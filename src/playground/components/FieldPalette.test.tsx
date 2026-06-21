@@ -23,7 +23,7 @@ describe('FieldPalette', () => {
 
   it('renders field options when not in preview mode', () => {
     render(<FieldPalette />)
-    expect(screen.getByText('Add Fields')).toBeInTheDocument()
+    expect(screen.getByText('Form Fields')).toBeInTheDocument()
     expect(screen.getByText('Text Input')).toBeInTheDocument()
     expect(screen.getByText('Number')).toBeInTheDocument()
   })

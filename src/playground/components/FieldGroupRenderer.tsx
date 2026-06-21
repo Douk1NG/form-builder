@@ -16,17 +16,17 @@ type GroupFieldItemProps = {
 
 function GroupFieldItem({ field, onRemove }: GroupFieldItemProps) {
   return (
-    <div className="relative group/field rounded-lg border border-border/40 bg-card/60 p-3 transition-all hover:border-primary/30">
+    <div className="relative group/field rounded-xl border border-border/30 bg-card/80 p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-xs">
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="absolute top-1.5 right-1.5 h-6 w-6 opacity-0 group-hover/field:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 z-10"
+        className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover/field:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 z-10 rounded-md"
         onClick={onRemove}
       >
-        <Trash2 className="h-3 w-3" />
+        <Trash2 className="h-3.5 w-3.5" />
       </Button>
-      <div className="pointer-events-none opacity-80">
+      <div className="pointer-events-none opacity-90">
         <FieldComponent {...field as Omit<typeof field, 'id'>} />
       </div>
     </div>
@@ -58,11 +58,11 @@ function GroupDropZone({ groupId }: GroupDropZoneProps) {
   return (
     <div
       ref={dropRef}
-      className={`rounded-lg border-2 border-dashed transition-all py-4 flex items-center justify-center ${
-        isOver ? 'border-primary bg-primary/5 scale-[1.01]' : 'border-border/30 bg-transparent'
+      className={`rounded-xl border-2 border-dashed transition-all duration-200 py-6 flex items-center justify-center ${
+        isOver ? 'border-primary/50 bg-primary/10 shadow-inner' : 'border-border/40 bg-muted/20 hover:border-primary/30'
       }`}
     >
-      <p className="text-xs text-muted-foreground/60">
+      <p className="text-sm font-medium text-muted-foreground/60">
         {isOver ? 'Drop field here' : 'Drop a field or use buttons below'}
       </p>
     </div>
@@ -107,18 +107,19 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
 
   if (!group) return null
 
-  const borderClass = isSelected
-    ? 'border-primary ring-4 ring-primary/10 shadow-lg'
-    : 'border-border/50 hover:border-primary/30'
+  const selectedStyles = 'border-primary/60 ring-2 ring-primary/15 shadow-md shadow-primary/5 bg-card/90'
+  const defaultStyles = 'border-border/40 hover:border-primary/30 shadow-xs bg-card/70 hover:shadow-sm'
+
+  const borderClass = isSelected ? selectedStyles : defaultStyles
 
   return (
     <div
       ref={dragRef}
-      className={`relative group rounded-2xl border-2 transition-all backdrop-blur-sm bg-card/40 ${borderClass} ${isDragging ? 'opacity-50 scale-[0.98] shadow-none border-dashed' : ''}`}
+      className={`relative group rounded-2xl border transition-all duration-200 backdrop-blur-md ${borderClass} ${isDragging ? 'opacity-40 scale-[0.98] shadow-none border-dashed' : ''}`}
     >
       {/* Group Header */}
       <div
-        className="flex items-center gap-2 px-4 py-3 cursor-pointer border-b border-border/30 rounded-t-2xl bg-card/60 backdrop-blur-sm"
+        className="flex items-center gap-2.5 px-4 py-3.5 cursor-pointer border-b border-border/40 rounded-t-2xl bg-muted/30 hover:bg-muted/50 transition-colors backdrop-blur-sm"
         onClick={handleSelectGroup}
         role="button"
         tabIndex={0}
@@ -129,28 +130,28 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
         <button
           ref={dragHandleRef}
           type="button"
-          className="p-0.5 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing"
+          className="p-1 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 cursor-grab active:cursor-grabbing transition-colors"
           onClick={(event) => event.stopPropagation()}
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <div className="p-1 rounded-md bg-violet-500/10">
-          <Layers className="h-3.5 w-3.5 text-violet-500" />
+        <div className="p-1.5 rounded-lg bg-violet-500/15">
+          <Layers className="h-4 w-4 text-violet-600 dark:text-violet-400" />
         </div>
-        <span className="font-semibold text-sm text-foreground flex-1">{group.label}</span>
+        <span className="font-bold text-base text-foreground tracking-tight flex-1">{group.label}</span>
 
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-card shadow-sm border border-border rounded-md p-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleMoveUp}>
+        <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1">
+          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md hover:bg-muted" onClick={handleMoveUp}>
             <ArrowUp className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleMoveDown}>
+          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md hover:bg-muted" onClick={handleMoveDown}>
             <ArrowDown className="h-3.5 w-3.5" />
           </Button>
           <div className="w-px h-4 bg-border mx-0.5" />
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+            className="h-7 w-7 rounded-md text-destructive hover:text-destructive hover:bg-destructive/10"
             onClick={handleRemoveGroup}
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -159,7 +160,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
       </div>
 
       {/* Group Body */}
-      <div className="p-4 space-y-3">
+      <div className="p-5 space-y-4">
         {group.items.map((groupItem) => {
           if (groupItem.kind === 'column_row') {
             return (
@@ -172,7 +173,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
             )
           }
 
-          // Plain field — no `kind` property
+          // Plain field
           const field = groupItem as Field
           return (
             <GroupFieldItem
@@ -186,15 +187,15 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
 
         <GroupDropZone groupId={groupId} />
 
-        <div className="flex gap-2 pt-1">
+        <div className="flex gap-3 pt-2">
           <Button
             type="button"
             variant="outline"
             size="sm"
-            className="flex-1 text-xs border-dashed hover:border-primary/50 hover:bg-primary/5"
+            className="flex-1 border-dashed hover:border-violet-500/50 hover:bg-violet-500/5 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
             onClick={() => addColumnRowToGroup(groupId)}
           >
-            <Plus className="h-3 w-3 mr-1" />
+            <Plus className="h-4 w-4 mr-1.5" />
             Add 2-Column Row
           </Button>
         </div>
@@ -202,3 +203,4 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
     </div>
   )
 }
+

@@ -24,18 +24,18 @@ export function CanvasFieldWrapper({
   onRemove,
   children
 }: CanvasFieldWrapperProps) {
-  const ref = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLButtonElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
 
   useEffect(() => {
-    const el = ref.current
+    const element = wrapperRef.current
     const handle = dragHandleRef.current
-    if (!el || !handle) return
+    if (!element || !handle) return
 
     const cleanupDraggable = draggable({
-      element: el,
+      element,
       dragHandle: handle,
       getInitialData: () => ({ id, index, source: 'canvas' }),
       onDragStart: () => setIsDragging(true),
@@ -43,7 +43,7 @@ export function CanvasFieldWrapper({
     })
 
     const cleanupDropTarget = dropTargetForElements({
-      element: el,
+      element,
       getData: () => ({ id, index }),
       onDragEnter: () => setIsDragOver(true),
       onDragLeave: () => setIsDragOver(false),
@@ -56,16 +56,20 @@ export function CanvasFieldWrapper({
     }
   }, [id, index])
 
-  const borderClass = isSelected 
-    ? 'border-primary ring-4 ring-primary/10 shadow-md bg-card/90' 
+  const selectedStyles = 'border-primary/60 ring-2 ring-primary/15 shadow-md shadow-primary/5 bg-card'
+  const dragOverStyles = 'border-primary/40 border-t-4 shadow-sm bg-card/70'
+  const defaultStyles = 'border-border/40 hover:border-primary/30 shadow-xs bg-card/80 hover:shadow-sm'
+
+  const borderClass = isSelected
+    ? selectedStyles
     : isDragOver
-      ? 'border-primary border-t-4 hover:border-primary/50 shadow-sm bg-card/60'
-      : 'border-border/50 hover:border-primary/40 shadow-sm bg-card/50'
+      ? dragOverStyles
+      : defaultStyles
 
   return (
-    <div 
-      ref={ref}
-      className={`relative group p-5 pl-12 rounded-xl border-2 transition-all cursor-pointer backdrop-blur-sm ${borderClass} ${isDragging ? 'opacity-50 scale-[0.98] shadow-none border-dashed' : ''}`}
+    <div
+      ref={wrapperRef}
+      className={`relative group p-5 pl-12 rounded-xl border transition-all duration-200 cursor-pointer backdrop-blur-sm ${borderClass} ${isDragging ? 'opacity-40 scale-[0.98] shadow-none border-dashed' : ''}`}
       onClick={onSelect}
       role="button"
       tabIndex={0}
@@ -78,42 +82,58 @@ export function CanvasFieldWrapper({
       <button
         ref={dragHandleRef}
         type="button"
-        className="absolute left-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing"
+        className="absolute left-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 cursor-grab active:cursor-grabbing transition-colors"
       >
-        <GripVertical className="h-5 w-5" />
+        <GripVertical className="h-4 w-4" />
       </button>
 
-      <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-card shadow-sm border border-border rounded-md p-1 z-10">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-8 w-8"
-          onClick={onMoveUp}
-        >
-          <ArrowUp className="h-4 w-4" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-8 w-8"
-          onClick={onMoveDown}
-        >
-          <ArrowDown className="h-4 w-4" />
-        </Button>
-        <div className="w-px h-4 bg-border mx-1" />
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-          onClick={onRemove}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-      
+      <FieldActionToolbar
+        onMoveUp={onMoveUp}
+        onMoveDown={onMoveDown}
+        onRemove={onRemove}
+      />
+
       <div className="pointer-events-none opacity-80">
         {children}
       </div>
+    </div>
+  )
+}
+
+type FieldActionToolbarProps = {
+  onMoveUp: (event: React.MouseEvent) => void
+  onMoveDown: (event: React.MouseEvent) => void
+  onRemove: (event: React.MouseEvent) => void
+}
+
+function FieldActionToolbar({ onMoveUp, onMoveDown, onRemove }: FieldActionToolbarProps) {
+  return (
+    <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1 z-10">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-7 w-7 rounded-md hover:bg-muted"
+        onClick={onMoveUp}
+      >
+        <ArrowUp className="h-3.5 w-3.5" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-7 w-7 rounded-md hover:bg-muted"
+        onClick={onMoveDown}
+      >
+        <ArrowDown className="h-3.5 w-3.5" />
+      </Button>
+      <div className="w-px h-4 bg-border mx-0.5" />
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-7 w-7 rounded-md text-destructive hover:text-destructive hover:bg-destructive/10"
+        onClick={onRemove}
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </Button>
     </div>
   )
 }

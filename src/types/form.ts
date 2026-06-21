@@ -125,7 +125,7 @@ export type FieldGroup = {
 export type CanvasItem = CanvasField | ColumnRow | FieldGroup;
 
 export type FormProps = {
-    fields: Fields;
+    fields: Array<Field | CanvasItem>;
     values: Record<string, unknown>;
     translate?: (key: string) => string;
     action: (id: string | undefined, prevState: ActionResponse | null, formData: FormData) => Promise<ActionResponse>;
