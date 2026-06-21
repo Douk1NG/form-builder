@@ -2,6 +2,7 @@ import { useFieldProperties } from '../hooks/useFieldProperties'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { Switch } from '../../components/ui/switch'
+import { FieldOptionsEditor } from './FieldOptionsEditor'
 
 export function FieldProperties() {
   const {
@@ -13,6 +14,7 @@ export function FieldProperties() {
     handleUpdatePlaceholder,
     handleUpdateReadOnly,
     handleUpdateDisabled,
+    handleUpdateOptions,
   } = useFieldProperties()
 
   if (previewMode || !selectedField) {
@@ -22,6 +24,14 @@ export function FieldProperties() {
       </div>
     )
   }
+
+  const hasOptions = [
+    'select',
+    'multiselect',
+    'tagbox',
+    'group_variant_inventory',
+    'group_variant_product',
+  ].includes(selectedField.type)
 
   return (
     <div className="space-y-6">
@@ -75,6 +85,15 @@ export function FieldProperties() {
             onCheckedChange={handleUpdateDisabled}
           />
         </div>
+
+        {hasOptions && (
+          <div className="pt-4 border-t">
+            <FieldOptionsEditor
+              options={'options' in selectedField && Array.isArray(selectedField.options) ? selectedField.options : []}
+              onChange={handleUpdateOptions}
+            />
+          </div>
+        )}
       </div>
     </div>
   )

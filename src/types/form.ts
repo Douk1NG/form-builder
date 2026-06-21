@@ -57,7 +57,7 @@ export type SwitchField = BaseField & {
     type: 'switch';
 };
 
-export type TagboxField = BaseField & {
+export type TagboxField = BaseField & WithOptions & {
     type: 'tagbox';
 };
 

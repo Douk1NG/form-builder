@@ -10,7 +10,8 @@ export default function Tagbox({
     name,
     value = [],
     placeholder = '',
-    readOnly = false
+    readOnly = false,
+    options = []
 }: TagboxField) {
     const {
         tags,
@@ -27,6 +28,8 @@ export default function Tagbox({
         remove: 'Remove'
     }
 
+    const datalistId = `${name}-options`
+
     return (
         <div className="space-y-4">
             <div className="flex space-x-2">
@@ -39,7 +42,15 @@ export default function Tagbox({
                     placeholder={placeholder}
                     className="grow"
                     readOnly={readOnly}
+                    list={options.length > 0 ? datalistId : undefined}
                 />
+                {options.length > 0 && (
+                    <datalist id={datalistId}>
+                        {options.map((option) => (
+                            <option key={option.value} value={option.label} />
+                        ))}
+                    </datalist>
+                )}
                 <Button
                     onClick={addTag}
                     type="button"

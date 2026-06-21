@@ -1,5 +1,6 @@
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import type { Field } from '../../types/form'
+import type { Option } from '../../types/select'
 
 export function useFieldProperties() {
   const currentForm = useFormBuilderStore((state) => state.currentForm)
@@ -47,6 +48,12 @@ export function useFieldProperties() {
     }
   }
 
+  const handleUpdateOptions = (options: Option[]) => {
+    if (selectedField?.id) {
+      updateField(selectedField.id, { options })
+    }
+  }
+
   return {
     previewMode,
     selectedField,
@@ -56,5 +63,6 @@ export function useFieldProperties() {
     handleUpdatePlaceholder,
     handleUpdateReadOnly,
     handleUpdateDisabled,
+    handleUpdateOptions,
   }
 }

@@ -25,7 +25,8 @@ export function FormCanvas() {
         <FormBuilder 
           fields={currentForm.fields} 
           values={{}} 
-          action={simulateSubmit} 
+          action={simulateSubmit}
+          isCreating={true}
         />
       </div>
     )
