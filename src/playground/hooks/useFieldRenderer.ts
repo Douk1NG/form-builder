@@ -1,31 +1,31 @@
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 
 export function useFieldRenderer(id: string) {
-  const field = useFormBuilderStore((state) => state.fieldsData ? state.fieldsData[id] : null)
-  const selectedFieldId = useFormBuilderStore((state) => state.selectedFieldId)
-  const setSelectedField = useFormBuilderStore((state) => state.setSelectedField)
-  const removeField = useFormBuilderStore((state) => state.removeField)
-  const reorderField = useFormBuilderStore((state) => state.reorderField)
+  const field = useFormBuilderStore((state) => state.itemsData ? state.itemsData[id] : null)
+  const selectedItemId = useFormBuilderStore((state) => state.selectedItemId)
+  const setSelectedItem = useFormBuilderStore((state) => state.setSelectedItem)
+  const removeCanvasItem = useFormBuilderStore((state) => state.removeCanvasItem)
+  const reorderItem = useFormBuilderStore((state) => state.reorderItem)
 
-  const isSelected = selectedFieldId === id
+  const isSelected = selectedItemId === id
 
   const handleSelect = () => {
-    setSelectedField(id)
+    setSelectedItem(id)
   }
-  
+
   const handleMoveUp = (event: React.MouseEvent) => {
     event.stopPropagation()
-    reorderField(id, 'up')
+    reorderItem(id, 'up')
   }
 
   const handleMoveDown = (event: React.MouseEvent) => {
     event.stopPropagation()
-    reorderField(id, 'down')
+    reorderItem(id, 'down')
   }
 
   const handleRemove = (event: React.MouseEvent) => {
     event.stopPropagation()
-    removeField(id)
+    removeCanvasItem(id)
   }
 
   return {

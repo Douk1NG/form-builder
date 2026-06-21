@@ -17,7 +17,7 @@ export function FieldRenderer({ id, index }: FieldRendererProps) {
     handleRemove,
   } = useFieldRenderer(id)
 
-  if (!field) return null
+  if (!field || field.kind !== 'field') return null
 
   return (
     <CanvasFieldWrapper
@@ -29,7 +29,7 @@ export function FieldRenderer({ id, index }: FieldRendererProps) {
       onMoveDown={handleMoveDown}
       onRemove={handleRemove}
     >
-      <FieldComponent {...field as Omit<typeof field, 'id'>} />
+      <FieldComponent {...field as Omit<typeof field, 'id' | 'kind'>} />
     </CanvasFieldWrapper>
   )
 }

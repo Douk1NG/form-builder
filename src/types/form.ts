@@ -73,6 +73,7 @@ export type NumberField = BaseField & {
     type: 'number';
 };
 
+/** A plain form field without any canvas-specific metadata. */
 export type Field =
     | TextField
     | TextAreaField
@@ -87,6 +88,42 @@ export type Field =
 
 export type Fields = Field[];
 
+/**
+ * A row that renders two fields side-by-side in a 2-column layout.
+ * Slots hold a plain Field or null (empty slot).
+ */
+export type ColumnRow = {
+    id: string;
+    kind: 'column_row';
+    leftField: Field | null;
+    rightField: Field | null;
+};
+
+/**
+ * A canvas-aware field — a plain Field tagged with kind:'field' so it can
+ * participate in discriminated unions alongside ColumnRow and FieldGroup.
+ */
+export type CanvasField = Field & {
+    id: string;
+    kind: 'field';
+};
+
+/**
+ * A named group section containing canvas fields and/or column rows.
+ * All items carry a `kind` so they can be discriminated at runtime.
+ */
+export type FieldGroup = {
+    id: string;
+    kind: 'field_group';
+    label: string;
+    items: Array<CanvasField | ColumnRow>;
+};
+
+/**
+ * Any item that can appear at the top level of the canvas.
+ */
+export type CanvasItem = CanvasField | ColumnRow | FieldGroup;
+
 export type FormProps = {
     fields: Fields;
     values: Record<string, unknown>;
@@ -96,5 +133,5 @@ export type FormProps = {
     isEditing?: boolean;
     isCreating?: boolean;
     onSuccess?: (state: ActionResponse) => void;
-    onError?: (error: any) => void;
+    onError?: (error: unknown) => void;
 }

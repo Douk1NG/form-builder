@@ -16,7 +16,7 @@ export default function Component({
     inheritFrom,
     onChange: innerOnChange
 }: MultiselectField) {
-    const selectRef = useRef(null)
+    const selectRef = useRef<React.ElementRef<typeof Multiselect>>(null)
 
     const { onChange: onChangeInheritance } = useInheritanceContext()
 

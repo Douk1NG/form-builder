@@ -8,9 +8,9 @@ describe('useFormBuilderStore', () => {
       formId: null,
       formTitle: '',
       formDescription: '',
-      fieldIds: [],
-      fieldsData: {},
-      selectedFieldId: null,
+      itemIds: [],
+      itemsData: {},
+      selectedItemId: null,
       previewMode: false,
     })
   })
@@ -22,7 +22,7 @@ describe('useFormBuilderStore', () => {
     const state = useFormBuilderStore.getState()
     expect(state.formId).toBeDefined()
     expect(state.formTitle).toBe('Test Form')
-    expect(state.fieldIds).toHaveLength(0)
+    expect(state.itemIds).toHaveLength(0)
   })
 
   it('adds a field to the form', () => {
@@ -32,10 +32,10 @@ describe('useFormBuilderStore', () => {
     store.addField({ type: 'text', label: 'First Name' } as any)
     
     const state = useFormBuilderStore.getState()
-    expect(state.fieldIds).toHaveLength(1)
+    expect(state.itemIds).toHaveLength(1)
     
-    const fieldId = state.fieldIds[0]
-    expect(state.fieldsData[fieldId].label).toBe('First Name')
+    const itemId = state.itemIds[0]
+    expect((state.itemsData[itemId] as any).label).toBe('First Name')
   })
 
   it('inserts a field at a specific index', () => {
@@ -45,16 +45,16 @@ describe('useFormBuilderStore', () => {
     store.addField({ type: 'text', label: 'Field 1' } as any)
     store.addField({ type: 'text', label: 'Field 3' } as any)
     
-    store.insertFieldAt(1, { type: 'text', label: 'Field 2' } as any)
+    store.insertItemAt(1, { type: 'text', label: 'Field 2', id: 'temp-id', kind: 'field' } as any)
     
     const state = useFormBuilderStore.getState()
-    expect(state.fieldIds).toHaveLength(3)
+    expect(state.itemIds).toHaveLength(3)
     
-    const secondFieldId = state.fieldIds[1]
-    expect(state.fieldsData[secondFieldId].label).toBe('Field 2')
+    const secondItemId = state.itemIds[1]
+    expect((state.itemsData[secondItemId] as any).label).toBe('Field 2')
   })
 
-  it('moves a field from source to destination index', () => {
+  it('moves an item from source to destination index', () => {
     const store = useFormBuilderStore.getState()
     store.createForm('Test Form')
     
@@ -63,30 +63,30 @@ describe('useFormBuilderStore', () => {
     store.addField({ type: 'text', label: 'Field C' } as any)
     
     // Move 'Field A' to the end
-    store.moveField(0, 2)
+    store.moveItem(0, 2)
     
     const state = useFormBuilderStore.getState()
-    const { fieldIds, fieldsData } = state
+    const { itemIds, itemsData } = state
     
-    expect(fieldsData[fieldIds[0]].label).toBe('Field B')
-    expect(fieldsData[fieldIds[1]].label).toBe('Field C')
-    expect(fieldsData[fieldIds[2]].label).toBe('Field A')
+    expect((itemsData[itemIds[0]] as any).label).toBe('Field B')
+    expect((itemsData[itemIds[1]] as any).label).toBe('Field C')
+    expect((itemsData[itemIds[2]] as any).label).toBe('Field A')
   })
 
-  it('removes a field', () => {
+  it('removes an item', () => {
     const store = useFormBuilderStore.getState()
     store.createForm('Test Form')
     
     store.addField({ type: 'text', label: 'Field to remove' } as any)
-    const fieldId = useFormBuilderStore.getState().fieldIds[0]
+    const itemId = useFormBuilderStore.getState().itemIds[0]
     
-    if (fieldId) {
-      store.removeField(fieldId)
+    if (itemId) {
+      store.removeCanvasItem(itemId)
     }
     
     const state = useFormBuilderStore.getState()
-    expect(state.fieldIds).toHaveLength(0)
-    expect(state.fieldsData[fieldId]).toBeUndefined()
+    expect(state.itemIds).toHaveLength(0)
+    expect(state.itemsData[itemId]).toBeUndefined()
   })
 
   it('returns full FormSchema via getFormSchema', () => {
@@ -97,7 +97,7 @@ describe('useFormBuilderStore', () => {
     const schema = useFormBuilderStore.getState().getFormSchema()
     expect(schema).toBeDefined()
     expect(schema?.title).toBe('Schema Test')
-    expect(schema?.fields).toHaveLength(1)
-    expect(schema?.fields[0].label).toBe('Text')
+    expect(schema?.items).toHaveLength(1)
+    expect((schema?.items[0] as any).label).toBe('Text')
   })
 })

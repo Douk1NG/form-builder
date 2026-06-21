@@ -10,8 +10,8 @@ describe('FieldPalette', () => {
     useFormBuilderStore.setState({
       formId: '1',
       previewMode: false,
-      fieldIds: [],
-      fieldsData: {},
+      itemIds: [],
+      itemsData: {},
     })
   })
 
@@ -35,9 +35,9 @@ describe('FieldPalette', () => {
     await user.click(screen.getByText('Text Input'))
     
     const state = useFormBuilderStore.getState()
-    expect(state.fieldIds).toHaveLength(1)
+    expect(state.itemIds).toHaveLength(1)
     
-    const fieldId = state.fieldIds[0]
-    expect(state.fieldsData[fieldId].type).toBe('text')
+    const itemId = state.itemIds[0]
+    expect((state.itemsData[itemId] as any).type).toBe('text')
   })
 })

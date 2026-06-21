@@ -1,15 +1,68 @@
-import { Settings2 } from 'lucide-react'
+import { Settings2, Layers, Columns2 } from 'lucide-react'
 import { useFieldProperties } from '../hooks/useFieldProperties'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { Switch } from '../../components/ui/switch'
 import { FieldOptionsEditor } from './FieldOptionsEditor'
 
+function EmptyPropertiesPanel() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-4">
+      <div className="p-4 mb-4 rounded-full bg-primary/10">
+        <Settings2 className="w-8 h-8 text-primary/60" />
+      </div>
+      <p className="text-lg font-medium text-foreground/80">Properties</p>
+      <p className="text-sm mt-1">Select a field in the canvas to edit its properties</p>
+    </div>
+  )
+}
+
+function GroupPropertiesPanel({ groupLabel, onLabelChange }: { groupLabel: string; onLabelChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 pb-4 border-b border-border/50">
+        <div className="p-2 rounded-lg bg-violet-500/10">
+          <Layers className="w-5 h-5 text-violet-500" />
+        </div>
+        <h3 className="font-semibold text-lg">Group Properties</h3>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="group-label" className="text-sm font-medium">Group Label</Label>
+        <Input
+          id="group-label"
+          value={groupLabel}
+          onChange={onLabelChange}
+          placeholder="Group label..."
+          className="transition-all focus:ring-violet-500/50"
+        />
+      </div>
+    </div>
+  )
+}
+
+function ColumnRowPropertiesPanel() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 pb-4 border-b border-border/50">
+        <div className="p-2 rounded-lg bg-violet-500/10">
+          <Columns2 className="w-5 h-5 text-violet-500" />
+        </div>
+        <h3 className="font-semibold text-lg">Column Row</h3>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        This is a 2-column layout row. Drag fields from the palette onto the left and right slots to fill the columns.
+      </p>
+    </div>
+  )
+}
+
 export function FieldProperties() {
   const {
     formId,
     previewMode,
+    selectedKind,
     selectedField,
+    selectedGroup,
     handleUpdateLabel,
     handleUpdateName,
     handleUpdateDescription,
@@ -17,21 +70,27 @@ export function FieldProperties() {
     handleUpdateReadOnly,
     handleUpdateDisabled,
     handleUpdateOptions,
+    handleUpdateGroupLabel,
   } = useFieldProperties()
 
   if (previewMode || !formId) return null
 
-  if (!selectedField) {
+  if (!selectedKind) return <EmptyPropertiesPanel />
+
+  if (selectedKind === 'field_group' && selectedGroup) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-4">
-        <div className="p-4 mb-4 rounded-full bg-primary/10">
-          <Settings2 className="w-8 h-8 text-primary/60" />
-        </div>
-        <p className="text-lg font-medium text-foreground/80">Properties</p>
-        <p className="text-sm mt-1">Select a field in the canvas to edit its properties</p>
-      </div>
+      <GroupPropertiesPanel
+        groupLabel={selectedGroup.label}
+        onLabelChange={handleUpdateGroupLabel}
+      />
     )
   }
+
+  if (selectedKind === 'column_row') {
+    return <ColumnRowPropertiesPanel />
+  }
+
+  if (!selectedField) return <EmptyPropertiesPanel />
 
   const hasOptions = selectedField.type === 'select' || selectedField.type === 'multiselect'
 
@@ -43,7 +102,7 @@ export function FieldProperties() {
         </div>
         <h3 className="font-semibold text-lg">Field Properties</h3>
       </div>
-      
+
       <div className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="field-label" className="text-sm font-medium">Label</Label>

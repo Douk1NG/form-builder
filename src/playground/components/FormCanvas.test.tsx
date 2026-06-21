@@ -17,8 +17,8 @@ describe('FormCanvas', () => {
     useFormBuilderStore.setState({
       formId: null,
       formTitle: '',
-      fieldIds: [],
-      fieldsData: {},
+      itemIds: [],
+      itemsData: {},
       previewMode: false,
     })
   })
@@ -27,7 +27,7 @@ describe('FormCanvas', () => {
     useFormBuilderStore.setState({
       formId: '1', 
       formTitle: 'Test Form', 
-      fieldIds: [] 
+      itemIds: [] 
     })
     render(<FormCanvas />)
     expect(screen.getByText('Drag & Drop fields here')).toBeInTheDocument()
@@ -37,9 +37,9 @@ describe('FormCanvas', () => {
     useFormBuilderStore.setState({
       formId: '1', 
       formTitle: 'Test Form', 
-      fieldIds: ['f1'],
-      fieldsData: {
-        'f1': { id: 'f1', type: 'text', label: 'Field 1' } as any
+      itemIds: ['f1'],
+      itemsData: {
+        'f1': { id: 'f1', type: 'text', label: 'Field 1', kind: 'field' } as any
       }
     })
     render(<FormCanvas />)
@@ -50,7 +50,7 @@ describe('FormCanvas', () => {
     useFormBuilderStore.setState({
       formId: '1', 
       formTitle: 'Test Form', 
-      fieldIds: [],
+      itemIds: [],
       previewMode: true
     })
     render(<FormCanvas />)
