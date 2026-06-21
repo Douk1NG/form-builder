@@ -4,8 +4,6 @@ import { formatFileSize } from '../../../../utils/file'
 import { Button } from '../../../ui/button'
 import { Star} from 'lucide-react';
 
-import Image from "next/image"
-
 import type {
     ImageCardProps,
     ImageListProps,
@@ -34,15 +32,13 @@ const ImageCard = ({
 
     return (
         <div key={name} className="relative h-[30vh] w-full">
-            <Image
+            <img
                 src={url || preview}
                 alt={url || name}
-                className="object-cover rounded-md cursor-pointer"
+                className="object-cover w-full h-full rounded-md cursor-pointer absolute inset-0"
                 onClick={() => handlers.openCarousel(index)}
                 title="View image"
                 loading="lazy"
-                priority={false}
-                fill
             />
             {!readOnly && (
                 <Button

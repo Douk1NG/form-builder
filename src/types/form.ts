@@ -12,7 +12,7 @@ export type ActionResponse = {
 
 export type FieldType = 'text' | 'select' | 'textarea' | 'currency' | 'multiselect' | 'switch' | 'tagbox' | 'image' | 'group_variant_inventory' | 'group_variant_product' | 'number';
 
-export interface BaseField {
+export type BaseField = {
     id?: string;
     label: string;
     name?: string;
@@ -29,7 +29,7 @@ export interface BaseField {
     disabled?: boolean;
 }
 
-export interface WithOptions {
+export type WithOptions = {
     options?: Option[];
 }
 

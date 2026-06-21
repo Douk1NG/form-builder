@@ -1,7 +1,7 @@
 import { CircleX } from 'lucide-react';
 import { cn } from '../../lib/utils'
 
-interface FieldErrorProps {
+type FieldErrorProps = {
     error?: string
     className?: string
 }

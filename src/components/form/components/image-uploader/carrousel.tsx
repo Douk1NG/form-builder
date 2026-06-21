@@ -1,6 +1,5 @@
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-import Image from "next/image"
 import { useCarousel } from '../../../../hooks/use-carrousel'
 import type { CarouselProps } from '../../../../types/image-uploader'
 
@@ -46,15 +45,13 @@ export default function Carousel({
                         title="Close gallery"
                     >
                         {imageUrl && (
-                            <Image
+                            <img
                                 onClick={(e) => e.stopPropagation()}
                                 src={imageUrl}
                                 alt={`${imageName}`}
-                                className="object-contain rounded-sm !w-fit !h-fit max-h-[90vh] m-auto"
+                                className="object-contain rounded-sm w-full h-full max-h-[90vh] m-auto"
                                 title={imageName}
                                 loading="lazy"
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                             />
                         )}
                     </div>
