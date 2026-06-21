@@ -1,9 +1,7 @@
-import dynamic from 'next/dynamic'
+import Select from 'react-select'
 import { useInheritanceContext } from '../../../../context/InheritanceProvider'
 import type { SelectField } from '../../../../types/form'
 import type { Option } from '../../../../types/select'
-
-const Select = dynamic(() => import('react-select'), { ssr: false })
 
 const Component = ({
     options = [],

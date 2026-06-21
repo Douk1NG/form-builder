@@ -2,7 +2,7 @@ import CurrencyInput from 'react-currency-input-field';
 import { cn } from '../../../../lib/utils';
 import { safeParseFloat } from '../../../../utils/safeParse';
 import type { CurrencyField } from '../../../../types/form';
-import { useLocale } from 'next-intl';
+
 import { useDebouncedCallback } from 'use-debounce'
 import { useCallback } from 'react';
 import { useFieldInheritance } from '../../../../hooks/use-field-inheritance';
@@ -17,7 +17,7 @@ export default function Component({
     disabled,
     onChange
 }: CurrencyField) {
-    const locale = useLocale();
+    const locale = typeof navigator !== 'undefined' ? navigator.language.split('-')[0] : 'en';
     const [initialValue, setInitialValue] = useState(value)
 
     const intlConfig = {

@@ -2,6 +2,7 @@ import { useFormCanvas } from '../hooks/useFormCanvas'
 import { CanvasFieldWrapper } from './CanvasFieldWrapper'
 import FormBuilder from '../../components/form'
 import FieldComponent from '../../components/form/field'
+import { InheritanceProvider } from '../../context/InheritanceProvider'
 
 export function FormCanvas() {
   const { 
@@ -37,26 +38,28 @@ export function FormCanvas() {
         {currentForm.description && <p className="mt-2 text-muted-foreground">{currentForm.description}</p>}
       </div>
 
-      <div className="space-y-4">
-        {currentForm.fields.length === 0 ? (
-          <div className="p-12 text-center border-2 border-dashed rounded-lg border-border text-muted-foreground">
-            Add fields from the palette on the left
-          </div>
-        ) : (
-          currentForm.fields.map((field) => (
-            <CanvasFieldWrapper
-              key={field.id}
-              isSelected={selectedFieldId === field.id}
-              onSelect={() => handleSelectField(field.id as string)}
-              onMoveUp={(event) => handleMoveUp(event, field.id as string)}
-              onMoveDown={(event) => handleMoveDown(event, field.id as string)}
-              onRemove={(event) => handleRemove(event, field.id as string)}
-            >
-              <FieldComponent {...field as Omit<typeof field, 'id'>} />
-            </CanvasFieldWrapper>
-          ))
-        )}
-      </div>
+      <InheritanceProvider onChange={() => {}} getFieldValue={() => undefined}>
+        <div className="space-y-4">
+          {currentForm.fields.length === 0 ? (
+            <div className="p-12 text-center border-2 border-dashed rounded-lg border-border text-muted-foreground">
+              Add fields from the palette on the left
+            </div>
+          ) : (
+            currentForm.fields.map((field) => (
+              <CanvasFieldWrapper
+                key={field.id}
+                isSelected={selectedFieldId === field.id}
+                onSelect={() => handleSelectField(field.id as string)}
+                onMoveUp={(event) => handleMoveUp(event, field.id as string)}
+                onMoveDown={(event) => handleMoveDown(event, field.id as string)}
+                onRemove={(event) => handleRemove(event, field.id as string)}
+              >
+                <FieldComponent {...field as Omit<typeof field, 'id'>} />
+              </CanvasFieldWrapper>
+            ))
+          )}
+        </div>
+      </InheritanceProvider>
     </div>
   )
 }

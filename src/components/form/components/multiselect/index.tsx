@@ -1,12 +1,10 @@
-import dynamic from 'next/dynamic'
 import { useRef, useCallback } from 'react'
 import { useInheritanceContext } from '../../../../context/InheritanceProvider'
 import { useDebouncedCallback } from 'use-debounce'
 import { useFieldInheritance } from '../../../../hooks/use-field-inheritance'
+import Multiselect from 'react-select'
 
 import type { MultiselectField } from '../../../../types/form'
-
-const Multiselect = dynamic(() => import('react-select'), { ssr: false })
 
 export default function Component({
     id,
@@ -24,7 +22,6 @@ export default function Component({
 
     const inheritanceMethod = useCallback((value: unknown) => {
         if (selectRef.current) {
-            // @ts-expect-error - react-select types are overcomplicated
             selectRef.current.setValue(value, 'select-option')
         }
     }, [])
