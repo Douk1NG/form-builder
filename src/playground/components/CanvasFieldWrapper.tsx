@@ -1,7 +1,11 @@
+import { useEffect, useRef, useState } from 'react'
+import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { Button } from '../../components/ui/button'
-import { ArrowUp, ArrowDown, Trash2 } from 'lucide-react'
+import { ArrowUp, ArrowDown, Trash2, GripVertical } from 'lucide-react'
 
 export type CanvasFieldWrapperProps = {
+  id: string
+  index: number
   isSelected: boolean
   onSelect: () => void
   onMoveUp: (event: React.MouseEvent) => void
@@ -11,6 +15,8 @@ export type CanvasFieldWrapperProps = {
 }
 
 export function CanvasFieldWrapper({
+  id,
+  index,
   isSelected,
   onSelect,
   onMoveUp,
@@ -18,13 +24,48 @@ export function CanvasFieldWrapper({
   onRemove,
   children
 }: CanvasFieldWrapperProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const dragHandleRef = useRef<HTMLButtonElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [isDragOver, setIsDragOver] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    const handle = dragHandleRef.current
+    if (!el || !handle) return
+
+    const cleanupDraggable = draggable({
+      element: el,
+      dragHandle: handle,
+      getInitialData: () => ({ id, index, source: 'canvas' }),
+      onDragStart: () => setIsDragging(true),
+      onDrop: () => setIsDragging(false),
+    })
+
+    const cleanupDropTarget = dropTargetForElements({
+      element: el,
+      getData: () => ({ id, index }),
+      onDragEnter: () => setIsDragOver(true),
+      onDragLeave: () => setIsDragOver(false),
+      onDrop: () => setIsDragOver(false),
+    })
+
+    return () => {
+      cleanupDraggable()
+      cleanupDropTarget()
+    }
+  }, [id, index])
+
   const borderClass = isSelected 
     ? 'border-primary ring-2 ring-primary/20' 
-    : 'border-border hover:border-primary/50'
+    : isDragOver
+      ? 'border-primary border-t-4 hover:border-primary/50'
+      : 'border-border hover:border-primary/50'
 
   return (
     <div 
-      className={`relative group bg-card p-4 rounded-lg border-2 transition-all cursor-pointer ${borderClass}`}
+      ref={ref}
+      className={`relative group bg-card p-4 pl-10 rounded-lg border-2 transition-all cursor-pointer ${borderClass} ${isDragging ? 'opacity-50' : ''}`}
       onClick={onSelect}
       role="button"
       tabIndex={0}
@@ -34,6 +75,14 @@ export function CanvasFieldWrapper({
         }
       }}
     >
+      <button
+        ref={dragHandleRef}
+        type="button"
+        className="absolute left-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing"
+      >
+        <GripVertical className="h-5 w-5" />
+      </button>
+
       <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-card shadow-sm border border-border rounded-md p-1 z-10">
         <Button 
           variant="ghost" 

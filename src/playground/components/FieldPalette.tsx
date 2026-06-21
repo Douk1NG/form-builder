@@ -1,5 +1,5 @@
 import { useFieldPalette } from '../hooks/useFieldPalette'
-import { Button } from '../../components/ui/button'
+import { PaletteItem } from './PaletteItem'
 import type { FieldType } from '../../types/form'
 
 const FIELD_TYPES: Array<{ type: FieldType; label: string; icon: string }> = [
@@ -24,14 +24,13 @@ export function FieldPalette() {
       <h3 className="text-sm font-semibold">Add Fields</h3>
       <div className="grid gap-2">
         {FIELD_TYPES.map((fieldType) => (
-          <Button
+          <PaletteItem
             key={fieldType.type}
-            variant="outline"
-            className="justify-start h-auto px-4 py-3"
+            type={fieldType.type}
+            label={fieldType.label}
+            icon={fieldType.icon}
             onClick={() => handleAddField(fieldType.type, fieldType.label)}
-          >
-            {fieldType.label}
-          </Button>
+          />
         ))}
       </div>
     </div>

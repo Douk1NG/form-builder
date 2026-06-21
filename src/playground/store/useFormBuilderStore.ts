@@ -20,6 +20,8 @@ export type FormBuilderState = {
   reorderField: (fieldId: string, direction: 'up' | 'down') => void
   setSelectedField: (fieldId: string | null) => void
   setPreviewMode: (enabled: boolean) => void
+  insertFieldAt: (index: number, field: Omit<Field, 'id'>) => void
+  moveField: (sourceIndex: number, destinationIndex: number) => void
 }
 
 export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
@@ -112,5 +114,41 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
 
   setPreviewMode: (enabled) => {
     set({ previewMode: enabled })
+  },
+
+  insertFieldAt: (index, field) => {
+    const { currentForm } = get()
+    if (!currentForm) return
+
+    const newField: Field = {
+      ...field,
+      id: crypto.randomUUID(),
+    } as Field
+
+    const newFields = [...currentForm.fields]
+    newFields.splice(index, 0, newField)
+
+    set({
+      currentForm: {
+        ...currentForm,
+        fields: newFields,
+      },
+    })
+  },
+
+  moveField: (sourceIndex, destinationIndex) => {
+    const { currentForm } = get()
+    if (!currentForm) return
+
+    const newFields = [...currentForm.fields]
+    const [movedField] = newFields.splice(sourceIndex, 1)
+    newFields.splice(destinationIndex, 0, movedField)
+
+    set({
+      currentForm: {
+        ...currentForm,
+        fields: newFields,
+      },
+    })
   },
 }))
