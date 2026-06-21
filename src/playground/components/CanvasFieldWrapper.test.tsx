@@ -53,7 +53,7 @@ describe('CanvasFieldWrapper', () => {
     )
     const wrapper = screen.getByRole('button', { name: /child/i })
     expect(wrapper).toHaveClass('border-primary')
-    expect(wrapper).toHaveClass('ring-primary/20')
+    expect(wrapper).toHaveClass('ring-primary/10')
   })
 
   it('calls action handlers when buttons are clicked', async () => {

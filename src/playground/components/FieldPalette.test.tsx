@@ -8,8 +8,10 @@ import { useFormBuilderStore } from '../store/useFormBuilderStore'
 describe('FieldPalette', () => {
   beforeEach(() => {
     useFormBuilderStore.setState({
-      currentForm: { id: '1', title: 'Test', fields: [] },
+      formId: '1',
       previewMode: false,
+      fieldIds: [],
+      fieldsData: {},
     })
   })
 
@@ -33,7 +35,9 @@ describe('FieldPalette', () => {
     await user.click(screen.getByText('Text Input'))
     
     const state = useFormBuilderStore.getState()
-    expect(state.currentForm?.fields).toHaveLength(1)
-    expect(state.currentForm?.fields[0].type).toBe('text')
+    expect(state.fieldIds).toHaveLength(1)
+    
+    const fieldId = state.fieldIds[0]
+    expect(state.fieldsData[fieldId].type).toBe('text')
   })
 })

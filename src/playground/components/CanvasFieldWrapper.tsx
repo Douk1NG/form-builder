@@ -57,15 +57,15 @@ export function CanvasFieldWrapper({
   }, [id, index])
 
   const borderClass = isSelected 
-    ? 'border-primary ring-2 ring-primary/20' 
+    ? 'border-primary ring-4 ring-primary/10 shadow-md bg-card/90' 
     : isDragOver
-      ? 'border-primary border-t-4 hover:border-primary/50'
-      : 'border-border hover:border-primary/50'
+      ? 'border-primary border-t-4 hover:border-primary/50 shadow-sm bg-card/60'
+      : 'border-border/50 hover:border-primary/40 shadow-sm bg-card/50'
 
   return (
     <div 
       ref={ref}
-      className={`relative group bg-card p-4 pl-10 rounded-lg border-2 transition-all cursor-pointer ${borderClass} ${isDragging ? 'opacity-50' : ''}`}
+      className={`relative group p-5 pl-12 rounded-xl border-2 transition-all cursor-pointer backdrop-blur-sm ${borderClass} ${isDragging ? 'opacity-50 scale-[0.98] shadow-none border-dashed' : ''}`}
       onClick={onSelect}
       role="button"
       tabIndex={0}

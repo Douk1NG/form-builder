@@ -9,7 +9,12 @@ export type FormSchema = {
 }
 
 export type FormBuilderState = {
-  currentForm: FormSchema | null
+  formId: string | null
+  formTitle: string
+  formDescription: string
+  fieldIds: string[]
+  fieldsData: Record<string, Field>
+  
   selectedFieldId: string | null
   previewMode: boolean
   
@@ -22,89 +27,95 @@ export type FormBuilderState = {
   setPreviewMode: (enabled: boolean) => void
   insertFieldAt: (index: number, field: Omit<Field, 'id'>) => void
   moveField: (sourceIndex: number, destinationIndex: number) => void
+  
+  getFormSchema: () => FormSchema | null
 }
 
 export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
-  currentForm: null,
+  formId: null,
+  formTitle: '',
+  formDescription: '',
+  fieldIds: [],
+  fieldsData: {},
+  
   selectedFieldId: null,
   previewMode: false,
 
   createForm: (title) => {
     set({
-      currentForm: {
-        id: crypto.randomUUID(),
-        title,
-        fields: [],
-      },
+      formId: crypto.randomUUID(),
+      formTitle: title,
+      formDescription: '',
+      fieldIds: [],
+      fieldsData: {},
       selectedFieldId: null,
     })
   },
 
   addField: (field) => {
-    const { currentForm } = get()
-    if (!currentForm) return
+    const { formId, fieldIds, fieldsData } = get()
+    if (!formId) return
 
-    const newField: Field = {
-      ...field,
-      id: crypto.randomUUID(),
-    } as Field
+    const id = crypto.randomUUID()
+    const newField: Field = { ...field, id } as Field
 
     set({
-      currentForm: {
-        ...currentForm,
-        fields: [...currentForm.fields, newField],
+      fieldIds: [...fieldIds, id],
+      fieldsData: {
+        ...fieldsData,
+        [id]: newField,
       },
     })
   },
 
   updateField: (fieldId, updates) => {
-    const { currentForm } = get()
-    if (!currentForm) return
+    const { formId, fieldsData } = get()
+    if (!formId || !fieldsData[fieldId]) return
 
     set({
-      currentForm: {
-        ...currentForm,
-        fields: currentForm.fields.map((f) => 
-          f.id === fieldId ? { ...f, ...updates } as Field : f
-        ),
+      fieldsData: {
+        ...fieldsData,
+        [fieldId]: {
+          ...fieldsData[fieldId],
+          ...updates,
+        } as Field,
       },
     })
   },
 
   removeField: (fieldId) => {
-    const { currentForm, selectedFieldId } = get()
-    if (!currentForm) return
+    const { formId, fieldIds, fieldsData, selectedFieldId } = get()
+    if (!formId) return
+
+    const newFieldIds = fieldIds.filter((id) => id !== fieldId)
+    const newFieldsData = { ...fieldsData }
+    delete newFieldsData[fieldId]
 
     set({
-      currentForm: {
-        ...currentForm,
-        fields: currentForm.fields.filter((f) => f.id !== fieldId),
-      },
+      fieldIds: newFieldIds,
+      fieldsData: newFieldsData,
       selectedFieldId: selectedFieldId === fieldId ? null : selectedFieldId,
     })
   },
 
   reorderField: (fieldId, direction) => {
-    const { currentForm } = get()
-    if (!currentForm) return
+    const { formId, fieldIds } = get()
+    if (!formId) return
 
-    const index = currentForm.fields.findIndex(f => f.id === fieldId)
+    const index = fieldIds.indexOf(fieldId)
     if (index === -1) return
     if (direction === 'up' && index === 0) return
-    if (direction === 'down' && index === currentForm.fields.length - 1) return
+    if (direction === 'down' && index === fieldIds.length - 1) return
 
-    const newFields = [...currentForm.fields]
+    const newFieldIds = [...fieldIds]
     const swapIndex = direction === 'up' ? index - 1 : index + 1
     
-    const temp = newFields[index]
-    newFields[index] = newFields[swapIndex]
-    newFields[swapIndex] = temp
+    const temp = newFieldIds[index]
+    newFieldIds[index] = newFieldIds[swapIndex]
+    newFieldIds[swapIndex] = temp
 
     set({
-      currentForm: {
-        ...currentForm,
-        fields: newFields,
-      },
+      fieldIds: newFieldIds,
     })
   },
 
@@ -117,38 +128,46 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
   },
 
   insertFieldAt: (index, field) => {
-    const { currentForm } = get()
-    if (!currentForm) return
+    const { formId, fieldIds, fieldsData } = get()
+    if (!formId) return
 
-    const newField: Field = {
-      ...field,
-      id: crypto.randomUUID(),
-    } as Field
+    const id = crypto.randomUUID()
+    const newField: Field = { ...field, id } as Field
 
-    const newFields = [...currentForm.fields]
-    newFields.splice(index, 0, newField)
+    const newFieldIds = [...fieldIds]
+    newFieldIds.splice(index, 0, id)
 
     set({
-      currentForm: {
-        ...currentForm,
-        fields: newFields,
+      fieldIds: newFieldIds,
+      fieldsData: {
+        ...fieldsData,
+        [id]: newField,
       },
     })
   },
 
   moveField: (sourceIndex, destinationIndex) => {
-    const { currentForm } = get()
-    if (!currentForm) return
+    const { formId, fieldIds } = get()
+    if (!formId) return
 
-    const newFields = [...currentForm.fields]
-    const [movedField] = newFields.splice(sourceIndex, 1)
-    newFields.splice(destinationIndex, 0, movedField)
+    const newFieldIds = [...fieldIds]
+    const [movedId] = newFieldIds.splice(sourceIndex, 1)
+    newFieldIds.splice(destinationIndex, 0, movedId)
 
     set({
-      currentForm: {
-        ...currentForm,
-        fields: newFields,
-      },
+      fieldIds: newFieldIds,
     })
   },
+
+  getFormSchema: () => {
+    const { formId, formTitle, formDescription, fieldIds, fieldsData } = get()
+    if (!formId) return null
+
+    return {
+      id: formId,
+      title: formTitle,
+      description: formDescription,
+      fields: fieldIds.map((id) => fieldsData[id]),
+    }
+  }
 }))

@@ -1,87 +1,66 @@
 import { usePlayground } from './hooks/usePlayground'
+import { PlaygroundHeader } from './components/PlaygroundHeader'
 import { FieldPalette } from './components/FieldPalette'
 import { FormCanvas } from './components/FormCanvas'
 import { FieldProperties } from './components/FieldProperties'
-import { Button } from '../components/ui/button'
+
 import { Input } from '../components/ui/input'
-import { Eye, Download, Plus } from 'lucide-react'
+import { Button } from '../components/ui/button'
+import { Plus } from 'lucide-react'
 
 export function Playground() {
   const {
-    currentForm,
-    previewMode,
+    formId,
     newTitle,
     handleTitleChange,
     handleCreate,
-    handleKeyDown,
-    handleTogglePreview,
-    handleExportJson,
+    handleKeyDown
   } = usePlayground()
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
-      <header className="px-6 py-4 border-b bg-card border-border">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold">Form Builder Playground</h1>
-            {currentForm && (
-              <span className="text-sm font-medium text-muted-foreground">
-                Editing: {currentForm.title}
-              </span>
-            )}
-          </div>
+    <div className="flex flex-col h-screen bg-linear-to-br from-background via-background to-muted/50 text-foreground overflow-hidden">
+      <PlaygroundHeader />
 
-          <div className="flex items-center gap-2">
-            {!currentForm ? (
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Form title..."
-                  value={newTitle}
-                  onChange={handleTitleChange}
-                  onKeyDown={handleKeyDown}
-                />
-                <Button onClick={handleCreate} size="sm">
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Form
-                </Button>
-              </div>
-            ) : (
-              <>
-                <Button 
-                  variant={previewMode ? "default" : "outline"} 
-                  size="sm" 
-                  onClick={handleTogglePreview}
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  {previewMode ? 'Edit Mode' : 'Preview'}
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleExportJson}>
-                  <Download className="w-4 h-4 mr-2" />
-                  Export JSON
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {currentForm ? (
-        <div className="flex flex-1 overflow-hidden">
-          <aside className="w-64 p-4 overflow-y-auto border-r bg-card border-border">
+      {formId ? (
+        <div className="flex flex-1 overflow-hidden relative">
+          {/* Left Sidebar */}
+          <aside className="w-72 p-6 overflow-y-auto border-r bg-card/60 backdrop-blur-xl border-border/50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10 transition-all">
             <FieldPalette />
           </aside>
-          
-          <main className="flex-1 p-8 overflow-y-auto bg-muted/30">
+
+          {/* Main Canvas Area */}
+          <main className="flex-1 p-8 overflow-y-auto bg-transparent relative">
             <FormCanvas />
           </main>
-          
-          <aside className="w-80 p-4 overflow-y-auto border-l bg-card border-border">
+
+          {/* Right Sidebar */}
+          <aside className="w-80 p-6 overflow-y-auto border-l bg-card/60 backdrop-blur-xl border-border/50 shadow-[-4px_0_24px_rgba(0,0,0,0.02)] z-10 transition-all">
             <FieldProperties />
           </aside>
         </div>
       ) : (
-        <div className="flex items-center justify-center flex-1 text-muted-foreground">
-          Create a form to get started
+        <div className="flex flex-col items-center justify-center flex-1 text-muted-foreground bg-transparent p-4">
+          <div className="p-10 border rounded-3xl bg-card/50 backdrop-blur-xl shadow-2xl border-border/50 max-w-lg text-center transform transition-all w-full">
+            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Plus className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="text-3xl font-bold mb-3 text-foreground tracking-tight">Create a Form</h2>
+            <p className="text-lg opacity-80 mb-8">Enter a title to start building your custom layout.</p>
+
+            <div className="flex flex-col gap-4 max-w-sm mx-auto">
+              <Input
+                autoFocus
+                placeholder="E.g. Customer Feedback Survey"
+                value={newTitle}
+                onChange={handleTitleChange}
+                onKeyDown={handleKeyDown}
+                className="text-lg py-6 px-4 transition-all focus:ring-primary shadow-inner bg-background/50"
+              />
+              <Button onClick={handleCreate} size="lg" className="w-full text-md shadow-md hover:shadow-lg transition-all py-6">
+                Start Building
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

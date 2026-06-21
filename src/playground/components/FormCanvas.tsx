@@ -1,20 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { Plus } from 'lucide-react'
 import { useFormCanvas } from '../hooks/useFormCanvas'
-import { CanvasFieldWrapper } from './CanvasFieldWrapper'
+import { FieldRenderer } from './FieldRenderer'
 import FormBuilder from '../../components/form'
-import FieldComponent from '../../components/form/field'
 import { InheritanceProvider } from '../../context/InheritanceProvider'
 
 export function FormCanvas() {
   const {
-    currentForm,
+    fieldIds,
     previewMode,
-    selectedFieldId,
-    handleSelectField,
-    handleMoveUp,
-    handleMoveDown,
-    handleRemove,
+    currentFormSchema,
     simulateSubmit
   } = useFormCanvas()
 
@@ -34,14 +30,11 @@ export function FormCanvas() {
     })
   }, [])
 
-  if (!currentForm) return null
-
-  if (previewMode) {
+  if (previewMode && currentFormSchema) {
     return (
-      <div className="max-w-2xl p-8 mx-auto border rounded-lg shadow-sm bg-card border-border">
-        <h2 className="mb-6 text-2xl font-bold">{currentForm.title}</h2>
+      <div className="max-w-3xl p-8 mx-auto border rounded-2xl shadow-xl bg-card/80 backdrop-blur-md border-border/50">
         <FormBuilder
-          fields={currentForm.fields}
+          fields={currentFormSchema.fields}
           values={{}}
           action={simulateSubmit}
           isCreating={true}
@@ -51,35 +44,28 @@ export function FormCanvas() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
-      <div className="p-6 mb-8 border rounded-lg bg-card border-border">
-        <h2 className="text-2xl font-bold">{currentForm.title}</h2>
-        {currentForm.description && <p className="mt-2 text-muted-foreground">{currentForm.description}</p>}
-      </div>
+    <div className="max-w-3xl mx-auto space-y-6 pb-20">
 
       <InheritanceProvider onChange={() => { }} getFieldValue={() => undefined}>
         <div
           ref={ref}
-          className={`space-y-4 min-h-50 p-4 rounded-lg transition-colors ${isDragOver ? 'bg-primary/5 border-2 border-dashed border-primary/50' : ''}`}
+          className={`space-y-4 min-h-100 p-6 rounded-2xl transition-all duration-300 ${isDragOver ? 'bg-primary/5 border-2 border-dashed border-primary shadow-inner scale-[1.01]' : 'bg-card/40 border-2 border-dashed border-transparent hover:border-border/30'}`}
         >
-          {currentForm.fields.length === 0 ? (
-            <div className="p-12 text-center border-2 border-dashed rounded-lg border-border text-muted-foreground pointer-events-none">
-              Add fields from the palette on the left
+          {fieldIds.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 p-12 text-center border-2 border-dashed rounded-2xl border-border/50 bg-card/30 text-muted-foreground pointer-events-none transition-all">
+              <div className="p-4 mb-4 rounded-full bg-primary/10">
+                <Plus className="w-8 h-8 text-primary/70" />
+              </div>
+              <p className="text-lg font-medium">Drag & Drop fields here</p>
+              <p className="text-sm mt-1">Select components from the left palette to start building your form</p>
             </div>
           ) : (
-            currentForm.fields.map((field, index) => (
-              <CanvasFieldWrapper
-                key={field.id}
-                id={field.id as string}
+            fieldIds.map((id, index) => (
+              <FieldRenderer
+                key={id}
+                id={id}
                 index={index}
-                isSelected={selectedFieldId === field.id}
-                onSelect={() => handleSelectField(field.id as string)}
-                onMoveUp={(event) => handleMoveUp(event, field.id as string)}
-                onMoveDown={(event) => handleMoveDown(event, field.id as string)}
-                onRemove={(event) => handleRemove(event, field.id as string)}
-              >
-                <FieldComponent {...field as Omit<typeof field, 'id'>} />
-              </CanvasFieldWrapper>
+              />
             ))
           )}
         </div>

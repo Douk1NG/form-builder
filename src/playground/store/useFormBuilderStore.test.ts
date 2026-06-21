@@ -5,7 +5,11 @@ describe('useFormBuilderStore', () => {
   beforeEach(() => {
     // Reset store before each test
     useFormBuilderStore.setState({
-      currentForm: null,
+      formId: null,
+      formTitle: '',
+      formDescription: '',
+      fieldIds: [],
+      fieldsData: {},
       selectedFieldId: null,
       previewMode: false,
     })
@@ -16,9 +20,9 @@ describe('useFormBuilderStore', () => {
     createForm('Test Form')
     
     const state = useFormBuilderStore.getState()
-    expect(state.currentForm).toBeDefined()
-    expect(state.currentForm?.title).toBe('Test Form')
-    expect(state.currentForm?.fields).toHaveLength(0)
+    expect(state.formId).toBeDefined()
+    expect(state.formTitle).toBe('Test Form')
+    expect(state.fieldIds).toHaveLength(0)
   })
 
   it('adds a field to the form', () => {
@@ -28,8 +32,10 @@ describe('useFormBuilderStore', () => {
     store.addField({ type: 'text', label: 'First Name' } as any)
     
     const state = useFormBuilderStore.getState()
-    expect(state.currentForm?.fields).toHaveLength(1)
-    expect(state.currentForm?.fields[0].label).toBe('First Name')
+    expect(state.fieldIds).toHaveLength(1)
+    
+    const fieldId = state.fieldIds[0]
+    expect(state.fieldsData[fieldId].label).toBe('First Name')
   })
 
   it('inserts a field at a specific index', () => {
@@ -42,8 +48,10 @@ describe('useFormBuilderStore', () => {
     store.insertFieldAt(1, { type: 'text', label: 'Field 2' } as any)
     
     const state = useFormBuilderStore.getState()
-    expect(state.currentForm?.fields).toHaveLength(3)
-    expect(state.currentForm?.fields[1].label).toBe('Field 2')
+    expect(state.fieldIds).toHaveLength(3)
+    
+    const secondFieldId = state.fieldIds[1]
+    expect(state.fieldsData[secondFieldId].label).toBe('Field 2')
   })
 
   it('moves a field from source to destination index', () => {
@@ -58,10 +66,11 @@ describe('useFormBuilderStore', () => {
     store.moveField(0, 2)
     
     const state = useFormBuilderStore.getState()
-    const fields = state.currentForm?.fields || []
-    expect(fields[0].label).toBe('Field B')
-    expect(fields[1].label).toBe('Field C')
-    expect(fields[2].label).toBe('Field A')
+    const { fieldIds, fieldsData } = state
+    
+    expect(fieldsData[fieldIds[0]].label).toBe('Field B')
+    expect(fieldsData[fieldIds[1]].label).toBe('Field C')
+    expect(fieldsData[fieldIds[2]].label).toBe('Field A')
   })
 
   it('removes a field', () => {
@@ -69,13 +78,26 @@ describe('useFormBuilderStore', () => {
     store.createForm('Test Form')
     
     store.addField({ type: 'text', label: 'Field to remove' } as any)
-    const fieldId = useFormBuilderStore.getState().currentForm?.fields[0].id
+    const fieldId = useFormBuilderStore.getState().fieldIds[0]
     
     if (fieldId) {
       store.removeField(fieldId)
     }
     
     const state = useFormBuilderStore.getState()
-    expect(state.currentForm?.fields).toHaveLength(0)
+    expect(state.fieldIds).toHaveLength(0)
+    expect(state.fieldsData[fieldId]).toBeUndefined()
+  })
+
+  it('returns full FormSchema via getFormSchema', () => {
+    const store = useFormBuilderStore.getState()
+    store.createForm('Schema Test')
+    store.addField({ type: 'text', label: 'Text' } as any)
+    
+    const schema = useFormBuilderStore.getState().getFormSchema()
+    expect(schema).toBeDefined()
+    expect(schema?.title).toBe('Schema Test')
+    expect(schema?.fields).toHaveLength(1)
+    expect(schema?.fields[0].label).toBe('Text')
   })
 })

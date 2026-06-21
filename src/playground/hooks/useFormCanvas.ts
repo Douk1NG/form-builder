@@ -1,15 +1,16 @@
 import { useEffect } from 'react'
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { useShallow } from 'zustand/react/shallow'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import type { FieldType } from '../../types/form'
+import type { FormSchema } from '../store/useFormBuilderStore'
 
 export function useFormCanvas() {
-  const currentForm = useFormBuilderStore((state) => state.currentForm)
+  // `fieldIds` is a primitive string array — useShallow prevents unnecessary
+  // re-renders when the array reference changes but the contents are the same.
+  const fieldIds = useFormBuilderStore(useShallow((state) => state.fieldIds))
   const previewMode = useFormBuilderStore((state) => state.previewMode)
-  const selectedFieldId = useFormBuilderStore((state) => state.selectedFieldId)
-  const setSelectedField = useFormBuilderStore((state) => state.setSelectedField)
-  const removeField = useFormBuilderStore((state) => state.removeField)
-  const reorderField = useFormBuilderStore((state) => state.reorderField)
+  const getFormSchema = useFormBuilderStore((state) => state.getFormSchema)
   const insertFieldAt = useFormBuilderStore((state) => state.insertFieldAt)
   const moveField = useFormBuilderStore((state) => state.moveField)
   const addField = useFormBuilderStore((state) => state.addField)
@@ -43,37 +44,16 @@ export function useFormCanvas() {
     })
   }, [addField, insertFieldAt, moveField])
 
-  const handleSelectField = (fieldId: string) => {
-    setSelectedField(fieldId)
-  }
-
-  const handleMoveUp = (event: React.MouseEvent, fieldId: string) => {
-    event.stopPropagation()
-    reorderField(fieldId, 'up')
-  }
-
-  const handleMoveDown = (event: React.MouseEvent, fieldId: string) => {
-    event.stopPropagation()
-    reorderField(fieldId, 'down')
-  }
-
-  const handleRemove = (event: React.MouseEvent, fieldId: string) => {
-    event.stopPropagation()
-    removeField(fieldId)
-  }
-
   const simulateSubmit = async () => {
     return { success: true, message: 'Simulated submission', data: {} }
   }
 
+  const currentFormSchema: FormSchema | null = previewMode ? getFormSchema() : null
+
   return {
-    currentForm,
+    fieldIds,
     previewMode,
-    selectedFieldId,
-    handleSelectField,
-    handleMoveUp,
-    handleMoveDown,
-    handleRemove,
+    currentFormSchema,
     simulateSubmit,
   }
 }

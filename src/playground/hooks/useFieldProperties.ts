@@ -1,60 +1,63 @@
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
-import type { Field } from '../../types/form'
 import type { Option } from '../../types/select'
 
 export function useFieldProperties() {
-  const currentForm = useFormBuilderStore((state) => state.currentForm)
+  const formId = useFormBuilderStore((state) => state.formId)
   const selectedFieldId = useFormBuilderStore((state) => state.selectedFieldId)
   const updateField = useFormBuilderStore((state) => state.updateField)
   const previewMode = useFormBuilderStore((state) => state.previewMode)
-
-  const selectedField = currentForm?.fields.find(
-    (field: Field) => field.id === selectedFieldId
+  
+  // By accessing fieldsData[selectedFieldId] directly, this hook only triggers a 
+  // re-render if the specifically selected field's properties change, 
+  // or if the selectedFieldId changes.
+  const selectedField = useFormBuilderStore((state) => 
+    selectedFieldId && state.fieldsData ? state.fieldsData[selectedFieldId] : null
   )
 
   const handleUpdateLabel = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedField?.id) {
-      updateField(selectedField.id, { label: event.target.value })
+    if (selectedFieldId) {
+      updateField(selectedFieldId, { label: event.target.value })
     }
   }
 
   const handleUpdateName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedField?.id) {
-      updateField(selectedField.id, { name: event.target.value })
+    if (selectedFieldId) {
+      updateField(selectedFieldId, { name: event.target.value })
     }
   }
 
   const handleUpdateDescription = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedField?.id) {
-      updateField(selectedField.id, { description: event.target.value })
+    if (selectedFieldId) {
+      updateField(selectedFieldId, { description: event.target.value })
     }
   }
 
   const handleUpdatePlaceholder = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedField?.id) {
-      updateField(selectedField.id, { placeholder: event.target.value })
+    if (selectedFieldId) {
+      updateField(selectedFieldId, { placeholder: event.target.value })
     }
   }
 
   const handleUpdateReadOnly = (checked: boolean) => {
-    if (selectedField?.id) {
-      updateField(selectedField.id, { readOnly: checked })
+    if (selectedFieldId) {
+      updateField(selectedFieldId, { readOnly: checked })
     }
   }
 
   const handleUpdateDisabled = (checked: boolean) => {
-    if (selectedField?.id) {
-      updateField(selectedField.id, { disabled: checked })
+    if (selectedFieldId) {
+      updateField(selectedFieldId, { disabled: checked })
     }
   }
 
   const handleUpdateOptions = (options: Option[]) => {
-    if (selectedField?.id) {
-      updateField(selectedField.id, { options })
+    if (selectedFieldId) {
+      updateField(selectedFieldId, { options })
     }
   }
 
   return {
+    formId,
     previewMode,
     selectedField,
     handleUpdateLabel,

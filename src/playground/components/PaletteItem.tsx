@@ -30,10 +30,10 @@ export function PaletteItem({ type, label, onClick }: PaletteItemProps) {
     <Button
       ref={ref}
       variant="outline"
-      className={`justify-start h-auto px-4 py-3 cursor-grab active:cursor-grabbing ${isDragging ? 'opacity-50' : ''}`}
+      className={`justify-start h-auto px-4 py-3 cursor-grab active:cursor-grabbing hover:border-primary/50 hover:bg-primary/5 transition-all shadow-sm ${isDragging ? 'opacity-50 scale-95 border-primary border-dashed' : ''}`}
       onClick={onClick}
     >
-      {label}
+      <span className="font-medium">{label}</span>
     </Button>
   )
 }

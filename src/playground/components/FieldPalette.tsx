@@ -2,6 +2,8 @@ import { useFieldPalette } from '../hooks/useFieldPalette'
 import { PaletteItem } from './PaletteItem'
 import type { FieldType } from '../../types/form'
 
+import { Layers } from 'lucide-react'
+
 const FIELD_TYPES: Array<{ type: FieldType; label: string; icon: string }> = [
   { type: 'text', label: 'Text Input', icon: 'Type' },
   { type: 'textarea', label: 'Text Area', icon: 'AlignLeft' },
@@ -20,9 +22,14 @@ export function FieldPalette() {
   if (previewMode) return null
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-sm font-semibold">Add Fields</h3>
-      <div className="grid gap-2">
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 pb-4 border-b border-border/50">
+        <div className="p-2 rounded-lg bg-primary/10">
+          <Layers className="w-5 h-5 text-primary" />
+        </div>
+        <h3 className="font-semibold text-lg">Add Fields</h3>
+      </div>
+      <div className="grid gap-3">
         {FIELD_TYPES.map((fieldType) => (
           <PaletteItem
             key={fieldType.type}

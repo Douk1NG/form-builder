@@ -2,10 +2,12 @@ import { useState, type KeyboardEvent } from 'react'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 
 export function usePlayground() {
-  const currentForm = useFormBuilderStore((state) => state.currentForm)
+  const formId = useFormBuilderStore((state) => state.formId)
+  const formTitle = useFormBuilderStore((state) => state.formTitle)
   const createForm = useFormBuilderStore((state) => state.createForm)
   const setPreviewMode = useFormBuilderStore((state) => state.setPreviewMode)
   const previewMode = useFormBuilderStore((state) => state.previewMode)
+  const getFormSchema = useFormBuilderStore((state) => state.getFormSchema)
 
   const [newTitle, setNewTitle] = useState('')
 
@@ -29,6 +31,7 @@ export function usePlayground() {
   }
 
   const handleExportJson = () => {
+    const currentForm = getFormSchema()
     if (!currentForm) return
     const jsonString = JSON.stringify(currentForm, null, 2)
     const fileBlob = new Blob([jsonString], { type: 'application/json' })
@@ -43,7 +46,8 @@ export function usePlayground() {
   }
 
   return {
-    currentForm,
+    formId,
+    formTitle,
     previewMode,
     newTitle,
     handleTitleChange,

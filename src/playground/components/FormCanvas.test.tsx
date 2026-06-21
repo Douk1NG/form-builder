@@ -4,52 +4,53 @@ import { render, screen } from '@testing-library/react'
 import { FormCanvas } from './FormCanvas'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 
-// Mock the child components to simplify the test
-vi.mock('../../components/form', () => ({
-  default: () => <div data-testid="mock-form-builder">Mock Form Builder</div>
+vi.mock('./FieldRenderer', () => ({
+  FieldRenderer: ({ id }: { id: string }) => <div data-testid="mock-field-renderer">{id}</div>
 }))
 
-vi.mock('../../components/form/field', () => ({
-  default: ({ label }: { label: string }) => <div data-testid="mock-field">{label}</div>
+vi.mock('../../components/form', () => ({
+  default: () => <div data-testid="mock-form-builder">Mock Form Builder</div>
 }))
 
 describe('FormCanvas', () => {
   beforeEach(() => {
     useFormBuilderStore.setState({
-      currentForm: null,
+      formId: null,
+      formTitle: '',
+      fieldIds: [],
+      fieldsData: {},
       previewMode: false,
     })
   })
 
-  it('renders nothing when no form is selected', () => {
-    const { container } = render(<FormCanvas />)
-    expect(container.firstChild).toBeNull()
-  })
-
-  it('renders empty state when form has no fields', () => {
+  it('renders empty state when form has no fields but has formId', () => {
     useFormBuilderStore.setState({
-      currentForm: { id: '1', title: 'Test Form', fields: [] }
+      formId: '1', 
+      formTitle: 'Test Form', 
+      fieldIds: [] 
     })
     render(<FormCanvas />)
-    expect(screen.getByText('Add fields from the palette on the left')).toBeInTheDocument()
-    expect(screen.getByText('Test Form')).toBeInTheDocument()
+    expect(screen.getByText('Drag & Drop fields here')).toBeInTheDocument()
   })
 
-  it('renders fields when form has fields', () => {
+  it('renders field renderers when form has fields', () => {
     useFormBuilderStore.setState({
-      currentForm: { 
-        id: '1', 
-        title: 'Test Form', 
-        fields: [{ id: 'f1', type: 'text', label: 'Field 1' } as any] 
+      formId: '1', 
+      formTitle: 'Test Form', 
+      fieldIds: ['f1'],
+      fieldsData: {
+        'f1': { id: 'f1', type: 'text', label: 'Field 1' } as any
       }
     })
     render(<FormCanvas />)
-    expect(screen.getByTestId('mock-field')).toHaveTextContent('Field 1')
+    expect(screen.getByTestId('mock-field-renderer')).toHaveTextContent('f1')
   })
 
   it('renders preview mode correctly', () => {
     useFormBuilderStore.setState({
-      currentForm: { id: '1', title: 'Test Form', fields: [] },
+      formId: '1', 
+      formTitle: 'Test Form', 
+      fieldIds: [],
       previewMode: true
     })
     render(<FormCanvas />)

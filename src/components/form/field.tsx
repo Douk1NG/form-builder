@@ -37,11 +37,11 @@ const Index = <T extends Field>(props: T) => {
     }
 
     return (
-        <div className="w-full">
-            <Label htmlFor={props.name}>{props.label}</Label>
+        <div className="w-full space-y-2.5">
+            <Label htmlFor={props.name} className="text-base font-medium">{props.label}</Label>
             <Component {...props} />
-            {!props.readOnly && (
-                <p className='text-sm text-muted-foreground'>{props.description}</p>
+            {!props.readOnly && props.description && (
+                <p className='text-sm text-muted-foreground/80 mt-1'>{props.description}</p>
             )}
         </div>
     )
