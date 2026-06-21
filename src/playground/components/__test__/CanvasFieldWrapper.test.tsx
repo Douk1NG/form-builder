@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { CanvasFieldWrapper } from './CanvasFieldWrapper'
+import { CanvasFieldWrapper } from '../CanvasFieldWrapper'
 
 // Mock icons
 vi.mock('lucide-react', () => ({
@@ -40,7 +40,7 @@ describe('CanvasFieldWrapper', () => {
         <div>Child</div>
       </CanvasFieldWrapper>
     )
-    
+
     await user.click(screen.getByRole('button', { name: /child/i }))
     expect(onSelect).toHaveBeenCalled()
   })
@@ -61,10 +61,10 @@ describe('CanvasFieldWrapper', () => {
     const onMoveUp = vi.fn()
     const onMoveDown = vi.fn()
     const onRemove = vi.fn()
-    
+
     render(
-      <CanvasFieldWrapper 
-        {...defaultProps} 
+      <CanvasFieldWrapper
+        {...defaultProps}
         onMoveUp={onMoveUp}
         onMoveDown={onMoveDown}
         onRemove={onRemove}
@@ -77,7 +77,7 @@ describe('CanvasFieldWrapper', () => {
     // They are rendered, just with opacity-0 class from parent group.
     const buttons = screen.getAllByRole('button')
     // Grip is [0], Canvas wrapper is [1], ArrowUp is [2], ArrowDown is [3], Trash is [4]
-    
+
     await user.click(buttons[2])
     expect(onMoveUp).toHaveBeenCalled()
 

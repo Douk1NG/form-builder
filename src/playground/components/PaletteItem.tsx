@@ -28,7 +28,7 @@ export function PaletteItem({ type, label, icon, onClick }: PaletteItemProps) {
   }, [type, label])
 
   // Dynamically resolve the icon component from Lucide
-  const IconComponent = (Icons as Record<string, React.ComponentType<{ className?: string }>>)[icon] || Icons.HelpCircle
+  const IconComponent = ((Icons as unknown) as Record<string, React.ComponentType<{ className?: string }>>)[icon] || Icons.HelpCircle
 
   return (
     <Button

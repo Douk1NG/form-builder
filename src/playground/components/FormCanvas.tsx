@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { MousePointerClick } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useFormCanvas } from '../hooks/useFormCanvas'
 import { FieldRenderer } from './FieldRenderer'
 import { ColumnRowRenderer } from './ColumnRowRenderer'
@@ -26,14 +27,15 @@ function CanvasItemRenderer({ item, index }: { item: CanvasItem; index: number }
 
 
 function EmptyCanvasPlaceholder() {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-col items-center justify-center h-64 p-12 text-center rounded-2xl border-2 border-dashed border-border/40 bg-muted/20 text-muted-foreground pointer-events-none">
       <div className="p-4 mb-4 rounded-2xl bg-primary/5">
         <MousePointerClick className="w-8 h-8 text-primary/50" />
       </div>
-      <p className="text-base font-semibold text-foreground/60">Drag & Drop fields here</p>
+      <p className="text-base font-semibold text-foreground/60">{t('builder.dragDropTitle' as any)}</p>
       <p className="text-sm mt-1.5 text-muted-foreground/70 max-w-xs">
-        Select components from the left palette or use the Layout tools to start building your form
+        {t('builder.dragDropDescription' as any)}
       </p>
     </div>
   )

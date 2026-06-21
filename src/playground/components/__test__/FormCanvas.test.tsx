@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import { FormCanvas } from './FormCanvas'
-import { useFormBuilderStore } from '../store/useFormBuilderStore'
+import { FormCanvas } from '../FormCanvas'
+import { useFormBuilderStore } from '../../store/useFormBuilderStore'
 
 vi.mock('./FieldRenderer', () => ({
   FieldRenderer: ({ id }: { id: string }) => <div data-testid="mock-field-renderer">{id}</div>
@@ -25,9 +25,9 @@ describe('FormCanvas', () => {
 
   it('renders empty state when form has no fields but has formId', () => {
     useFormBuilderStore.setState({
-      formId: '1', 
-      formTitle: 'Test Form', 
-      itemIds: [] 
+      formId: '1',
+      formTitle: 'Test Form',
+      itemIds: []
     })
     render(<FormCanvas />)
     expect(screen.getByText('Drag & Drop fields here')).toBeInTheDocument()
@@ -35,8 +35,8 @@ describe('FormCanvas', () => {
 
   it('renders field renderers when form has fields', () => {
     useFormBuilderStore.setState({
-      formId: '1', 
-      formTitle: 'Test Form', 
+      formId: '1',
+      formTitle: 'Test Form',
       itemIds: ['f1'],
       itemsData: {
         'f1': { id: 'f1', type: 'text', label: 'Field 1', kind: 'field' } as any
@@ -48,8 +48,8 @@ describe('FormCanvas', () => {
 
   it('renders preview mode correctly', () => {
     useFormBuilderStore.setState({
-      formId: '1', 
-      formTitle: 'Test Form', 
+      formId: '1',
+      formTitle: 'Test Form',
       itemIds: [],
       previewMode: true
     })

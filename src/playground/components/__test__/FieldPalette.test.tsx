@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { FieldPalette } from './FieldPalette'
-import { useFormBuilderStore } from '../store/useFormBuilderStore'
+import { FieldPalette } from '../FieldPalette'
+import { useFormBuilderStore } from '../../store/useFormBuilderStore'
 
 describe('FieldPalette', () => {
   beforeEach(() => {
@@ -31,12 +31,12 @@ describe('FieldPalette', () => {
   it('adds a field when clicking a palette item', async () => {
     const user = userEvent.setup()
     render(<FieldPalette />)
-    
+
     await user.click(screen.getByText('Text Input'))
-    
+
     const state = useFormBuilderStore.getState()
     expect(state.itemIds).toHaveLength(1)
-    
+
     const itemId = state.itemIds[0]
     expect((state.itemsData[itemId] as any).type).toBe('text')
   })

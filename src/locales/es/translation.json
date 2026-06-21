@@ -1,0 +1,44 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "create": "Crear",
+    "add": "Añadir",
+    "remove": "Quitar",
+    "close": "Cerrar"
+  },
+  "builder": {
+    "title": "Constructor de Formularios",
+    "addField": "Añadir Campo",
+    "fieldSettings": "Configuración del Campo",
+    "formSettings": "Configuración del Formulario",
+    "preview": "Vista Previa",
+    "noFields": "No se han añadido campos todavía. Arrastra y suelta o haz clic para añadir un campo.",
+    "dragDropTitle": "Arrastra y suelta campos aquí",
+    "dragDropDescription": "Selecciona componentes de la paleta izquierda o usa las herramientas de Diseño para empezar a construir tu formulario"
+  },
+  "fields": {
+    "text": "Texto",
+    "number": "Número",
+    "email": "Correo",
+    "password": "Contraseña",
+    "textarea": "Área de Texto",
+    "select": "Selección",
+    "multiselect": "Selección Múltiple",
+    "checkbox": "Casilla de Verificación",
+    "radio": "Radio",
+    "date": "Fecha",
+    "time": "Hora",
+    "file": "Subida de Archivo"
+  },
+  "properties": {
+    "label": "Etiqueta",
+    "placeholder": "Texto de ejemplo",
+    "defaultValue": "Valor por defecto",
+    "description": "Descripción",
+    "options": "Opciones",
+    "required": "Requerido"
+  }
+}

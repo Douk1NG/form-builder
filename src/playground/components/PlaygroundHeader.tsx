@@ -1,5 +1,6 @@
 import { Button } from '../../components/ui/button'
 import { Eye, Pencil, Download, Blocks } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { usePlayground } from '../hooks/usePlayground'
 
 function FormBuilderLogo() {
@@ -35,6 +36,8 @@ export function PlaygroundHeader() {
     handleExportJson,
   } = usePlayground()
 
+  const { i18n } = useTranslation()
+
   return (
     <header className="px-6 py-3 border-b bg-card/80 backdrop-blur-xl border-border/50 shadow-xs sticky top-0 z-50">
       <div className="flex items-center justify-between">
@@ -44,6 +47,14 @@ export function PlaygroundHeader() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en')}
+            className="font-medium text-muted-foreground hover:text-foreground mr-2"
+          >
+            {i18n.language === 'en' ? 'ES' : 'EN'}
+          </Button>
           {formId && (
             <>
               <Button

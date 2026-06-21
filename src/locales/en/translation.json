@@ -1,0 +1,44 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "add": "Add",
+    "remove": "Remove",
+    "close": "Close"
+  },
+  "builder": {
+    "title": "Form Builder",
+    "addField": "Add Field",
+    "fieldSettings": "Field Settings",
+    "formSettings": "Form Settings",
+    "preview": "Preview",
+    "noFields": "No fields added yet. Drag and drop or click to add a field.",
+    "dragDropTitle": "Drag & Drop fields here",
+    "dragDropDescription": "Select components from the left palette or use the Layout tools to start building your form"
+  },
+  "fields": {
+    "text": "Text",
+    "number": "Number",
+    "email": "Email",
+    "password": "Password",
+    "textarea": "Textarea",
+    "select": "Select",
+    "multiselect": "Multiselect",
+    "checkbox": "Checkbox",
+    "radio": "Radio",
+    "date": "Date",
+    "time": "Time",
+    "file": "File Upload"
+  },
+  "properties": {
+    "label": "Label",
+    "placeholder": "Placeholder",
+    "defaultValue": "Default Value",
+    "description": "Description",
+    "options": "Options",
+    "required": "Required"
+  }
+}
