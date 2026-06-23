@@ -19,3 +19,9 @@ This document tracks upcoming features and enhancements for the form builder tha
 ## Integrations & Export
 - **Webhooks & Integrations:** Connect the form to external services (Slack, Google Sheets, Zapier) upon submission.
 - **Embed Codes:** Generate snippet codes (iframe, React component, or vanilla JS) to easily embed the published form anywhere.
+
+## Current To-Do
+- **Fix some behaviors:** Address known bugs and improve overall stability.
+- **Add tests:** Increase test coverage across components and logic.
+- **Improve code readability:** Refactor complex blocks and add comments.
+- **Work on new mapped/just new feats:** Develop upcoming mapped features and ideate new functionalities.
