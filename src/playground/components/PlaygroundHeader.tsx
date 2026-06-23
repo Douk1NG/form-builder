@@ -1,5 +1,5 @@
 import { Button } from '../../components/ui/button'
-import { Eye, Pencil, Download, Blocks, Languages } from 'lucide-react'
+import { Eye, Pencil, Download, Blocks, Languages, Monitor, Tablet, Smartphone } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { usePlayground } from '../hooks/usePlayground'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
@@ -65,6 +65,9 @@ export function PlaygroundHeader() {
     handleExportJson,
   } = usePlayground()
 
+  const previewDevice = useFormBuilderStore((state) => state.previewDevice)
+  const setPreviewDevice = useFormBuilderStore((state) => state.setPreviewDevice)
+
   return (
     <header className="px-6 py-3 border-b bg-card/80 backdrop-blur-xl border-border/50 shadow-xs sticky top-0 z-50">
       <div className="flex items-center justify-between">
@@ -74,6 +77,34 @@ export function PlaygroundHeader() {
         </div>
 
         <div className="flex items-center gap-2">
+          {formId && previewMode && (
+            <div className="flex items-center bg-muted/50 p-1 rounded-lg border border-border/50 mr-2">
+              <Button
+                variant={previewDevice === 'desktop' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setPreviewDevice('desktop')}
+                className="h-7 w-8 px-0"
+              >
+                <Monitor className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={previewDevice === 'tablet' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setPreviewDevice('tablet')}
+                className="h-7 w-8 px-0"
+              >
+                <Tablet className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={previewDevice === 'mobile' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setPreviewDevice('mobile')}
+                className="h-7 w-8 px-0"
+              >
+                <Smartphone className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
           <LocaleSwitcher />
           {formId && (
             <>

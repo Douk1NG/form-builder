@@ -1,5 +1,7 @@
-import { Settings2, Layers, Columns2, ChevronDown } from 'lucide-react'
+import { Settings2, Layers, Columns2, ChevronDown, Maximize2, Minimize2 } from 'lucide-react'
 import { useState } from 'react'
+import { useFormBuilderStore } from '../store/useFormBuilderStore'
+import { Button } from '../../components/ui/button'
 import { useFieldProperties } from '../hooks/useFieldProperties'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
@@ -50,20 +52,24 @@ type PropertiesSectionHeaderProps = {
   icon: React.ReactNode
   title: string
   accentColor?: 'primary' | 'violet'
+  rightAction?: React.ReactNode
 }
 
-function PropertiesSectionHeader({ icon, title, accentColor = 'primary' }: PropertiesSectionHeaderProps) {
+function PropertiesSectionHeader({ icon, title, accentColor = 'primary', rightAction }: PropertiesSectionHeaderProps) {
   const backgroundColors = {
     primary: 'bg-primary/10 text-primary',
     violet: 'bg-violet-500/10 text-violet-500',
   }
 
   return (
-    <div className="sticky top-0 z-10 flex items-center gap-2.5 pb-4 border-b border-border/40 bg-card/95 backdrop-blur-sm -mx-5 px-5 pt-0">
-      <div className={`p-2 rounded-lg ${backgroundColors[accentColor]}`}>
-        {icon}
+    <div className="sticky top-0 z-10 flex items-center justify-between pb-4 border-b border-border/40 bg-card/95 backdrop-blur-sm -mx-5 px-5 pt-0">
+      <div className="flex items-center gap-2.5">
+        <div className={`p-2 rounded-lg ${backgroundColors[accentColor]}`}>
+          {icon}
+        </div>
+        <h3 className="font-bold text-base tracking-tight">{title}</h3>
       </div>
-      <h3 className="font-bold text-base tracking-tight">{title}</h3>
+      {rightAction}
     </div>
   )
 }
@@ -113,21 +119,38 @@ export function FieldProperties() {
     handleUpdateGroupLabel,
   } = useFieldProperties()
 
+  const isPropertiesExpanded = useFormBuilderStore((state) => state.isPropertiesExpanded)
+  const togglePropertiesExpanded = useFormBuilderStore((state) => state.togglePropertiesExpanded)
+
+  const expandToggle = (
+    <Button variant="ghost" size="icon" onClick={togglePropertiesExpanded} className="h-8 w-8 text-muted-foreground hover:text-foreground">
+      {isPropertiesExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+    </Button>
+  )
+
   if (previewMode || !formId) return null
 
   if (!selectedKind) return <EmptyPropertiesPanel />
 
   if (selectedKind === 'field_group' && selectedGroup) {
     return (
-      <GroupPropertiesPanel
-        groupLabel={selectedGroup.label}
-        onLabelChange={handleUpdateGroupLabel}
-      />
+      <div className="relative">
+        <div className="absolute top-0 right-0 z-20">{expandToggle}</div>
+        <GroupPropertiesPanel
+          groupLabel={selectedGroup.label}
+          onLabelChange={handleUpdateGroupLabel}
+        />
+      </div>
     )
   }
 
   if (selectedKind === 'column_row') {
-    return <ColumnRowPropertiesPanel />
+    return (
+      <div className="relative">
+        <div className="absolute top-0 right-0 z-20">{expandToggle}</div>
+        <ColumnRowPropertiesPanel />
+      </div>
+    )
   }
 
   if (!selectedField) return <EmptyPropertiesPanel />
@@ -136,7 +159,7 @@ export function FieldProperties() {
 
   return (
     <div className="space-y-5">
-      <PropertiesSectionHeader icon={<Settings2 className="w-5 h-5" />} title="Field Properties" />
+      <PropertiesSectionHeader icon={<Settings2 className="w-5 h-5" />} title="Field Properties" rightAction={expandToggle} />
 
       <CollapsibleSection title="Basic Settings">
         <LocalizedInput

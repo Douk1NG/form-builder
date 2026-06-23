@@ -19,19 +19,48 @@ type PreviewFormRendererProps = {
 
 function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: PreviewFormRendererProps) {
   const previewLocale = useFormBuilderStore((state) => state.previewLocale)
+  const previewDevice = useFormBuilderStore((state) => state.previewDevice)
   const { t } = useTranslation()
 
+  let deviceMaxWidth = 'max-w-4xl'
+  let frameClasses = ''
+  let header = null
+
+  if (previewDevice === 'desktop') {
+    frameClasses = 'border rounded-xl shadow-2xl shadow-black/10 overflow-hidden bg-card/95 backdrop-blur-xl border-border/50'
+    header = (
+      <div className="bg-muted/40 border-b border-border/40 px-4 py-3 flex items-center gap-2">
+        <div className="w-3 h-3 rounded-full bg-red-400/80" />
+        <div className="w-3 h-3 rounded-full bg-amber-400/80" />
+        <div className="w-3 h-3 rounded-full bg-green-400/80" />
+      </div>
+    )
+  } else if (previewDevice === 'tablet') {
+    deviceMaxWidth = 'max-w-2xl'
+    frameClasses = 'border-[8px] rounded-[2.5rem] shadow-2xl shadow-black/15 overflow-hidden bg-card border-zinc-800 dark:border-zinc-900'
+  } else if (previewDevice === 'mobile') {
+    deviceMaxWidth = 'max-w-[375px]'
+    frameClasses = 'border-[12px] border-b-[36px] border-t-[36px] rounded-[3rem] shadow-2xl shadow-black/15 overflow-hidden bg-card border-zinc-800 dark:border-zinc-900'
+  }
+
   return (
-    <div className="max-w-3xl p-8 mx-auto border rounded-2xl shadow-lg shadow-black/5 bg-card/90 backdrop-blur-md border-border/50">
-      <FormBuilder
-        fields={currentFormSchema.items}
-        values={{}}
-        locale={previewLocale}
-        // @ts-expect-error - dynamic key for translation
-        translate={(key: string) => String(t(key))}
-        action={simulateSubmit}
-        isCreating={true}
-      />
+    <div className="min-h-[calc(100vh-100px)] p-8 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#27272a_1px,transparent_1px)] bg-size-[24px_24px] -m-8 flex items-start justify-center">
+      <div className={`w-full transition-all duration-300 ease-in-out ${deviceMaxWidth}`}>
+        <div className={frameClasses}>
+          {header}
+          <div className="p-8 h-full max-h-[80vh] overflow-y-auto custom-scrollbar">
+            <FormBuilder
+              fields={currentFormSchema.items}
+              values={{}}
+              locale={previewLocale}
+              // @ts-expect-error - dynamic key for translation
+              translate={(key: string) => String(t(key))}
+              action={simulateSubmit}
+              isCreating={true}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

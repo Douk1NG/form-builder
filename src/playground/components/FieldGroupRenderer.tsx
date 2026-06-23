@@ -73,7 +73,7 @@ function GroupDropZone({ groupId }: GroupDropZoneProps) {
     return dropTargetForElements({
       element,
       getData: () => ({ groupId }),
-      canDrop: ({ source }) => source.data.source === 'palette',
+      canDrop: ({ source }) => source.data.source === 'palette' || source.data.source === 'canvas',
       onDragEnter: () => setIsOver(true),
       onDragLeave: () => setIsOver(false),
       onDrop: () => setIsOver(false),

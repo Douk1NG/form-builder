@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { attachClosestEdge, extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import type { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types'
 import { Button } from '../../components/ui/button'
 import { ArrowUp, ArrowDown, Trash2, GripVertical } from 'lucide-react'
 
@@ -28,6 +30,7 @@ export function CanvasFieldWrapper({
   const dragHandleRef = useRef<HTMLButtonElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [closestEdge, setClosestEdge] = useState<Edge | null>(null)
 
   useEffect(() => {
     const element = wrapperRef.current
@@ -44,10 +47,27 @@ export function CanvasFieldWrapper({
 
     const cleanupDropTarget = dropTargetForElements({
       element,
-      getData: () => ({ id, index }),
-      onDragEnter: () => setIsDragOver(true),
-      onDragLeave: () => setIsDragOver(false),
-      onDrop: () => setIsDragOver(false),
+      getData: ({ input }) => {
+        return attachClosestEdge(
+          { id, index },
+          { element, input, allowedEdges: ['left', 'right'] }
+        )
+      },
+      onDragEnter: ({ self }) => {
+        setIsDragOver(true)
+        setClosestEdge(extractClosestEdge(self.data))
+      },
+      onDrag: ({ self }) => {
+        setClosestEdge(extractClosestEdge(self.data))
+      },
+      onDragLeave: () => {
+        setIsDragOver(false)
+        setClosestEdge(null)
+      },
+      onDrop: () => {
+        setIsDragOver(false)
+        setClosestEdge(null)
+      },
     })
 
     return () => {
@@ -96,6 +116,13 @@ export function CanvasFieldWrapper({
       <div className="pointer-events-none opacity-80">
         {children}
       </div>
+
+      {closestEdge === 'left' && (
+        <div className="absolute top-0 bottom-0 left-0 w-2 bg-primary rounded-l-xl z-20" />
+      )}
+      {closestEdge === 'right' && (
+        <div className="absolute top-0 bottom-0 right-0 w-2 bg-primary rounded-r-xl z-20" />
+      )}
     </div>
   )
 }

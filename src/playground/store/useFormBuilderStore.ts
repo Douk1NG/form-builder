@@ -27,6 +27,8 @@ export type FormBuilderState = {
   selectedItemId: string | null
   previewMode: boolean
   previewLocale: string
+  previewDevice: 'desktop' | 'tablet' | 'mobile'
+  isPropertiesExpanded: boolean
 
   createForm: (title: string) => void
   addField: (field: Omit<Field, 'id'>) => void
@@ -47,6 +49,11 @@ export type FormBuilderState = {
   setSelectedItem: (itemId: string | null) => void
   setPreviewMode: (enabled: boolean) => void
   setPreviewLocale: (locale: string) => void
+  setPreviewDevice: (device: 'desktop' | 'tablet' | 'mobile') => void
+  togglePropertiesExpanded: () => void
+  createColumnRowFromDrop: (sourceId: string, targetId: string, side: 'left' | 'right') => void
+  createColumnRowWithNewField: (targetId: string, field: Omit<Field, 'id'>, side: 'left' | 'right') => void
+  moveFieldToGroup: (fieldId: string, groupId: string) => void
   insertItemAt: (index: number, item: CanvasItem) => void
   moveItem: (sourceIndex: number, destinationIndex: number) => void
 
@@ -92,6 +99,8 @@ export const useFormBuilderStore = create<FormBuilderState>()(  persist(
   selectedItemId: null,
   previewMode: false,
   previewLocale: 'en',
+  previewDevice: 'desktop',
+  isPropertiesExpanded: false,
 
   createForm: (title) => {
     set({
@@ -385,6 +394,118 @@ export const useFormBuilderStore = create<FormBuilderState>()(  persist(
 
   setPreviewLocale: (locale) => {
     set({ previewLocale: locale })
+  },
+
+  setPreviewDevice: (device) => {
+    set({ previewDevice: device })
+  },
+
+  togglePropertiesExpanded: () => {
+    set((state) => ({ isPropertiesExpanded: !state.isPropertiesExpanded }))
+  },
+
+  createColumnRowFromDrop: (sourceId, targetId, side) => {
+    const { formId, itemIds, itemsData } = get()
+    if (!formId) return
+
+    const sourceItem = itemsData[sourceId]
+    const targetItem = itemsData[targetId]
+
+    if (!sourceItem || !targetItem) return
+    if (sourceItem.kind !== 'field' || targetItem.kind !== 'field') return
+
+    const rowId = crypto.randomUUID()
+    const leftField = side === 'left' ? sourceItem : targetItem
+    const rightField = side === 'right' ? sourceItem : targetItem
+
+    const newRow: ColumnRow = {
+      id: rowId,
+      kind: 'column_row',
+      leftField: leftField as Field,
+      rightField: rightField as Field,
+    }
+
+    const finalItemIds = []
+    for (const id of itemIds) {
+      if (id === targetId) {
+        finalItemIds.push(rowId)
+      } else if (id !== sourceId) {
+        finalItemIds.push(id)
+      }
+    }
+
+    const newItemsData = { ...itemsData }
+    delete newItemsData[sourceId]
+    delete newItemsData[targetId]
+    newItemsData[rowId] = newRow
+
+    set({
+      itemIds: finalItemIds,
+      itemsData: newItemsData,
+      selectedItemId: rowId,
+    })
+  },
+
+  createColumnRowWithNewField: (targetId, field, side) => {
+    const { formId, itemIds, itemsData } = get()
+    if (!formId) return
+
+    const targetItem = itemsData[targetId]
+    if (!targetItem || targetItem.kind !== 'field') return
+
+    const newFieldId = crypto.randomUUID()
+    const newField: CanvasField = { ...(field as Field), id: newFieldId, kind: 'field' }
+
+    const rowId = crypto.randomUUID()
+    const leftField = side === 'left' ? newField : targetItem
+    const rightField = side === 'right' ? newField : targetItem
+
+    const newRow: ColumnRow = {
+      id: rowId,
+      kind: 'column_row',
+      leftField: leftField as Field,
+      rightField: rightField as Field,
+    }
+
+    const finalItemIds = []
+    for (const id of itemIds) {
+      if (id === targetId) {
+        finalItemIds.push(rowId)
+      } else {
+        finalItemIds.push(id)
+      }
+    }
+
+    const newItemsData = { ...itemsData }
+    delete newItemsData[targetId]
+    newItemsData[rowId] = newRow
+
+    set({
+      itemIds: finalItemIds,
+      itemsData: newItemsData,
+      selectedItemId: rowId,
+    })
+  },
+
+  moveFieldToGroup: (fieldId, groupId) => {
+    const { formId, itemIds, itemsData } = get()
+    if (!formId) return
+
+    const fieldItem = itemsData[fieldId]
+    const groupItem = itemsData[groupId]
+
+    if (!fieldItem || !groupItem || groupItem.kind !== 'field_group') return
+
+    const newItemIds = itemIds.filter((id) => id !== fieldId)
+    const updatedGroupItems = [...groupItem.items, fieldItem as CanvasField | ColumnRow]
+
+    set({
+      itemIds: newItemIds,
+      itemsData: {
+        ...itemsData,
+        [groupId]: { ...groupItem, items: updatedGroupItems },
+      },
+    })
   },
 
   insertItemAt: (index, item) => {

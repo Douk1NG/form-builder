@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { useShallow } from 'zustand/react/shallow'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import type { FieldType } from '../../types/form'
@@ -15,6 +16,9 @@ export function useFormCanvas() {
   const addFieldToColumnRowSlot = useFormBuilderStore((state) => state.addFieldToColumnRowSlot)
   const addFieldToGroup = useFormBuilderStore((state) => state.addFieldToGroup)
   const addFieldToGroupColumnRowSlot = useFormBuilderStore((state) => state.addFieldToGroupColumnRowSlot)
+  const createColumnRowFromDrop = useFormBuilderStore((state) => state.createColumnRowFromDrop)
+  const createColumnRowWithNewField = useFormBuilderStore((state) => state.createColumnRowWithNewField)
+  const moveFieldToGroup = useFormBuilderStore((state) => state.moveFieldToGroup)
 
   useEffect(() => {
     return monitorForElements({
@@ -24,6 +28,7 @@ export function useFormCanvas() {
 
         const sourceData = source.data
         const destData = destination.data
+        const edge = extractClosestEdge(destData)
 
         if (sourceData.source === 'palette') {
           const field = {
@@ -33,7 +38,9 @@ export function useFormCanvas() {
             required: false,
           }
 
-          if (destData.isCanvas) {
+          if (edge === 'left' || edge === 'right') {
+            createColumnRowWithNewField(destData.id as string, field, edge)
+          } else if (destData.isCanvas) {
             addField(field)
           } else if (typeof destData.insertIndex === 'number') {
             const newItem = { ...field, id: crypto.randomUUID(), kind: 'field' as const }
@@ -57,13 +64,17 @@ export function useFormCanvas() {
             addFieldToGroup(destData.groupId as string, field)
           }
         } else if (sourceData.source === 'canvas') {
-          if (typeof sourceData.index === 'number' && typeof destData.index === 'number') {
+          if (typeof destData.groupId === 'string') {
+            moveFieldToGroup(sourceData.id as string, destData.groupId as string)
+          } else if (edge === 'left' || edge === 'right') {
+            createColumnRowFromDrop(sourceData.id as string, destData.id as string, edge)
+          } else if (typeof sourceData.index === 'number' && typeof destData.index === 'number') {
             moveItem(sourceData.index as number, destData.index as number)
           }
         }
       },
     })
-  }, [addField, insertItemAt, moveItem, addFieldToColumnRowSlot, addFieldToGroup, addFieldToGroupColumnRowSlot])
+  }, [addField, insertItemAt, moveItem, addFieldToColumnRowSlot, addFieldToGroup, addFieldToGroupColumnRowSlot, createColumnRowFromDrop, createColumnRowWithNewField, moveFieldToGroup])
 
   const simulateSubmit = async () => {
     return { success: true, message: 'Simulated submission', data: {} }
