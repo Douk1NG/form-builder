@@ -4,7 +4,7 @@ import type { FieldType } from '../../types/form'
 import * as Icons from 'lucide-react'
 
 export type PaletteItemProps = {
-  type: FieldType
+  type: FieldType | 'field_group' | 'column_row'
   label: string
   icon: string
   onClick: () => void

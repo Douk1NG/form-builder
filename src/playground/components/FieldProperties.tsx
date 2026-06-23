@@ -1,5 +1,4 @@
-import { Settings2, Layers, Columns2, ChevronDown, Maximize2, Minimize2 } from 'lucide-react'
-import { useState } from 'react'
+import { Settings2, Layers, Columns2, Maximize2, Minimize2 } from 'lucide-react'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import { Button } from '../../components/ui/button'
 import { useFieldProperties } from '../hooks/useFieldProperties'
@@ -8,6 +7,7 @@ import { Label } from '../../components/ui/label'
 import { Switch } from '../../components/ui/switch'
 import { FieldOptionsEditor } from './FieldOptionsEditor'
 import { LocalizedInput } from './LocalizedInput'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs'
 import type { LocalizedString } from '../../types/form'
 
 function EmptyPropertiesPanel() {
@@ -74,34 +74,6 @@ function PropertiesSectionHeader({ icon, title, accentColor = 'primary', rightAc
   )
 }
 
-type CollapsibleSectionProps = {
-  title: string
-  defaultOpen?: boolean
-  children: React.ReactNode
-}
-
-function CollapsibleSection({ title, defaultOpen = true, children }: CollapsibleSectionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen)
-
-  return (
-    <div className="border border-border/30 rounded-xl overflow-hidden">
-      <button
-        type="button"
-        className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-foreground/80 bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {title}
-        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-      {isOpen && (
-        <div className="px-4 py-4 space-y-4">
-          {children}
-        </div>
-      )}
-    </div>
-  )
-}
-
 export function FieldProperties() {
   const {
     formId,
@@ -161,77 +133,85 @@ export function FieldProperties() {
     <div className="space-y-5">
       <PropertiesSectionHeader icon={<Settings2 className="w-5 h-5" />} title="Field Properties" rightAction={expandToggle} />
 
-      <CollapsibleSection title="Basic Settings">
-        <LocalizedInput
-          id="field-label"
-          label="Label"
-          value={selectedField.label}
-          onChange={handleUpdateLabel}
-          placeholder="Field Label"
-        />
+      <Tabs defaultValue="basic" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsTrigger value="basic">Basic</TabsTrigger>
+          <TabsTrigger value="behavior">Behavior</TabsTrigger>
+          <TabsTrigger value="data" disabled={!hasOptions}>Data</TabsTrigger>
+        </TabsList>
 
-        <div className="space-y-2">
-          <Label htmlFor="field-name" className="text-sm font-medium">Name</Label>
-          <Input
-            id="field-name"
-            value={selectedField.name}
-            onChange={handleUpdateName}
-            placeholder="field_name"
-            className="font-mono text-sm transition-all focus:ring-primary/30 rounded-lg"
+        <TabsContent value="basic" className="space-y-4">
+          <LocalizedInput
+            id="field-label"
+            label="Label"
+            value={selectedField.label}
+            onChange={handleUpdateLabel}
+            placeholder="Field Label"
           />
-        </div>
 
-        <LocalizedInput
-          id="field-description"
-          label="Description"
-          value={selectedField.description}
-          onChange={handleUpdateDescription}
-          placeholder="Helper text..."
-        />
-
-        <LocalizedInput
-          id="field-placeholder"
-          label="Placeholder"
-          value={selectedField.placeholder}
-          onChange={handleUpdatePlaceholder}
-          placeholder="Placeholder text..."
-        />
-      </CollapsibleSection>
-
-      <CollapsibleSection title="Behavior">
-        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30 hover:border-border/50 transition-all">
-          <div className="space-y-0.5">
-            <Label htmlFor="field-readonly" className="text-sm font-medium">Read Only</Label>
-            <p className="text-xs text-muted-foreground">Prevent user input</p>
+          <div className="space-y-2">
+            <Label htmlFor="field-name" className="text-sm font-medium">Name</Label>
+            <Input
+              id="field-name"
+              value={selectedField.name}
+              onChange={handleUpdateName}
+              placeholder="field_name"
+              className="font-mono text-sm transition-all focus:ring-primary/30 rounded-lg"
+            />
           </div>
-          <Switch
-            id="field-readonly"
-            checked={selectedField.readOnly || false}
-            onCheckedChange={handleUpdateReadOnly}
-          />
-        </div>
 
-        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30 hover:border-border/50 transition-all">
-          <div className="space-y-0.5">
-            <Label htmlFor="field-disabled" className="text-sm font-medium">Disabled</Label>
-            <p className="text-xs text-muted-foreground">Disable field interaction</p>
+          <LocalizedInput
+            id="field-description"
+            label="Description"
+            value={selectedField.description}
+            onChange={handleUpdateDescription}
+            placeholder="Helper text..."
+          />
+
+          <LocalizedInput
+            id="field-placeholder"
+            label="Placeholder"
+            value={selectedField.placeholder}
+            onChange={handleUpdatePlaceholder}
+            placeholder="Placeholder text..."
+          />
+        </TabsContent>
+
+        <TabsContent value="behavior" className="space-y-4 mt-4">
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30 hover:border-border/50 transition-all">
+            <div className="space-y-0.5">
+              <Label htmlFor="field-readonly" className="text-sm font-medium">Read Only</Label>
+              <p className="text-xs text-muted-foreground">Prevent user input</p>
+            </div>
+            <Switch
+              id="field-readonly"
+              checked={selectedField.readOnly || false}
+              onCheckedChange={handleUpdateReadOnly}
+            />
           </div>
-          <Switch
-            id="field-disabled"
-            checked={selectedField.disabled || false}
-            onCheckedChange={handleUpdateDisabled}
-          />
-        </div>
-      </CollapsibleSection>
 
-      {hasOptions && (
-        <CollapsibleSection title="Options">
-          <FieldOptionsEditor
-            options={selectedField.options || []}
-            onChange={handleUpdateOptions}
-          />
-        </CollapsibleSection>
-      )}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30 hover:border-border/50 transition-all">
+            <div className="space-y-0.5">
+              <Label htmlFor="field-disabled" className="text-sm font-medium">Disabled</Label>
+              <p className="text-xs text-muted-foreground">Disable field interaction</p>
+            </div>
+            <Switch
+              id="field-disabled"
+              checked={selectedField.disabled || false}
+              onCheckedChange={handleUpdateDisabled}
+            />
+          </div>
+        </TabsContent>
+
+        {hasOptions && (
+          <TabsContent value="data" className="space-y-4 mt-4">
+            <FieldOptionsEditor
+              options={selectedField.options || []}
+              onChange={handleUpdateOptions}
+            />
+          </TabsContent>
+        )}
+      </Tabs>
     </div>
   )
 }

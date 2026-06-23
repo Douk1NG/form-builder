@@ -9,12 +9,21 @@ export type FormSchema = {
   items: CanvasItem[]
 }
 
+export type SavedForm = {
+  formId: string
+  formTitle: string
+  formDescription: string
+  itemIds: string[]
+  itemsData: Record<string, CanvasItem>
+}
+
 export type PersistedFormBuilderState = {
   formId: string | null
   formTitle: string
   formDescription: string
   itemIds: string[]
   itemsData: Record<string, CanvasItem>
+  savedForms: Record<string, SavedForm>
 }
 
 export type FormBuilderState = {
@@ -23,6 +32,7 @@ export type FormBuilderState = {
   formDescription: string
   itemIds: string[]
   itemsData: Record<string, CanvasItem>
+  savedForms: Record<string, SavedForm>
 
   selectedItemId: string | null
   previewMode: boolean
@@ -30,7 +40,9 @@ export type FormBuilderState = {
   previewDevice: 'desktop' | 'tablet' | 'mobile'
   isPropertiesExpanded: boolean
 
-  createForm: (title: string) => void
+  createNewForm: (title: string) => void
+  switchForm: (formId: string) => void
+  updateFormTitle: (title: string) => void
   addField: (field: Omit<Field, 'id'>) => void
   addGroup: (label: string) => void
   addColumnRow: () => void
@@ -95,6 +107,7 @@ export const useFormBuilderStore = create<FormBuilderState>()(  persist(
   formDescription: '',
   itemIds: [],
   itemsData: {},
+  savedForms: {},
 
   selectedItemId: null,
   previewMode: false,
@@ -102,14 +115,88 @@ export const useFormBuilderStore = create<FormBuilderState>()(  persist(
   previewDevice: 'desktop',
   isPropertiesExpanded: false,
 
-  createForm: (title) => {
+  createNewForm: (title) => {
+    const { formId, formTitle, formDescription, itemIds, itemsData, savedForms } = get()
+    
+    // Save current form if it exists
+    const newSavedForms = { ...savedForms }
+    if (formId) {
+      newSavedForms[formId] = {
+        formId,
+        formTitle,
+        formDescription,
+        itemIds,
+        itemsData,
+      }
+    }
+
+    const newFormId = crypto.randomUUID()
+    
+    // Also save the newly created form right away
+    newSavedForms[newFormId] = {
+      formId: newFormId,
+      formTitle: title,
+      formDescription: '',
+      itemIds: [],
+      itemsData: {},
+    }
+
     set({
-      formId: crypto.randomUUID(),
+      formId: newFormId,
       formTitle: title,
       formDescription: '',
       itemIds: [],
       itemsData: {},
       selectedItemId: null,
+      savedForms: newSavedForms,
+    })
+  },
+
+  switchForm: (targetFormId) => {
+    const { formId, formTitle, formDescription, itemIds, itemsData, savedForms } = get()
+    
+    if (formId === targetFormId) return
+
+    // Save current form
+    const newSavedForms = { ...savedForms }
+    if (formId) {
+      newSavedForms[formId] = {
+        formId,
+        formTitle,
+        formDescription,
+        itemIds,
+        itemsData,
+      }
+    }
+
+    const targetForm = newSavedForms[targetFormId]
+    if (!targetForm) return
+
+    set({
+      formId: targetForm.formId,
+      formTitle: targetForm.formTitle,
+      formDescription: targetForm.formDescription,
+      itemIds: targetForm.itemIds,
+      itemsData: targetForm.itemsData,
+      selectedItemId: null,
+      savedForms: newSavedForms,
+    })
+  },
+
+  updateFormTitle: (title) => {
+    const { formId, savedForms } = get()
+    
+    const newSavedForms = { ...savedForms }
+    if (formId && newSavedForms[formId]) {
+      newSavedForms[formId] = {
+        ...newSavedForms[formId],
+        formTitle: title,
+      }
+    }
+
+    set({
+      formTitle: title,
+      savedForms: newSavedForms,
     })
   },
 

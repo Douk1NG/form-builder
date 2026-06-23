@@ -1,23 +1,23 @@
-import { usePlayground } from './hooks/usePlayground'
+import { useEffect } from 'react'
 import { PlaygroundHeader } from './components/PlaygroundHeader'
 import { FieldPalette } from './components/FieldPalette'
 import { FormCanvas } from './components/FormCanvas'
 import { FieldProperties } from './components/FieldProperties'
 import { AmbientBackground } from './components/AmbientBackground'
-import { CreateFormPrompt } from './components/CreateFormPrompt'
 import { useFormBuilderStore } from './store/useFormBuilderStore'
 
 export function Playground() {
-  const {
-    formId,
-    newTitle,
-    handleTitleChange,
-    handleCreate,
-    handleKeyDown
-  } = usePlayground()
-
+  const formId = useFormBuilderStore((state) => state.formId)
+  const createNewForm = useFormBuilderStore((state) => state.createNewForm)
+  const savedForms = useFormBuilderStore((state) => state.savedForms)
   const hasSelectedItem = useFormBuilderStore((state) => state.selectedItemId !== null)
   const isPropertiesExpanded = useFormBuilderStore((state) => state.isPropertiesExpanded)
+
+  useEffect(() => {
+    if (!formId && Object.keys(savedForms).length === 0) {
+      createNewForm('Untitled Form')
+    }
+  }, [formId, savedForms, createNewForm])
 
   const propertiesSidebarWidth = !hasSelectedItem 
     ? 'w-80' 
@@ -38,7 +38,7 @@ export function Playground() {
           </aside>
 
           {/* Main Canvas Area */}
-          <main className="flex-1 p-8 overflow-y-auto bg-transparent relative">
+          <main className="flex-1 p-8 overflow-y-auto bg-transparent relative custom-scrollbar">
             <FormCanvas />
           </main>
 
@@ -48,12 +48,9 @@ export function Playground() {
           </aside>
         </div>
       ) : (
-        <CreateFormPrompt
-          newTitle={newTitle}
-          onTitleChange={handleTitleChange}
-          onKeyDown={handleKeyDown}
-          onCreate={handleCreate}
-        />
+        <div className="flex-1 flex items-center justify-center relative z-10">
+          <p className="text-muted-foreground">Select or create a form to begin.</p>
+        </div>
       )}
     </div>
   )
