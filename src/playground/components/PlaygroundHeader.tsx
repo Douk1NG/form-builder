@@ -1,7 +1,9 @@
 import { Button } from '../../components/ui/button'
-import { Eye, Pencil, Download, Blocks } from 'lucide-react'
+import { Eye, Pencil, Download, Blocks, Languages } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { usePlayground } from '../hooks/usePlayground'
+import { useFormBuilderStore } from '../store/useFormBuilderStore'
+import { SUPPORTED_LOCALES } from '../../utils/locales'
 
 function FormBuilderLogo() {
   return (
@@ -27,6 +29,33 @@ function EditingBadge({ title }: { title: string }) {
   )
 }
 
+function LocaleSwitcher() {
+  const { i18n } = useTranslation()
+  const previewLocale = useFormBuilderStore((state) => state.previewLocale)
+  const setPreviewLocale = useFormBuilderStore((state) => state.setPreviewLocale)
+
+  const currentIndex = SUPPORTED_LOCALES.indexOf(previewLocale as typeof SUPPORTED_LOCALES[number])
+  const nextIndex = (currentIndex + 1) % SUPPORTED_LOCALES.length
+  const nextLocale = SUPPORTED_LOCALES[nextIndex]
+
+  const handleToggleLocale = () => {
+    setPreviewLocale(nextLocale)
+    i18n.changeLanguage(nextLocale)
+  }
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={handleToggleLocale}
+      className="font-semibold gap-1.5 rounded-lg transition-all duration-200"
+    >
+      <Languages className="w-3.5 h-3.5" />
+      {previewLocale.toUpperCase()}
+    </Button>
+  )
+}
+
 export function PlaygroundHeader() {
   const {
     formId,
@@ -35,8 +64,6 @@ export function PlaygroundHeader() {
     handleTogglePreview,
     handleExportJson,
   } = usePlayground()
-
-  const { i18n } = useTranslation()
 
   return (
     <header className="px-6 py-3 border-b bg-card/80 backdrop-blur-xl border-border/50 shadow-xs sticky top-0 z-50">
@@ -47,14 +74,7 @@ export function PlaygroundHeader() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en')}
-            className="font-medium text-muted-foreground hover:text-foreground mr-2"
-          >
-            {i18n.language === 'en' ? 'ES' : 'EN'}
-          </Button>
+          <LocaleSwitcher />
           {formId && (
             <>
               <Button
@@ -91,3 +111,4 @@ export function PlaygroundHeader() {
     </header>
   )
 }
+

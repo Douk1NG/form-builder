@@ -1,6 +1,6 @@
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import type { Option } from '../../types/select'
-import type { Field, CanvasField, FieldGroup, ColumnRow } from '../../types/form'
+import type { Field, CanvasField, FieldGroup, ColumnRow, LocalizedString } from '../../types/form'
 
 export type SelectedItemKind = 'field' | 'field_group' | 'column_row' | null
 
@@ -13,7 +13,36 @@ export function useFieldProperties() {
 
   const selectedItem = useFormBuilderStore((state) => {
     if (!selectedItemId || !state.itemsData) return null
-    return state.itemsData[selectedItemId] ?? null
+
+    const topLevelMatch = state.itemsData[selectedItemId]
+    if (topLevelMatch) return topLevelMatch
+
+    for (const item of Object.values(state.itemsData)) {
+      if (item.kind === 'field_group') {
+        for (const groupItem of item.items) {
+          if (groupItem.kind === 'column_row') {
+            if (groupItem.leftField?.id === selectedItemId) {
+              return { ...groupItem.leftField, kind: 'field' } as CanvasField
+            }
+            if (groupItem.rightField?.id === selectedItemId) {
+              return { ...groupItem.rightField, kind: 'field' } as CanvasField
+            }
+          } else if (groupItem.id === selectedItemId) {
+            return groupItem
+          }
+        }
+      }
+      if (item.kind === 'column_row') {
+        if (item.leftField?.id === selectedItemId) {
+          return { ...item.leftField, kind: 'field' } as CanvasField
+        }
+        if (item.rightField?.id === selectedItemId) {
+          return { ...item.rightField, kind: 'field' } as CanvasField
+        }
+      }
+    }
+
+    return null
   })
 
   const selectedKind: SelectedItemKind = (() => {
@@ -32,9 +61,9 @@ export function useFieldProperties() {
   const selectedColumnRow: ColumnRow | null =
     selectedKind === 'column_row' ? (selectedItem as ColumnRow) : null
 
-  const handleUpdateLabel = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpdateLabel = (value: LocalizedString) => {
     if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { label: event.target.value })
+      updateField(selectedItemId, { label: value })
     }
   }
 
@@ -44,15 +73,15 @@ export function useFieldProperties() {
     }
   }
 
-  const handleUpdateDescription = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpdateDescription = (value: LocalizedString) => {
     if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { description: event.target.value })
+      updateField(selectedItemId, { description: value })
     }
   }
 
-  const handleUpdatePlaceholder = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpdatePlaceholder = (value: LocalizedString) => {
     if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { placeholder: event.target.value })
+      updateField(selectedItemId, { placeholder: value })
     }
   }
 
@@ -74,9 +103,9 @@ export function useFieldProperties() {
     }
   }
 
-  const handleUpdateGroupLabel = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpdateGroupLabel = (value: LocalizedString) => {
     if (selectedItemId && selectedKind === 'field_group') {
-      updateGroup(selectedItemId, { label: event.target.value })
+      updateGroup(selectedItemId, { label: value })
     }
   }
 

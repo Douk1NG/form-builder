@@ -5,6 +5,7 @@ import { useTagbox } from '../../../../hooks/use-tagbox'
 import { Button } from '../../../ui/button'
 import type { TagboxField } from '../../../../types/form'
 import type { Tag } from '../../../../types/tagbox'
+import { resolveLocalizedString } from '../../../../utils/locales';
 
 export default function Tagbox({
     name,
@@ -39,7 +40,7 @@ export default function Tagbox({
                     value={inputValue}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
-                    placeholder={placeholder}
+                    placeholder={resolveLocalizedString(placeholder)}
                     className="grow"
                     readOnly={readOnly}
                     list={options.length > 0 ? datalistId : undefined}

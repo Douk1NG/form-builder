@@ -12,6 +12,7 @@ import Number from "./components/number";
 import { Label } from '../ui/label';
 import type { Field } from '../../types/form';
 import type { JSX } from "react";
+import { resolveLocalizedString } from '../../utils/locales';
 
 const Components = {
     text: Text,
@@ -38,10 +39,10 @@ const Index = <T extends Field>(props: T) => {
 
     return (
         <div className="w-full space-y-2.5">
-            <Label htmlFor={props.name} className="text-base font-medium">{props.label}</Label>
+            <Label htmlFor={props.name} className="text-base font-medium">{resolveLocalizedString(props.label)}</Label>
             <Component {...props} />
             {!props.readOnly && props.description && (
-                <p className='text-sm text-muted-foreground/80 mt-1'>{props.description}</p>
+                <p className='text-sm text-muted-foreground/80 mt-1'>{resolveLocalizedString(props.description)}</p>
             )}
         </div>
     )

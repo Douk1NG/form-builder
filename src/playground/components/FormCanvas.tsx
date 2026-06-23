@@ -9,7 +9,29 @@ import { FieldGroupRenderer } from './FieldGroupRenderer'
 import FormBuilder from '../../components/form'
 import { InheritanceProvider } from '../../context/InheritanceProvider'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
-import type { CanvasItem } from '../../types/form'
+import type { FormSchema } from '../store/useFormBuilderStore'
+import type { CanvasItem, ActionResponse } from '../../types/form'
+
+type PreviewFormRendererProps = {
+  currentFormSchema: FormSchema
+  simulateSubmit: (id: string | undefined, previousState: ActionResponse | null, formData: FormData) => Promise<ActionResponse>
+}
+
+function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: PreviewFormRendererProps) {
+  const previewLocale = useFormBuilderStore((state) => state.previewLocale)
+
+  return (
+    <div className="max-w-3xl p-8 mx-auto border rounded-2xl shadow-lg shadow-black/5 bg-card/90 backdrop-blur-md border-border/50">
+      <FormBuilder
+        fields={currentFormSchema.items}
+        values={{}}
+        locale={previewLocale}
+        action={simulateSubmit}
+        isCreating={true}
+      />
+    </div>
+  )
+}
 
 function CanvasItemRenderer({ item, index }: { item: CanvasItem; index: number }) {
   if (item.kind === 'field') {
@@ -69,14 +91,10 @@ export function FormCanvas() {
 
   if (previewMode && currentFormSchema) {
     return (
-      <div className="max-w-3xl p-8 mx-auto border rounded-2xl shadow-lg shadow-black/5 bg-card/90 backdrop-blur-md border-border/50">
-        <FormBuilder
-          fields={currentFormSchema.items}
-          values={{}}
-          action={simulateSubmit}
-          isCreating={true}
-        />
-      </div>
+      <PreviewFormRenderer
+        currentFormSchema={currentFormSchema}
+        simulateSubmit={simulateSubmit}
+      />
     )
   }
 

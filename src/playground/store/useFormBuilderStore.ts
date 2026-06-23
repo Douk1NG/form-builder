@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { Field, CanvasItem, CanvasField, ColumnRow, FieldGroup } from '../../types/form'
 
 export type FormSchema = {
@@ -6,6 +7,14 @@ export type FormSchema = {
   title: string
   description?: string
   items: CanvasItem[]
+}
+
+export type PersistedFormBuilderState = {
+  formId: string | null
+  formTitle: string
+  formDescription: string
+  itemIds: string[]
+  itemsData: Record<string, CanvasItem>
 }
 
 export type FormBuilderState = {
@@ -17,6 +26,7 @@ export type FormBuilderState = {
 
   selectedItemId: string | null
   previewMode: boolean
+  previewLocale: string
 
   createForm: (title: string) => void
   addField: (field: Omit<Field, 'id'>) => void
@@ -36,6 +46,7 @@ export type FormBuilderState = {
   reorderItem: (itemId: string, direction: 'up' | 'down') => void
   setSelectedItem: (itemId: string | null) => void
   setPreviewMode: (enabled: boolean) => void
+  setPreviewLocale: (locale: string) => void
   insertItemAt: (index: number, item: CanvasItem) => void
   moveItem: (sourceIndex: number, destinationIndex: number) => void
 
@@ -70,7 +81,8 @@ function updateFieldInGroupItems(
   })
 }
 
-export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
+export const useFormBuilderStore = create<FormBuilderState>()(  persist(
+    (set, get) => ({
   formId: null,
   formTitle: '',
   formDescription: '',
@@ -79,6 +91,7 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
 
   selectedItemId: null,
   previewMode: false,
+  previewLocale: 'en',
 
   createForm: (title) => {
     set({
@@ -370,6 +383,10 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
     set({ previewMode: enabled })
   },
 
+  setPreviewLocale: (locale) => {
+    set({ previewLocale: locale })
+  },
+
   insertItemAt: (index, item) => {
     const { formId, itemIds, itemsData } = get()
     if (!formId) return
@@ -405,4 +422,16 @@ export const useFormBuilderStore = create<FormBuilderState>((set, get) => ({
       items: itemIds.map((id) => itemsData[id]),
     }
   },
-}))
+}),
+    {
+      name: 'form-builder-store',
+      partialize: (state) => ({
+        formId: state.formId,
+        formTitle: state.formTitle,
+        formDescription: state.formDescription,
+        itemIds: state.itemIds,
+        itemsData: state.itemsData,
+      }),
+    } as { name: string; partialize: (state: FormBuilderState) => PersistedFormBuilderState },
+  ),
+)

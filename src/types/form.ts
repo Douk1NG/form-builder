@@ -10,14 +10,16 @@ export type ActionResponse = {
     data: Record<string, unknown>;
 }
 
+export type LocalizedString = string | Record<string, string>;
+
 export type FieldType = 'text' | 'select' | 'textarea' | 'currency' | 'multiselect' | 'switch' | 'tagbox' | 'image' | 'group_variant_inventory' | 'group_variant_product' | 'number';
 
 export type BaseField = {
     id?: string;
-    label: string;
+    label: LocalizedString;
     name?: string;
-    description?: string;
-    placeholder?: string;
+    description?: LocalizedString;
+    placeholder?: LocalizedString;
     value?: unknown;
     inheritFrom?: {
         field: string;
@@ -115,7 +117,7 @@ export type CanvasField = Field & {
 export type FieldGroup = {
     id: string;
     kind: 'field_group';
-    label: string;
+    label: LocalizedString;
     items: Array<CanvasField | ColumnRow>;
 };
 
@@ -127,6 +129,7 @@ export type CanvasItem = CanvasField | ColumnRow | FieldGroup;
 export type FormProps = {
     fields: Array<Field | CanvasItem>;
     values: Record<string, unknown>;
+    locale?: string;
     translate?: (key: string) => string;
     action: (id: string | undefined, prevState: ActionResponse | null, formData: FormData) => Promise<ActionResponse>;
     onEditModeChange?: (editing: boolean) => void;

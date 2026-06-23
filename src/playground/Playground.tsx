@@ -5,6 +5,7 @@ import { FormCanvas } from './components/FormCanvas'
 import { FieldProperties } from './components/FieldProperties'
 import { AmbientBackground } from './components/AmbientBackground'
 import { CreateFormPrompt } from './components/CreateFormPrompt'
+import { useFormBuilderStore } from './store/useFormBuilderStore'
 
 export function Playground() {
   const {
@@ -14,6 +15,12 @@ export function Playground() {
     handleCreate,
     handleKeyDown
   } = usePlayground()
+
+  const hasSelectedItem = useFormBuilderStore((state) => state.selectedItemId !== null)
+
+  const propertiesSidebarWidth = hasSelectedItem
+    ? 'w-1/2'
+    : 'w-80'
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative">
@@ -33,7 +40,7 @@ export function Playground() {
           </main>
 
           {/* Right Sidebar */}
-          <aside className="w-80 p-5 overflow-y-auto border-l bg-card/80 backdrop-blur-xl border-border/50 shadow-[-2px_0_20px_rgba(0,0,0,0.03)] z-10">
+          <aside className={`${propertiesSidebarWidth} p-5 overflow-y-auto border-l bg-card/80 backdrop-blur-xl border-border/50 shadow-[-2px_0_20px_rgba(0,0,0,0.03)] z-10 transition-[width] duration-300 ease-in-out`}>
             <FieldProperties />
           </aside>
         </div>
@@ -48,3 +55,4 @@ export function Playground() {
     </div>
   )
 }
+

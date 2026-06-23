@@ -11,10 +11,12 @@ import FormSubmitButton from './submit'
 import FieldError from './field-error'
 
 import type { FormProps, Field, CanvasItem, ColumnRow, FieldGroup } from '../../types/form'
+import { resolveLocalizedString } from '../../utils/locales'
 
 const FormBuilder = ({
     fields,
     values,
+    locale = 'en',
     translate = (key) => key,
     action,
     onEditModeChange,
@@ -55,8 +57,8 @@ const FormBuilder = ({
             >
                 <FieldComponent
                     {...item}
-                    label={translate(item.label)}
-                    {...(item.description ? { description: translate(item.description) } : {})}
+                    label={translate(resolveLocalizedString(item.label, locale))}
+                    {...(item.description ? { description: translate(resolveLocalizedString(item.description, locale)) } : {})}
                     value={state.data?.[item.name]}
                     readOnly={isDetail}
                     translate={translate}
@@ -87,7 +89,7 @@ const FormBuilder = ({
                 const group = item as FieldGroup;
                 return (
                     <div key={group.id} className="space-y-6 p-6 rounded-2xl border border-border/40 bg-card/40 backdrop-blur-sm">
-                        <h3 className="font-bold text-xl tracking-tight text-foreground">{translate(group.label)}</h3>
+                        <h3 className="font-bold text-xl tracking-tight text-foreground">{translate(resolveLocalizedString(group.label, locale))}</h3>
                         <div className="space-y-4">
                             {group.items.map((groupItem, index) => (
                                 <div key={'id' in groupItem ? groupItem.id : index}>

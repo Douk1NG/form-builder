@@ -5,6 +5,8 @@ import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { Switch } from '../../components/ui/switch'
 import { FieldOptionsEditor } from './FieldOptionsEditor'
+import { LocalizedInput } from './LocalizedInput'
+import type { LocalizedString } from '../../types/form'
 
 function EmptyPropertiesPanel() {
   return (
@@ -18,20 +20,17 @@ function EmptyPropertiesPanel() {
   )
 }
 
-function GroupPropertiesPanel({ groupLabel, onLabelChange }: { groupLabel: string; onLabelChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) {
+function GroupPropertiesPanel({ groupLabel, onLabelChange }: { groupLabel: LocalizedString; onLabelChange: (val: LocalizedString) => void }) {
   return (
     <div className="space-y-5">
       <PropertiesSectionHeader icon={<Layers className="w-5 h-5" />} title="Group Properties" accentColor="violet" />
-      <div className="space-y-2">
-        <Label htmlFor="group-label" className="text-sm font-medium">Group Label</Label>
-        <Input
-          id="group-label"
-          value={groupLabel}
-          onChange={onLabelChange}
-          placeholder="Group label..."
-          className="transition-all focus:ring-violet-500/30 rounded-lg"
-        />
-      </div>
+      <LocalizedInput
+        id="group-label"
+        label="Group Label"
+        value={groupLabel}
+        onChange={onLabelChange}
+        placeholder="Group label..."
+      />
     </div>
   )
 }
@@ -60,7 +59,7 @@ function PropertiesSectionHeader({ icon, title, accentColor = 'primary' }: Prope
   }
 
   return (
-    <div className="flex items-center gap-2.5 pb-4 border-b border-border/40">
+    <div className="sticky top-0 z-10 flex items-center gap-2.5 pb-4 border-b border-border/40 bg-card/95 backdrop-blur-sm -mx-5 px-5 pt-0">
       <div className={`p-2 rounded-lg ${backgroundColors[accentColor]}`}>
         {icon}
       </div>
@@ -140,16 +139,13 @@ export function FieldProperties() {
       <PropertiesSectionHeader icon={<Settings2 className="w-5 h-5" />} title="Field Properties" />
 
       <CollapsibleSection title="Basic Settings">
-        <div className="space-y-2">
-          <Label htmlFor="field-label" className="text-sm font-medium">Label</Label>
-          <Input
-            id="field-label"
-            value={selectedField.label}
-            onChange={handleUpdateLabel}
-            placeholder="Field Label"
-            className="transition-all focus:ring-primary/30 rounded-lg"
-          />
-        </div>
+        <LocalizedInput
+          id="field-label"
+          label="Label"
+          value={selectedField.label}
+          onChange={handleUpdateLabel}
+          placeholder="Field Label"
+        />
 
         <div className="space-y-2">
           <Label htmlFor="field-name" className="text-sm font-medium">Name</Label>
@@ -162,27 +158,21 @@ export function FieldProperties() {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="field-description" className="text-sm font-medium">Description</Label>
-          <Input
-            id="field-description"
-            value={selectedField.description || ''}
-            onChange={handleUpdateDescription}
-            placeholder="Helper text..."
-            className="transition-all focus:ring-primary/30 rounded-lg"
-          />
-        </div>
+        <LocalizedInput
+          id="field-description"
+          label="Description"
+          value={selectedField.description}
+          onChange={handleUpdateDescription}
+          placeholder="Helper text..."
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="field-placeholder" className="text-sm font-medium">Placeholder</Label>
-          <Input
-            id="field-placeholder"
-            value={selectedField.placeholder || ''}
-            onChange={handleUpdatePlaceholder}
-            placeholder="Placeholder text..."
-            className="transition-all focus:ring-primary/30 rounded-lg"
-          />
-        </div>
+        <LocalizedInput
+          id="field-placeholder"
+          label="Placeholder"
+          value={selectedField.placeholder}
+          onChange={handleUpdatePlaceholder}
+          placeholder="Placeholder text..."
+        />
       </CollapsibleSection>
 
       <CollapsibleSection title="Behavior">

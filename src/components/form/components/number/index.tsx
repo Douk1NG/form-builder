@@ -1,10 +1,11 @@
 import { Input } from '../../../ui/input'
 import type { NumberField } from '../../../../types/form'
+import { resolveLocalizedString } from '../../../../utils/locales'
 
 const Component = (props: NumberField) => {
     return (
         <Input
-            placeholder={props.placeholder}
+            placeholder={resolveLocalizedString(props.placeholder)}
             defaultValue={props.value as string}
             id={props.name}
             name={props.name}

@@ -7,6 +7,7 @@ import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import FieldComponent from '../../components/form/field'
 import { ColumnRowRenderer } from './ColumnRowRenderer'
 import type { Field, ColumnRow } from '../../types/form'
+import { resolveLocalizedString } from '../../utils/locales'
 
 type GroupFieldItemProps = {
   field: Field
@@ -15,8 +16,28 @@ type GroupFieldItemProps = {
 }
 
 function GroupFieldItem({ field, onRemove }: GroupFieldItemProps) {
+  const setSelectedItem = useFormBuilderStore((state) => state.setSelectedItem)
+  const selectedItemId = useFormBuilderStore((state) => state.selectedItemId)
+  const isSelected = selectedItemId === field.id
+
+  const handleSelect = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    setSelectedItem(field.id ?? null)
+  }
+
+  const selectedStyles = 'border-primary/50 ring-1 ring-primary/20 shadow-sm shadow-primary/5'
+  const defaultStyles = 'border-border/30 hover:border-primary/40 hover:shadow-xs'
+
   return (
-    <div className="relative group/field rounded-xl border border-border/30 bg-card/80 p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-xs">
+    <div
+      className={`relative group/field rounded-xl border bg-card/80 p-4 transition-all duration-200 cursor-pointer ${isSelected ? selectedStyles : defaultStyles}`}
+      onClick={handleSelect}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') handleSelect(event as unknown as React.MouseEvent)
+      }}
+    >
       <Button
         type="button"
         variant="ghost"
@@ -138,7 +159,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
         <div className="p-1.5 rounded-lg bg-violet-500/15">
           <Layers className="h-4 w-4 text-violet-600 dark:text-violet-400" />
         </div>
-        <span className="font-bold text-base text-foreground tracking-tight flex-1">{group.label}</span>
+        <span className="font-bold text-base text-foreground tracking-tight flex-1">{resolveLocalizedString(group.label)}</span>
 
         <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1">
           <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md hover:bg-muted" onClick={handleMoveUp}>

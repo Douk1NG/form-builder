@@ -2,6 +2,7 @@ import Select from 'react-select'
 import { useInheritanceContext } from '../../../../context/InheritanceProvider'
 import type { SelectField } from '../../../../types/form'
 import type { Option } from '../../../../types/select'
+import { resolveLocalizedString } from '../../../../utils/locales'
 
 const Component = ({
     options = [],
@@ -24,7 +25,7 @@ const Component = ({
             options={options}
             {...(defaultValue !== undefined ? { defaultValue } : {})}
             {...(name ? { name } : {})}
-            placeholder={placeholder}
+            placeholder={resolveLocalizedString(placeholder)}
             className='select-tw-fix'
             isClearable={true}
             isDisabled={readOnly}

@@ -5,6 +5,7 @@ import { useFieldInheritance } from '../../../../hooks/use-field-inheritance'
 import Multiselect from 'react-select'
 
 import type { MultiselectField } from '../../../../types/form'
+import { resolveLocalizedString } from '../../../../utils/locales'
 
 export default function Component({
     id,
@@ -37,7 +38,7 @@ export default function Component({
         <Multiselect
             {...(id ? { id } : {})}
             ref={selectRef}
-            placeholder={placeholder}
+            placeholder={resolveLocalizedString(placeholder) || 'Select options'}
             defaultValue={value}
             isMulti
             options={options}
