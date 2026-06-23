@@ -1,5 +1,5 @@
-import { useFormBuilderStore } from '../store/useFormBuilderStore'
-import type { FieldGroup } from '../../types/form'
+import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
+import type { FieldGroup } from '@/types/form'
 
 export function useFieldGroupRenderer(groupId: string) {
   const selectedItemId = useFormBuilderStore((state) => state.selectedItemId)
@@ -16,7 +16,7 @@ export function useFieldGroupRenderer(groupId: string) {
 
   const isSelected = selectedItemId === groupId
 
-  const handleSelectGroup = (event: React.MouseEvent) => {
+  const handleSelectGroup = (event: React.MouseEvent | React.KeyboardEvent) => {
     event.stopPropagation()
     setSelectedItem(groupId)
   }

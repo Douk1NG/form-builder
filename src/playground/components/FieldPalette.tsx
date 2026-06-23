@@ -16,7 +16,7 @@ const FIELD_TYPES: Array<{ type: FieldType; label: string; icon: string }> = [
 ]
 
 export function FieldPalette() {
-  const { previewMode, handleAddField, handleAddGroup, handleAddColumnRow } = useFieldPalette()
+  const { previewMode, handleAddField, handleAddGroup, handleAddRow } = useFieldPalette()
 
   if (previewMode) return null
 
@@ -39,9 +39,9 @@ export function FieldPalette() {
           />
           <PaletteItem
             type="column_row"
-            label="2-Column Row"
-            icon="Columns2"
-            onClick={handleAddColumnRow}
+            label="2 Columns"
+            icon="Columns"
+            onClick={handleAddRow}
           />
         </div>
       </div>

@@ -1,8 +1,8 @@
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import type { Option } from '../../types/select'
-import type { Field, CanvasField, FieldGroup, ColumnRow, LocalizedString } from '../../types/form'
+import type { Field, CanvasField, FieldGroup, LocalizedString } from '../../types/form'
 
-export type SelectedItemKind = 'field' | 'field_group' | 'column_row' | null
+export type SelectedItemKind = 'field' | 'field_group' | null
 
 export function useFieldProperties() {
   const formId = useFormBuilderStore((state) => state.formId)
@@ -20,24 +20,11 @@ export function useFieldProperties() {
     for (const item of Object.values(state.itemsData)) {
       if (item.kind === 'field_group') {
         for (const groupItem of item.items) {
-          if (groupItem.kind === 'column_row') {
-            if (groupItem.leftField?.id === selectedItemId) {
-              return { ...groupItem.leftField, kind: 'field' } as CanvasField
-            }
-            if (groupItem.rightField?.id === selectedItemId) {
-              return { ...groupItem.rightField, kind: 'field' } as CanvasField
-            }
+          if (groupItem.kind === 'field_group') {
+            if (groupItem.id === selectedItemId) return groupItem
           } else if (groupItem.id === selectedItemId) {
             return groupItem
           }
-        }
-      }
-      if (item.kind === 'column_row') {
-        if (item.leftField?.id === selectedItemId) {
-          return { ...item.leftField, kind: 'field' } as CanvasField
-        }
-        if (item.rightField?.id === selectedItemId) {
-          return { ...item.rightField, kind: 'field' } as CanvasField
         }
       }
     }
@@ -48,7 +35,6 @@ export function useFieldProperties() {
   const selectedKind: SelectedItemKind = (() => {
     if (!selectedItem) return null
     if (selectedItem.kind === 'field_group') return 'field_group'
-    if (selectedItem.kind === 'column_row') return 'column_row'
     return 'field'
   })()
 
@@ -57,9 +43,6 @@ export function useFieldProperties() {
 
   const selectedGroup: FieldGroup | null =
     selectedKind === 'field_group' ? (selectedItem as FieldGroup) : null
-
-  const selectedColumnRow: ColumnRow | null =
-    selectedKind === 'column_row' ? (selectedItem as ColumnRow) : null
 
   const handleUpdateLabel = (value: LocalizedString) => {
     if (selectedItemId && selectedKind === 'field') {
@@ -109,13 +92,18 @@ export function useFieldProperties() {
     }
   }
 
+  const handleUpdateGroupColumns = (columns: number) => {
+    if (selectedItemId && selectedKind === 'field_group') {
+      updateGroup(selectedItemId, { columns })
+    }
+  }
+
   return {
     formId,
     previewMode,
     selectedKind,
     selectedField,
     selectedGroup,
-    selectedColumnRow,
     handleUpdateLabel,
     handleUpdateName,
     handleUpdateDescription,
@@ -124,5 +112,6 @@ export function useFieldProperties() {
     handleUpdateDisabled,
     handleUpdateOptions,
     handleUpdateGroupLabel,
+    handleUpdateGroupColumns,
   }
 }

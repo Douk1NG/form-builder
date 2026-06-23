@@ -10,7 +10,7 @@ import FormAlert from './alert'
 import FormSubmitButton from './submit'
 import FieldError from './field-error'
 
-import type { FormProps, Field, CanvasItem, ColumnRow, FieldGroup } from '../../types/form'
+import type { FormProps, Field, CanvasItem, FieldGroup } from '../../types/form'
 import { resolveLocalizedString } from '../../utils/locales'
 
 const FormBuilder = ({
@@ -74,19 +74,6 @@ const FormBuilder = ({
 
     const renderItem = (item: Field | CanvasItem): React.ReactNode => {
         if ('kind' in item) {
-            if (item.kind === 'column_row') {
-                const row = item as ColumnRow;
-                return (
-                    <div key={row.id} className="flex flex-col md:flex-row gap-6 w-full">
-                        <div className="flex-1">
-                            {row.leftField && renderField(row.leftField)}
-                        </div>
-                        <div className="flex-1">
-                            {row.rightField && renderField(row.rightField)}
-                        </div>
-                    </div>
-                )
-            }
             if (item.kind === 'field_group') {
                 const group = item as FieldGroup;
                 return (

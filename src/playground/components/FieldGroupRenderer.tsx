@@ -1,98 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { dropTargetForElements, draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { GripVertical, Trash2, Layers, ArrowUp, ArrowDown, Plus } from 'lucide-react'
-import { Button } from '../../components/ui/button'
-import { useFieldGroupRenderer } from '../hooks/useFieldGroupRenderer'
-import { useFormBuilderStore } from '../store/useFormBuilderStore'
-import FieldComponent from '../../components/form/field'
-import { ColumnRowRenderer } from './ColumnRowRenderer'
-import type { Field, ColumnRow } from '../../types/form'
-import { resolveLocalizedString } from '../../utils/locales'
-
-import { useTranslation } from 'react-i18next'
-
-type GroupFieldItemProps = {
-  field: Field
-  groupId: string
-  onRemove: (event: React.MouseEvent) => void
-}
-
-function GroupFieldItem({ field, onRemove }: GroupFieldItemProps) {
-  const { t } = useTranslation()
-  const setSelectedItem = useFormBuilderStore((state) => state.setSelectedItem)
-  const selectedItemId = useFormBuilderStore((state) => state.selectedItemId)
-  const isSelected = selectedItemId === field.id
-
-  const handleSelect = (event: React.MouseEvent) => {
-    event.stopPropagation()
-    setSelectedItem(field.id ?? null)
-  }
-
-  const selectedStyles = 'border-primary/50 ring-1 ring-primary/20 shadow-sm shadow-primary/5'
-  const defaultStyles = 'border-border/30 hover:border-primary/40 hover:shadow-xs'
-
-  return (
-    <div
-      className={`relative group/field rounded-xl border bg-card/80 p-4 transition-all duration-200 cursor-pointer ${isSelected ? selectedStyles : defaultStyles}`}
-      onClick={handleSelect}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') handleSelect(event as unknown as React.MouseEvent)
-      }}
-    >
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover/field:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 z-10 rounded-md"
-        onClick={onRemove}
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-      </Button>
-      <div className="pointer-events-none opacity-90">
-        {/* @ts-expect-error - dynamic key for translation */}
-        <FieldComponent {...field as Omit<typeof field, 'id'>} translate={(key: string) => String(t(key))} />
-      </div>
-    </div>
-  )
-}
-
-type GroupDropZoneProps = {
-  groupId: string
-}
-
-function GroupDropZone({ groupId }: GroupDropZoneProps) {
-  const dropRef = useRef<HTMLDivElement>(null)
-  const [isOver, setIsOver] = useState(false)
-
-  useEffect(() => {
-    const element = dropRef.current
-    if (!element) return
-
-    return dropTargetForElements({
-      element,
-      getData: () => ({ groupId }),
-      canDrop: ({ source }) => source.data.source === 'palette' || source.data.source === 'canvas',
-      onDragEnter: () => setIsOver(true),
-      onDragLeave: () => setIsOver(false),
-      onDrop: () => setIsOver(false),
-    })
-  }, [groupId])
-
-  return (
-    <div
-      ref={dropRef}
-      className={`rounded-xl border-2 border-dashed transition-all duration-200 py-6 flex items-center justify-center ${
-        isOver ? 'border-primary/50 bg-primary/10 shadow-inner' : 'border-border/40 bg-muted/20 hover:border-primary/30'
-      }`}
-    >
-      <p className="text-sm font-medium text-muted-foreground/60">
-        {isOver ? 'Drop field here' : 'Drop a field or use buttons below'}
-      </p>
-    </div>
-  )
-}
+import { attachClosestEdge, extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import { GripVertical, Trash2, Layers, ArrowUp, ArrowDown } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { useFieldGroupRenderer } from '@/playground/hooks/useFieldGroupRenderer'
+import { resolveLocalizedString } from '@/utils/locales'
+import type { Field } from '@/types/form'
+import { GroupFieldItem } from './GroupFieldItem'
+import { GroupDropZone } from './GroupDropZone'
 
 export type FieldGroupRendererProps = {
   groupId: string
@@ -110,32 +25,70 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
     handleRemoveFieldFromGroup,
   } = useFieldGroupRenderer(groupId)
 
-  const addColumnRowToGroup = useFormBuilderStore((state) => state.addColumnRowToGroup)
-
   const dragRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLButtonElement>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [isDragOver, setIsDragOver] = useState(false)
+  const [closestEdge, setClosestEdge] = useState<string | null>(null)
 
   useEffect(() => {
     const element = dragRef.current
     const handle = dragHandleRef.current
     if (!element || !handle) return
 
-    return draggable({
+    const cleanupDraggable = draggable({
       element,
       dragHandle: handle,
       getInitialData: () => ({ id: groupId, index, source: 'canvas' }),
       onDragStart: () => setIsDragging(true),
       onDrop: () => setIsDragging(false),
     })
+
+    const cleanupDropTarget = dropTargetForElements({
+      element,
+      getData: ({ input }) => {
+        return attachClosestEdge(
+          { id: groupId, index },
+          { element, input, allowedEdges: ['top', 'bottom', 'left', 'right'] }
+        )
+      },
+      onDragEnter: ({ self }) => {
+        setIsDragOver(true)
+        setClosestEdge(extractClosestEdge(self.data))
+      },
+      onDrag: ({ self }) => {
+        setClosestEdge(extractClosestEdge(self.data))
+      },
+      onDragLeave: () => {
+        setIsDragOver(false)
+        setClosestEdge(null)
+      },
+      onDrop: () => {
+        setIsDragOver(false)
+        setClosestEdge(null)
+      },
+    })
+
+    return () => {
+      cleanupDraggable()
+      cleanupDropTarget()
+    }
   }, [groupId, index])
 
   if (!group) return null
 
   const selectedStyles = 'border-primary/60 ring-2 ring-primary/15 shadow-md shadow-primary/5 bg-card/90'
   const defaultStyles = 'border-border/40 hover:border-primary/30 shadow-xs bg-card/70 hover:shadow-sm'
+  const dragOverStyles = 'border-primary/40 shadow-sm bg-card/80'
 
-  const borderClass = isSelected ? selectedStyles : defaultStyles
+  const borderClass = isSelected ? selectedStyles : isDragOver ? dragOverStyles : defaultStyles
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleSelectGroup(event)
+    }
+  }
 
   return (
     <div
@@ -148,9 +101,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
         onClick={handleSelectGroup}
         role="button"
         tabIndex={0}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') handleSelectGroup(event as unknown as React.MouseEvent)
-        }}
+        onKeyDown={handleKeyDown}
       >
         <button
           ref={dragHandleRef}
@@ -185,47 +136,42 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
       </div>
 
       {/* Group Body */}
-      <div className="p-5 space-y-4">
+      <div className={`p-5 grid gap-4 grid-cols-1 ${group.columns === 2 ? 'md:grid-cols-2' : ''} ${group.columns === 3 ? 'md:grid-cols-3' : ''} ${group.columns === 4 ? 'md:grid-cols-4' : ''}`}>
         {group.items.map((groupItem) => {
-          if (groupItem.kind === 'column_row') {
-            return (
-              <ColumnRowRenderer
-                key={(groupItem as ColumnRow).id}
-                rowId={(groupItem as ColumnRow).id}
-                index={0}
-                groupId={groupId}
-              />
-            )
+          if (groupItem.kind === 'field_group') {
+            return <FieldGroupRenderer key={groupItem.id} groupId={groupItem.id} index={0} />
           }
 
-          // Plain field
-          const field = groupItem as Field
           return (
             <GroupFieldItem
-              key={field.id}
-              field={field}
+              key={groupItem.id}
+              field={groupItem as Field}
               groupId={groupId}
-              onRemove={handleRemoveFieldFromGroup(field.id ?? '')}
+              onRemove={handleRemoveFieldFromGroup(groupItem.id)}
             />
           )
         })}
 
-        <GroupDropZone groupId={groupId} />
-
-        <div className="flex gap-3 pt-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="flex-1 border-dashed hover:border-violet-500/50 hover:bg-violet-500/5 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
-            onClick={() => addColumnRowToGroup(groupId)}
-          >
-            <Plus className="h-4 w-4 mr-1.5" />
-            Add 2-Column Row
-          </Button>
-        </div>
+        {(() => {
+          const emptySlots = group.columns ? Math.max(1, group.columns - group.items.length) : 1
+          return Array.from({ length: emptySlots }).map((_, i) => (
+            <GroupDropZone key={`dropzone-${i}`} groupId={groupId} />
+          ))
+        })()}
       </div>
+
+      {closestEdge === 'top' && (
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary rounded-t-2xl z-20 pointer-events-none" />
+      )}
+      {closestEdge === 'bottom' && (
+        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-primary rounded-b-2xl z-20 pointer-events-none" />
+      )}
+      {closestEdge === 'left' && (
+        <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-primary rounded-l-2xl z-20 pointer-events-none" />
+      )}
+      {closestEdge === 'right' && (
+        <div className="absolute top-0 bottom-0 right-0 w-1.5 bg-primary rounded-r-2xl z-20 pointer-events-none" />
+      )}
     </div>
   )
 }
-

@@ -4,7 +4,7 @@ import type { FieldType, Field } from '../../types/form'
 export function useFieldPalette() {
   const addField = useFormBuilderStore((state) => state.addField)
   const addGroup = useFormBuilderStore((state) => state.addGroup)
-  const addColumnRow = useFormBuilderStore((state) => state.addColumnRow)
+  const addRow = useFormBuilderStore((state) => state.addRow)
   const previewMode = useFormBuilderStore((state) => state.previewMode)
 
   const handleAddField = (type: FieldType, label: string) => {
@@ -22,14 +22,14 @@ export function useFieldPalette() {
     addGroup('Field Group')
   }
 
-  const handleAddColumnRow = () => {
-    addColumnRow()
+  const handleAddRow = () => {
+    addRow(2)
   }
 
   return {
     previewMode,
     handleAddField,
     handleAddGroup,
-    handleAddColumnRow,
+    handleAddRow,
   }
 }

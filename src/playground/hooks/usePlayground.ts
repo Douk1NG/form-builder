@@ -1,10 +1,10 @@
 import { useState, type KeyboardEvent } from 'react'
-import { useFormBuilderStore } from '../store/useFormBuilderStore'
+import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 
 export function usePlayground() {
   const formId = useFormBuilderStore((state) => state.formId)
   const formTitle = useFormBuilderStore((state) => state.formTitle)
-  const createForm = useFormBuilderStore((state) => state.createForm)
+  const createForm = useFormBuilderStore((state) => state.createNewForm)
   const setPreviewMode = useFormBuilderStore((state) => state.setPreviewMode)
   const previewMode = useFormBuilderStore((state) => state.previewMode)
   const getFormSchema = useFormBuilderStore((state) => state.getFormSchema)
@@ -37,11 +37,11 @@ export function usePlayground() {
     const fileBlob = new Blob([jsonString], { type: 'application/json' })
     const fileUrl = URL.createObjectURL(fileBlob)
     const downloadAnchor = document.createElement('a')
-    
+
     downloadAnchor.href = fileUrl
     downloadAnchor.download = `${currentForm.title || 'form'}.json`
     downloadAnchor.click()
-    
+
     URL.revokeObjectURL(fileUrl)
   }
 

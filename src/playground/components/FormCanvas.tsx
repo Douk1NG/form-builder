@@ -4,12 +4,11 @@ import { MousePointerClick } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useFormCanvas } from '../hooks/useFormCanvas'
 import { FieldRenderer } from './FieldRenderer'
-import { ColumnRowRenderer } from './ColumnRowRenderer'
 import { FieldGroupRenderer } from './FieldGroupRenderer'
 import FormBuilder from '../../components/form'
 import { InheritanceProvider } from '../../context/InheritanceProvider'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
-import type { FormSchema } from '../store/useFormBuilderStore'
+import type { FormSchema } from '@/playground/store/slices/CanvasItems'
 import type { CanvasItem, ActionResponse } from '../../types/form'
 
 type PreviewFormRendererProps = {
@@ -68,9 +67,6 @@ function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: PreviewFormR
 function CanvasItemRenderer({ item, index }: { item: CanvasItem; index: number }) {
   if (item.kind === 'field') {
     return <FieldRenderer id={item.id ?? ''} index={index} />
-  }
-  if (item.kind === 'column_row') {
-    return <ColumnRowRenderer rowId={item.id} index={index} />
   }
   if (item.kind === 'field_group') {
     return <FieldGroupRenderer groupId={item.id} index={index} />

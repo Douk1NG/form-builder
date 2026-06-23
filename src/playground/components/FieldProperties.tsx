@@ -1,4 +1,4 @@
-import { Settings2, Layers, Columns2, Maximize2, Minimize2 } from 'lucide-react'
+import { Settings2, Layers, Maximize2, Minimize2 } from 'lucide-react'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import { Button } from '../../components/ui/button'
 import { useFieldProperties } from '../hooks/useFieldProperties'
@@ -22,28 +22,22 @@ function EmptyPropertiesPanel() {
   )
 }
 
-function GroupPropertiesPanel({ groupLabel, onLabelChange }: { groupLabel: LocalizedString; onLabelChange: (val: LocalizedString) => void }) {
+type GroupPropertiesPanelProps = {
+  groupLabel: LocalizedString | undefined
+  onLabelChange: (value: LocalizedString) => void
+}
+
+function GroupPropertiesPanel({ groupLabel, onLabelChange }: GroupPropertiesPanelProps) {
   return (
     <div className="space-y-5">
       <PropertiesSectionHeader icon={<Layers className="w-5 h-5" />} title="Group Properties" accentColor="violet" />
       <LocalizedInput
         id="group-label"
         label="Group Label"
-        value={groupLabel}
+        value={groupLabel ?? ''}
         onChange={onLabelChange}
-        placeholder="Group label..."
+        placeholder="Group label (optional)..."
       />
-    </div>
-  )
-}
-
-function ColumnRowPropertiesPanel() {
-  return (
-    <div className="space-y-5">
-      <PropertiesSectionHeader icon={<Columns2 className="w-5 h-5" />} title="Column Row" accentColor="violet" />
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        This is a 2-column layout row. Drag fields from the palette onto the left and right slots to fill the columns.
-      </p>
     </div>
   )
 }
@@ -88,7 +82,7 @@ export function FieldProperties() {
     handleUpdateReadOnly,
     handleUpdateDisabled,
     handleUpdateOptions,
-    handleUpdateGroupLabel,
+    handleUpdateGroupLabel
   } = useFieldProperties()
 
   const isPropertiesExpanded = useFormBuilderStore((state) => state.isPropertiesExpanded)
@@ -112,15 +106,6 @@ export function FieldProperties() {
           groupLabel={selectedGroup.label}
           onLabelChange={handleUpdateGroupLabel}
         />
-      </div>
-    )
-  }
-
-  if (selectedKind === 'column_row') {
-    return (
-      <div className="relative">
-        <div className="absolute top-0 right-0 z-20">{expandToggle}</div>
-        <ColumnRowPropertiesPanel />
       </div>
     )
   }

@@ -92,19 +92,8 @@ export type Field =
 export type Fields = Field[];
 
 /**
- * A row that renders two fields side-by-side in a 2-column layout.
- * Slots hold a plain Field or null (empty slot).
- */
-export type ColumnRow = {
-    id: string;
-    kind: 'column_row';
-    leftField: Field | null;
-    rightField: Field | null;
-};
-
-/**
  * A canvas-aware field — a plain Field tagged with kind:'field' so it can
- * participate in discriminated unions alongside ColumnRow and FieldGroup.
+ * participate in discriminated unions alongside FieldGroup.
  */
 export type CanvasField = Field & {
     id: string;
@@ -112,20 +101,21 @@ export type CanvasField = Field & {
 };
 
 /**
- * A named group section containing canvas fields and/or column rows.
+ * A named group section containing canvas fields and/or other nested groups.
  * All items carry a `kind` so they can be discriminated at runtime.
  */
 export type FieldGroup = {
     id: string;
     kind: 'field_group';
-    label: LocalizedString;
-    items: Array<CanvasField | ColumnRow>;
+    label?: LocalizedString;
+    columns?: number;
+    items: Array<CanvasField | FieldGroup>;
 };
 
 /**
  * Any item that can appear at the top level of the canvas.
  */
-export type CanvasItem = CanvasField | ColumnRow | FieldGroup;
+export type CanvasItem = CanvasField | FieldGroup;
 
 export type FormProps = {
     fields: Array<Field | CanvasItem>;
