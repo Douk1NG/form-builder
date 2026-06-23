@@ -40,5 +40,22 @@
     "description": "Description",
     "options": "Options",
     "required": "Required"
+  },
+  "form": {
+    "submit": "Save",
+    "submitting": "Saving...",
+    "tagbox": {
+      "add": "Add",
+      "remove": "Remove",
+      "validation": {
+        "duplicateTag": {
+          "title": "Duplicate tag",
+          "description": "This tag already exists"
+        }
+      }
+    },
+    "validation": {
+      "error": "Error"
+    }
   }
 }

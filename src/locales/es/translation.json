@@ -40,5 +40,22 @@
     "description": "Descripción",
     "options": "Opciones",
     "required": "Requerido"
+  },
+  "form": {
+    "submit": "Guardar",
+    "submitting": "Guardando...",
+    "tagbox": {
+      "add": "Añadir",
+      "remove": "Quitar",
+      "validation": {
+        "duplicateTag": {
+          "title": "Etiqueta duplicada",
+          "description": "Esta etiqueta ya existe"
+        }
+      }
+    },
+    "validation": {
+      "error": "Error"
+    }
   }
 }

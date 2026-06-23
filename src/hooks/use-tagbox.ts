@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react'
-import type { Tag } from '../types/tagbox'
+import type { Tag, TagboxValidationError } from '../types/tagbox'
 
 export const useTagbox = (
     initialTags: Tag[] = [], 
-    onError?: (error: string) => void,
+    onError?: (error: TagboxValidationError) => void,
     translate: (key: string) => string = (key) => key
 ) => {
     const [tags, setTags] = useState<Tag[]>(initialTags)
@@ -19,7 +19,10 @@ export const useTagbox = (
     }), [])
 
     const showDuplicateError = useCallback(() => {
-        onError?.(translate('layout.form.tagbox.validation.unique.description'))
+        onError?.({
+            title: translate('form.tagbox.validation.duplicateTag.title'),
+            description: translate('form.tagbox.validation.duplicateTag.description'),
+        })
     }, [onError, translate])
 
     const addTag = useCallback(() => {

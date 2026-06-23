@@ -4,9 +4,12 @@ import { cn } from '../../lib/utils'
 type FieldErrorProps = {
     error?: string
     className?: string
+    translate?: (key: string) => string
 }
 
-const FieldError = ({ error, className }: FieldErrorProps) => {
+const defaultTranslate = (key: string) => key
+
+const FieldError = ({ error, className, translate = defaultTranslate }: FieldErrorProps) => {
     if (!error) return null
 
     return (
@@ -17,7 +20,7 @@ const FieldError = ({ error, className }: FieldErrorProps) => {
             )}
         >
             <CircleX className="h-4 w-4" />
-            {error}
+            {translate(error)}
         </p>
 
     )

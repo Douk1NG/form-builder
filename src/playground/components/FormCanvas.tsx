@@ -19,6 +19,7 @@ type PreviewFormRendererProps = {
 
 function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: PreviewFormRendererProps) {
   const previewLocale = useFormBuilderStore((state) => state.previewLocale)
+  const { t } = useTranslation()
 
   return (
     <div className="max-w-3xl p-8 mx-auto border rounded-2xl shadow-lg shadow-black/5 bg-card/90 backdrop-blur-md border-border/50">
@@ -26,6 +27,8 @@ function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: PreviewFormR
         fields={currentFormSchema.items}
         values={{}}
         locale={previewLocale}
+        // @ts-expect-error - dynamic key for translation
+        translate={(key: string) => String(t(key))}
         action={simulateSubmit}
         isCreating={true}
       />

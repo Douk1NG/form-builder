@@ -9,6 +9,8 @@ import { ColumnRowRenderer } from './ColumnRowRenderer'
 import type { Field, ColumnRow } from '../../types/form'
 import { resolveLocalizedString } from '../../utils/locales'
 
+import { useTranslation } from 'react-i18next'
+
 type GroupFieldItemProps = {
   field: Field
   groupId: string
@@ -16,6 +18,7 @@ type GroupFieldItemProps = {
 }
 
 function GroupFieldItem({ field, onRemove }: GroupFieldItemProps) {
+  const { t } = useTranslation()
   const setSelectedItem = useFormBuilderStore((state) => state.setSelectedItem)
   const selectedItemId = useFormBuilderStore((state) => state.selectedItemId)
   const isSelected = selectedItemId === field.id
@@ -48,7 +51,8 @@ function GroupFieldItem({ field, onRemove }: GroupFieldItemProps) {
         <Trash2 className="h-3.5 w-3.5" />
       </Button>
       <div className="pointer-events-none opacity-90">
-        <FieldComponent {...field as Omit<typeof field, 'id'>} />
+        {/* @ts-expect-error - dynamic key for translation */}
+        <FieldComponent {...field as Omit<typeof field, 'id'>} translate={(key: string) => String(t(key))} />
       </div>
     </div>
   )

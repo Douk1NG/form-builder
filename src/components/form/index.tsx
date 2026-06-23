@@ -18,6 +18,7 @@ const FormBuilder = ({
     values,
     locale = 'en',
     translate = (key) => key,
+    submitLabel,
     action,
     onEditModeChange,
     isEditing,
@@ -64,7 +65,8 @@ const FormBuilder = ({
                     translate={translate}
                 />
                 <FieldError
-                    {...(state?.errors?.[item.name]?.at(0) ? { error: state.errors[item.name]?.[0] ?? '' } : {})}
+                    {...(state?.errors?.[item.name]?.at(0) ? { error: resolveLocalizedString(state.errors[item.name]?.[0], locale) } : {})}
+                    translate={translate}
                 />
             </div>
         )
@@ -123,11 +125,15 @@ const FormBuilder = ({
                     ))}
                 </div>
                 {showFailMessage &&
-                    (<FormAlert message={state.message} />)
+                    (<FormAlert message={resolveLocalizedString(state.message, locale)} translate={translate} />)
                 }
                 {!isDetail &&
                     (<div className="pt-4 border-t border-border/50">
-                        <FormSubmitButton isPending={isPending} translate={translate} />
+                        <FormSubmitButton
+                            isPending={isPending}
+                            label={submitLabel ? resolveLocalizedString(submitLabel, locale) : undefined}
+                            translate={translate}
+                        />
                     </div>)
                 }
             </form>

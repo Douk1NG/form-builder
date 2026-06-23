@@ -7,12 +7,15 @@ import type { TagboxField } from '../../../../types/form'
 import type { Tag } from '../../../../types/tagbox'
 import { resolveLocalizedString } from '../../../../utils/locales';
 
+const defaultTranslate = (key: string) => key
+
 export default function Tagbox({
     name,
     value = [],
     placeholder = '',
     readOnly = false,
-    options = []
+    options = [],
+    translate = defaultTranslate
 }: TagboxField) {
     const {
         tags,
@@ -22,12 +25,7 @@ export default function Tagbox({
         handleKeyDown,
         addTag,
         removeTag
-    } = useTagbox(value as Tag[])
-
-    const translations = {
-        add: 'Add',
-        remove: 'Remove'
-    }
+    } = useTagbox(value as Tag[], undefined, translate)
 
     const datalistId = `${name}-options`
 
@@ -58,7 +56,7 @@ export default function Tagbox({
                     disabled={isInputEmpty}
                     className="cursor-pointer"
                 >
-                    {translations.add}
+                    {translate('form.tagbox.add')}
                 </Button>
             </div>
             <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-25">
@@ -75,7 +73,7 @@ export default function Tagbox({
                             variant="ghost"
                             className="h-4 w-4 p-0 hover:bg-primary-foreground hover:text-primary cursor-pointer"
                             onClick={() => removeTag(tag.label)}
-                            title={translations.remove}
+                            title={translate('form.tagbox.remove')}
                             disabled={readOnly}
                         >
                             <CircleX height={16} width={16} />
@@ -91,3 +89,4 @@ export default function Tagbox({
         </div>
     )
 }
+

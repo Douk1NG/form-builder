@@ -6,6 +6,8 @@ import { useColumnRowRenderer } from '../hooks/useColumnRowRenderer'
 import FieldComponent from '../../components/form/field'
 import type { Field } from '../../types/form'
 
+import { useTranslation } from 'react-i18next'
+
 type ColumnSlotProps = {
   slot: 'leftField' | 'rightField'
   field: Field | null
@@ -15,6 +17,7 @@ type ColumnSlotProps = {
 }
 
 function ColumnSlot({ slot, field, rowId, groupId, onRemoveField }: ColumnSlotProps) {
+  const { t } = useTranslation()
   const dropRef = useRef<HTMLDivElement>(null)
   const [isOver, setIsOver] = useState(false)
 
@@ -54,7 +57,8 @@ function ColumnSlot({ slot, field, rowId, groupId, onRemoveField }: ColumnSlotPr
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
           <div className="pointer-events-none opacity-90">
-            <FieldComponent {...field as Omit<typeof field, 'id'>} />
+            {/* @ts-expect-error - dynamic key for translation */}
+            <FieldComponent {...field as Omit<typeof field, 'id'>} translate={(key: string) => String(t(key))} />
           </div>
         </>
       ) : (

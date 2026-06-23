@@ -3,9 +3,9 @@ import type { Option } from './select';
 
 export type ActionResponse = {
     success: boolean;
-    message: string;
+    message: LocalizedString;
     errors?: {
-        [x: string]: string[] | undefined;
+        [x: string]: LocalizedString[] | undefined;
     };
     data: Record<string, unknown>;
 }
@@ -29,6 +29,7 @@ export type BaseField = {
     onChange?: (value: unknown) => void;
     defaultValue?: unknown;
     disabled?: boolean;
+    translate?: (key: string) => string;
 }
 
 export type WithOptions = {
@@ -131,6 +132,7 @@ export type FormProps = {
     values: Record<string, unknown>;
     locale?: string;
     translate?: (key: string) => string;
+    submitLabel?: LocalizedString;
     action: (id: string | undefined, prevState: ActionResponse | null, formData: FormData) => Promise<ActionResponse>;
     onEditModeChange?: (editing: boolean) => void;
     isEditing?: boolean;
