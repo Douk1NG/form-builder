@@ -85,7 +85,7 @@ function EmptyCanvasPlaceholder() {
       </div>
       <p className="text-base font-semibold text-foreground/60">{t('builder.dragDropTitle' as any)}</p>
       <p className="text-sm mt-1.5 text-muted-foreground/70 max-w-xs">
-        {t('builder.dragDropDescription' as any)}
+        {t('builder.dragDropDescription')}
       </p>
     </div>
   )

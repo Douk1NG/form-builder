@@ -57,5 +57,17 @@
     "validation": {
       "error": "Error"
     }
+  },
+  "playground": {
+    "fields": {
+      "group": {
+        "status": {
+          "locked": "Bloqueado",
+          "unlock": "Desbloquear grupo",
+          "lock": "Bloquear grupo — se añadirán nuevos campos aquí",
+          "add-two-column-row-btn": "Añadir fila de 2 columnas"
+        }
+      }
+    }
   }
 }

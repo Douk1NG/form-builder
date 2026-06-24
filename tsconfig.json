@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "strict": true,
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "target": "es2022",
     "module": "esnext",
     "lib": [
@@ -32,6 +36,7 @@
     }
   },
   "include": [
-    "src"
+    "src",
+    "i18n.d.ts"
   ]
 }

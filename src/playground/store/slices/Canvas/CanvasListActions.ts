@@ -31,11 +31,13 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         if (!formId) return
 
         const id = crypto.randomUUID()
-        const newGroup: FieldGroup = { id, kind: 'field_group', label, columns: 2, items: [] }
+        const newGroup: FieldGroup = { id, kind: 'field_group', label, items: [] }
 
         set({
             itemIds: [...itemIds, id],
             itemsData: { ...itemsData, [id]: newGroup },
+            lockedGroupId: id,
+            selectedItemId: id,
         })
     },
 
@@ -53,17 +55,39 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
     },
 
     removeCanvasItem: (itemId) => {
-        const { formId, itemIds, itemsData, selectedItemId } = get()
+        const { formId, itemIds, itemsData, selectedItemId, lockedGroupId } = get()
         if (!formId) return
 
-        const newItemIds = itemIds.filter((id) => id !== itemId)
+        if (itemsData[itemId]) {
+            const newItemIds = itemIds.filter((id) => id !== itemId)
+            const newItemsData = { ...itemsData }
+            delete newItemsData[itemId]
+
+            set({
+                itemIds: newItemIds,
+                itemsData: newItemsData,
+                selectedItemId: selectedItemId === itemId ? null : selectedItemId,
+                lockedGroupId: lockedGroupId === itemId ? null : lockedGroupId,
+            })
+            return
+        }
+
         const newItemsData = { ...itemsData }
-        delete newItemsData[itemId]
+        for (const parentId of Object.keys(newItemsData)) {
+            const parent = newItemsData[parentId]
+            if (parent.kind === 'field_group') {
+                const filtered = parent.items.filter((child) => child.id !== itemId)
+                if (filtered.length !== parent.items.length) {
+                    newItemsData[parentId] = { ...parent, items: filtered }
+                    break
+                }
+            }
+        }
 
         set({
-            itemIds: newItemIds,
             itemsData: newItemsData,
             selectedItemId: selectedItemId === itemId ? null : selectedItemId,
+            lockedGroupId: lockedGroupId === itemId ? null : lockedGroupId,
         })
     },
 

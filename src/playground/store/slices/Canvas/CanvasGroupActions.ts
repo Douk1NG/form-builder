@@ -7,10 +7,12 @@ export type CanvasGroupActions = {
     updateField: (fieldId: string, updates: Partial<Field>) => void
     updateGroup: (groupId: string, updates: Partial<Pick<FieldGroup, 'label' | 'columns'>>) => void
     addFieldToGroup: (groupId: string, field: Omit<Field, 'id'>) => void
+    addRowToGroup: (groupId: string) => void
     removeFieldFromGroup: (groupId: string, fieldId: string) => void
     createGroupFromDrop: (sourceId: string, targetId: string, side: 'left' | 'right') => void
     createGroupWithNewField: (targetId: string, field: Omit<Field, 'id'>, side: 'left' | 'right') => void
     moveFieldToGroup: (fieldId: string, groupId: string) => void
+    mergeGroupIntoGroup: (sourceGroupId: string, targetGroupId: string) => void
 }
 
 export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], CanvasGroupActions> = (set, get) => ({
@@ -68,6 +70,29 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
             itemsData: {
                 ...itemsData,
                 [groupId]: { ...existingItem, items: [...existingItem.items, newField] },
+            },
+        })
+    },
+
+    addRowToGroup: (groupId) => {
+        const { formId, itemsData } = get()
+        if (!formId) return
+
+        const existingItem = itemsData[groupId]
+        if (!existingItem || existingItem.kind !== 'field_group') return
+
+        const rowId = crypto.randomUUID()
+        const newRow: FieldGroup = {
+            id: rowId,
+            kind: 'field_group',
+            columns: 2,
+            items: [],
+        }
+
+        set({
+            itemsData: {
+                ...itemsData,
+                [groupId]: { ...existingItem, items: [...existingItem.items, newRow] },
             },
         })
     },
@@ -188,6 +213,29 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
                 ...itemsData,
                 [groupId]: { ...groupItem, items: updatedGroupItems },
             },
+        })
+    },
+
+    mergeGroupIntoGroup: (sourceGroupId, targetGroupId) => {
+        const { formId, itemIds, itemsData } = get()
+        if (!formId) return
+
+        const sourceGroup = itemsData[sourceGroupId]
+        const targetGroup = itemsData[targetGroupId]
+
+        if (!sourceGroup || !targetGroup) return
+        if (sourceGroup.kind !== 'field_group' || targetGroup.kind !== 'field_group') return
+
+        const mergedItems = [...targetGroup.items, ...sourceGroup.items]
+
+        const newItemIds = itemIds.filter((id) => id !== sourceGroupId)
+        const newItemsData = { ...itemsData }
+        delete newItemsData[sourceGroupId]
+        newItemsData[targetGroupId] = { ...targetGroup, items: mergedItems }
+
+        set({
+            itemIds: newItemIds,
+            itemsData: newItemsData,
         })
     },
 })

@@ -25,7 +25,7 @@ export function LocalizedInput({ id, value, onChange, placeholder, label }: Loca
   const toggleLocalization = () => {
     if (isLocalized) {
       // Convert back to single string (take 'en' or first value or empty)
-      const newValue = typeof value === 'object' && value !== null 
+      const newValue = typeof value === 'object' && value !== null
         ? (value['en'] || Object.values(value)[0] || '')
         : (value || '')
       onChange(newValue as string)
@@ -52,10 +52,10 @@ export function LocalizedInput({ id, value, onChange, placeholder, label }: Loca
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         {label && <Label htmlFor={id} className="text-sm font-medium">{label}</Label>}
-        <Button 
-          type="button" 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
           className={`h-6 px-2 text-xs ${isLocalized ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}
           onClick={toggleLocalization}
           title="Toggle Translations"

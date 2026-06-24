@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { attachClosestEdge, extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import type { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types'
-import { Button } from '../../components/ui/button'
-import { ArrowUp, ArrowDown, Trash2, GripVertical } from 'lucide-react'
+import { GripVertical } from 'lucide-react'
+import { LEFT, RIGHT } from '@/playground/constants/edgeConstants'
+import { useEdgeDraggable } from '@/playground/hooks/useEdgeDraggable'
+import { useCanvasFieldWrapper } from '@/playground/hooks/useCanvasFieldWrapper'
+import { FieldActionToolbar } from '@/playground/components/FieldActionToolbar'
 
 export type CanvasFieldWrapperProps = {
   id: string
@@ -26,78 +25,39 @@ export function CanvasFieldWrapper({
   onRemove,
   children
 }: CanvasFieldWrapperProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const dragHandleRef = useRef<HTMLButtonElement>(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const [isDragOver, setIsDragOver] = useState(false)
-  const [closestEdge, setClosestEdge] = useState<Edge | null>(null)
+  const {
+    elementRef: wrapperRef,
+    dragHandleRef,
+    isDragging,
+    isDragOver,
+    closestEdge
+  } = useEdgeDraggable({
+    id,
+    index,
+    allowedEdges: [LEFT, RIGHT]
+  })
 
-  useEffect(() => {
-    const element = wrapperRef.current
-    const handle = dragHandleRef.current
-    if (!element || !handle) return
-
-    const cleanupDraggable = draggable({
-      element,
-      dragHandle: handle,
-      getInitialData: () => ({ id, index, source: 'canvas' }),
-      onDragStart: () => setIsDragging(true),
-      onDrop: () => setIsDragging(false),
-    })
-
-    const cleanupDropTarget = dropTargetForElements({
-      element,
-      getData: ({ input }) => {
-        return attachClosestEdge(
-          { id, index },
-          { element, input, allowedEdges: ['left', 'right'] }
-        )
-      },
-      onDragEnter: ({ self }) => {
-        setIsDragOver(true)
-        setClosestEdge(extractClosestEdge(self.data))
-      },
-      onDrag: ({ self }) => {
-        setClosestEdge(extractClosestEdge(self.data))
-      },
-      onDragLeave: () => {
-        setIsDragOver(false)
-        setClosestEdge(null)
-      },
-      onDrop: () => {
-        setIsDragOver(false)
-        setClosestEdge(null)
-      },
-    })
-
-    return () => {
-      cleanupDraggable()
-      cleanupDropTarget()
-    }
-  }, [id, index])
-
-  const selectedStyles = 'border-primary/60 ring-2 ring-primary/15 shadow-md shadow-primary/5 bg-card'
-  const dragOverStyles = 'border-primary/40 border-t-4 shadow-sm bg-card/70'
-  const defaultStyles = 'border-border/40 hover:border-primary/30 shadow-xs bg-card/80 hover:shadow-sm'
-
-  const borderClass = isSelected
-    ? selectedStyles
-    : isDragOver
-      ? dragOverStyles
-      : defaultStyles
+  const {
+    isLeftEdge,
+    isRightEdge,
+    draggingClassName,
+    borderClass,
+    handleOnKeyDown
+  } = useCanvasFieldWrapper({
+    closestEdge,
+    isSelected,
+    isDragOver,
+    isDragging
+  })
 
   return (
     <div
       ref={wrapperRef}
-      className={`relative group p-5 pl-12 rounded-xl border transition-all duration-200 cursor-pointer backdrop-blur-sm ${borderClass} ${isDragging ? 'opacity-40 scale-[0.98] shadow-none border-dashed' : ''}`}
+      className={`relative group p-5 pl-12 rounded-xl border transition-all duration-200 cursor-pointer backdrop-blur-sm ${borderClass} ${draggingClassName}`}
       onClick={onSelect}
       role="button"
       tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          onSelect()
-        }
-      }}
+      onKeyDown={(event) => handleOnKeyDown(event, onSelect)}
     >
       <button
         ref={dragHandleRef}
@@ -117,50 +77,12 @@ export function CanvasFieldWrapper({
         {children}
       </div>
 
-      {closestEdge === 'left' && (
+      {isLeftEdge && (
         <div className="absolute top-0 bottom-0 left-0 w-2 bg-primary rounded-l-xl z-20" />
       )}
-      {closestEdge === 'right' && (
+      {isRightEdge && (
         <div className="absolute top-0 bottom-0 right-0 w-2 bg-primary rounded-r-xl z-20" />
       )}
-    </div>
-  )
-}
-
-type FieldActionToolbarProps = {
-  onMoveUp: (event: React.MouseEvent) => void
-  onMoveDown: (event: React.MouseEvent) => void
-  onRemove: (event: React.MouseEvent) => void
-}
-
-function FieldActionToolbar({ onMoveUp, onMoveDown, onRemove }: FieldActionToolbarProps) {
-  return (
-    <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1 z-10">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-7 w-7 rounded-md hover:bg-muted"
-        onClick={onMoveUp}
-      >
-        <ArrowUp className="h-3.5 w-3.5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-7 w-7 rounded-md hover:bg-muted"
-        onClick={onMoveDown}
-      >
-        <ArrowDown className="h-3.5 w-3.5" />
-      </Button>
-      <div className="w-px h-4 bg-border mx-0.5" />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-7 w-7 rounded-md text-destructive hover:text-destructive hover:bg-destructive/10"
-        onClick={onRemove}
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-      </Button>
     </div>
   )
 }

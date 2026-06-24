@@ -57,5 +57,72 @@
     "validation": {
       "error": "Error"
     }
+  },
+  "playground": {
+    "fields": {
+      "group": {
+        "status": {
+          "locked": "Locked",
+          "unlock": "Unlock group",
+          "lock": "Lock group — new fields will be added here",
+          "add-two-column-row-btn": "Add 2-Column Row"
+        }
+      }
+    },
+    "properties": {
+      "title": "Properties",
+      "emptyPlaceholder": "Select a field in the canvas to edit its properties",
+      "group": {
+        "title": "Group Properties",
+        "label": "Label",
+        "placeholder": "Group label (optional)..."
+      },
+      "tabs": {
+        "basic": "Basic",
+        "behavior": "Behavior",
+        "data": "Data"
+      },
+      "basic": {
+        "label": {
+          "title": "Label",
+          "placeholder": "Field label"
+        },
+        "name": {
+          "title": "Name",
+          "placeholder": "Field name"
+        },
+        "description": {
+          "title": "Description",
+          "placeholder": "Helper text..."
+        },
+        "placeholder": {
+          "title": "Placeholder",
+          "placeholder": "Placeholder text..."
+        }
+      },
+      "behavior": {
+        "readonly": {
+          "title": "Read Only",
+          "description": "Prevent user input"
+        },
+        "disabled": {
+          "title": "Disabled",
+          "description": "Disable field interaction"
+        }
+      },
+      "data": {
+        "options": "Options",
+        "addOption": "Add Option",
+        "noOptions": "No options defined"
+      }
+    },
+    "controls": {
+      "layout": {
+        "title": "Layout & Structure",
+        "group": "Field Group",
+        "twoColumnRow": "2 Columns"
+      },
+      "fields": "Fields"
+    }
   }
 }

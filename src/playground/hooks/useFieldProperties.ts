@@ -92,12 +92,6 @@ export function useFieldProperties() {
     }
   }
 
-  const handleUpdateGroupColumns = (columns: number) => {
-    if (selectedItemId && selectedKind === 'field_group') {
-      updateGroup(selectedItemId, { columns })
-    }
-  }
-
   return {
     formId,
     previewMode,
@@ -112,6 +106,5 @@ export function useFieldProperties() {
     handleUpdateDisabled,
     handleUpdateOptions,
     handleUpdateGroupLabel,
-    handleUpdateGroupColumns,
   }
 }

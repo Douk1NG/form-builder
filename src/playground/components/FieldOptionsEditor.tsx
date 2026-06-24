@@ -4,6 +4,7 @@ import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { CircleX, Plus } from 'lucide-react'
 import type { Option } from '../../types/select'
+import { useTranslation } from 'react-i18next'
 
 type FieldOptionsEditorProps = {
   options?: Option[]
@@ -19,19 +20,25 @@ export function FieldOptionsEditor({ options = [], onChange, disabled }: FieldOp
     handleUpdateOption,
   } = useFieldOptionsEditor(options, onChange)
 
+  const { t: translations } = useTranslation(
+    'translation',
+    { keyPrefix: 'playground.properties.data' }
+  )
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label>Options</Label>
+        <Label>{translations('options')}</Label>
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={handleAddOption}
           disabled={disabled}
+          className='cursor-pointer'
         >
           <Plus className="h-4 w-4 mr-1" />
-          Add Option
+          {translations('addOption')}
         </Button>
       </div>
 
@@ -63,7 +70,7 @@ export function FieldOptionsEditor({ options = [], onChange, disabled }: FieldOp
         ))}
         {currentOptions.length === 0 && (
           <div className="text-sm text-muted-foreground text-center py-2 border border-dashed rounded-md">
-            No options defined
+            {translations('noOptions')}
           </div>
         )}
       </div>

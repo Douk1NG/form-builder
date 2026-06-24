@@ -17,6 +17,8 @@ export function useFormCanvas() {
   const createGroupFromDrop = useFormBuilderStore((state) => state.createGroupFromDrop)
   const createGroupWithNewField = useFormBuilderStore((state) => state.createGroupWithNewField)
   const moveFieldToGroup = useFormBuilderStore((state) => state.moveFieldToGroup)
+  const mergeGroupIntoGroup = useFormBuilderStore((state) => state.mergeGroupIntoGroup)
+  const itemsData = useFormBuilderStore((state) => state.itemsData)
 
   useEffect(() => {
     return monitorForElements({
@@ -30,11 +32,12 @@ export function useFormCanvas() {
 
         if (sourceData.source === 'palette') {
           if (sourceData.type === 'field_group' || sourceData.type === 'column_row') {
+            const isColumnRow = sourceData.type === 'column_row'
             const newGroup = {
               id: crypto.randomUUID(),
               kind: 'field_group' as const,
-              label: sourceData.type === 'column_row' ? '2 Columns Row' : 'Field Group',
-              columns: 2,
+              label: isColumnRow ? '2 Columns Row' : 'Field Group',
+              ...(isColumnRow ? { columns: 2 } : {}),
               items: [],
             };
 
@@ -63,17 +66,28 @@ export function useFormCanvas() {
             }
           }
         } else if (sourceData.source === 'canvas') {
+          const sourceId = sourceData.id as string
+          const sourceItem = itemsData[sourceId]
+          const targetId = destData.id as string
+          const targetItem = targetId ? itemsData[targetId] : null
+
           if (typeof destData.groupId === 'string') {
-            moveFieldToGroup(sourceData.id as string, destData.groupId as string)
+            if (sourceItem?.kind === 'field_group' && destData.groupId) {
+              mergeGroupIntoGroup(sourceId, destData.groupId as string)
+            } else {
+              moveFieldToGroup(sourceId, destData.groupId as string)
+            }
+          } else if (sourceItem?.kind === 'field_group' && targetItem?.kind === 'field_group') {
+            mergeGroupIntoGroup(sourceId, targetId)
           } else if (edge === 'left' || edge === 'right') {
-            createGroupFromDrop(sourceData.id as string, destData.id as string, edge)
+            createGroupFromDrop(sourceId, destData.id as string, edge)
           } else if (typeof sourceData.index === 'number' && typeof destData.index === 'number') {
             moveItem(sourceData.index as number, destData.index as number)
           }
         }
       },
     })
-  }, [addField, insertItemAt, moveItem, addFieldToGroup, createGroupFromDrop, createGroupWithNewField, moveFieldToGroup])
+  }, [addField, insertItemAt, moveItem, addFieldToGroup, createGroupFromDrop, createGroupWithNewField, moveFieldToGroup, mergeGroupIntoGroup, itemsData, itemIds])
 
   const simulateSubmit = async () => {
     return { success: true, message: 'Simulated submission', data: {} }
