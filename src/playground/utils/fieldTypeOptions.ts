@@ -1,19 +1,20 @@
 import type { FieldType } from '@/types/form'
+import type { IconName } from 'lucide-react/dynamic'
 
 export type FieldTypeOption = {
     type: FieldType
     label: string
-    icon: string
+    icon: IconName
 }
 
 export const fieldTypeOptions: FieldTypeOption[] = [
-    { type: 'text', label: 'Text Input', icon: 'Type' },
-    { type: 'textarea', label: 'Text Area', icon: 'AlignLeft' },
-    { type: 'number', label: 'Number', icon: 'Hash' },
-    { type: 'select', label: 'Select', icon: 'List' },
-    { type: 'multiselect', label: 'Multi Select', icon: 'ListChecks' },
-    { type: 'currency', label: 'Currency', icon: 'DollarSign' },
-    { type: 'switch', label: 'Switch', icon: 'ToggleRight' },
-    { type: 'tagbox', label: 'Tags', icon: 'Tags' },
-    { type: 'image', label: 'Image Upload', icon: 'Image' },
+    { type: 'text', label: 'Text Input', icon: 'type' },
+    { type: 'textarea', label: 'Text Area', icon: 'align-left' },
+    { type: 'number', label: 'Number', icon: 'hash' },
+    { type: 'select', label: 'Select', icon: 'list' },
+    { type: 'multiselect', label: 'Multi Select', icon: 'list-checks' },
+    { type: 'currency', label: 'Currency', icon: 'dollar-sign' },
+    { type: 'switch', label: 'Switch', icon: 'toggle-right' },
+    { type: 'tagbox', label: 'Tags', icon: 'tags' },
+    { type: 'image', label: 'Image Upload', icon: 'image' },
 ]

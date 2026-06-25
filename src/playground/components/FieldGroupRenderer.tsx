@@ -111,13 +111,28 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
             onClick={handleToggleLock}
             title={lockGroupTranslationLabel}
           >
-            {isLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
+            {isLocked ?
+              <Lock className="h-3.5 w-3.5" /> :
+              <Unlock className="h-3.5 w-3.5" />
+            }
           </Button>
           <div className="w-px h-4 bg-border mx-0.5" />
-          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md hover:bg-muted" onClick={handleMoveUp}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 rounded-md hover:bg-muted"
+            onClick={handleMoveUp}
+          >
             <ArrowUp className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md hover:bg-muted" onClick={handleMoveDown}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 rounded-md hover:bg-muted"
+            onClick={handleMoveDown}
+          >
             <ArrowDown className="h-3.5 w-3.5" />
           </Button>
           <div className="w-px h-4 bg-border mx-0.5" />
@@ -135,20 +150,21 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
       {/* Group Body */}
       <div className={`p-5 grid gap-4 grid-cols-1 ${groupColumnsClass}`}>
         {group.items.map((groupItem, itemIndex) => {
-          if (groupItem.kind === 'field_group') {
+          const { kind, id } = groupItem
+          if (kind === 'field_group') {
             return <FieldGroupRenderer
-              key={groupItem.id}
-              groupId={groupItem.id}
+              key={id}
+              groupId={id}
               index={itemIndex}
             />
           }
 
           return (
             <GroupFieldItem
-              key={groupItem.id}
+              key={id}
               field={groupItem as Field}
               groupId={groupId}
-              onRemove={handleRemoveFieldFromGroup(groupItem.id)}
+              onRemove={handleRemoveFieldFromGroup(id)}
             />
           )
         })}
@@ -166,7 +182,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
           onClick={handleAddRow}
         >
           <Plus className="h-4 w-4" />
-          {translations('status.add-two-column-row-btn')}
+          {translations('add-two-column-row-btn')}
         </button>
       </div>
 

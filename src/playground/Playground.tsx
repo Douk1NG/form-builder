@@ -19,10 +19,10 @@ export function Playground() {
     }
   }, [formId, savedForms, createNewForm])
 
-  const propertiesSidebarWidth = !hasSelectedItem 
-    ? 'w-80' 
-    : isPropertiesExpanded 
-      ? 'w-1/2' 
+  const propertiesSidebarWidth = !hasSelectedItem
+    ? 'w-80'
+    : isPropertiesExpanded
+      ? 'w-1/2'
       : 'w-80'
 
   return (

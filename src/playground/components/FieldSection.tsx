@@ -24,7 +24,9 @@ export function FieldsSection({ onAddField }: FieldsSectionProps) {
                 <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
                     <Layers className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-base tracking-tight text-foreground">{translations('fields')}</h3>
+                <h3 className="font-bold text-base tracking-tight text-foreground">
+                    {translations('fields')}
+                </h3>
             </div>
             <div className="grid grid-cols-2 gap-3">
                 {fieldTypeOptions.map((fieldType) => (
@@ -33,7 +35,10 @@ export function FieldsSection({ onAddField }: FieldsSectionProps) {
                         type={fieldType.type}
                         label={fieldType.label}
                         icon={fieldType.icon}
-                        onClick={() => onAddField(fieldType.type, fieldType.label)}
+                        onClick={() => onAddField(
+                            fieldType.type,
+                            fieldType.label
+                        )}
                     />
                 ))}
             </div>

@@ -9,16 +9,6 @@
     "remove": "Remove",
     "close": "Close"
   },
-  "builder": {
-    "title": "Form Builder",
-    "addField": "Add Field",
-    "fieldSettings": "Field Settings",
-    "formSettings": "Form Settings",
-    "preview": "Preview",
-    "noFields": "No fields added yet. Drag and drop or click to add a field.",
-    "dragDropTitle": "Drag & Drop fields here",
-    "dragDropDescription": "Select components from the left palette or use the Layout tools to start building your form"
-  },
   "fields": {
     "text": "Text",
     "number": "Number",
@@ -64,9 +54,13 @@
         "status": {
           "locked": "Locked",
           "unlock": "Unlock group",
-          "lock": "Lock group — new fields will be added here",
-          "add-two-column-row-btn": "Add 2-Column Row"
-        }
+          "lock": "Lock group — new fields will be added here"
+        },
+        "dropZone": {
+          "title": "Drop fields here",
+          "titleAlt": "Drop a field or use buttons below"
+        },
+        "add-two-column-row-btn": "Add 2-Column Row"
       }
     },
     "properties": {
@@ -113,7 +107,9 @@
       "data": {
         "options": "Options",
         "addOption": "Add Option",
-        "noOptions": "No options defined"
+        "noOptions": "No options defined",
+        "value": "Value",
+        "label": "Label"
       }
     },
     "controls": {
@@ -123,6 +119,30 @@
         "twoColumnRow": "2 Columns"
       },
       "fields": "Fields"
+    },
+    "builder": {
+      "dragDropTitle": "Drag & Drop fields here",
+      "dragDropDescription": "Select components from the left palette or use the Layout tools to start building your form",
+      "localizedInput": {
+        "translate": "Translate",
+        "toggleBtnTitle": "Toggle translations"
+      },
+      "header": {
+        "editMode": "Edit Mode",
+        "previewMode": "Preview",
+        "exportJson": "Export JSON",
+        "formSwitcher": {
+          "placeholder": "Select a form...",
+          "create": "+ Create New Form",
+          "dialog": {
+            "title": "Create New Form",
+            "description": "Enter a name for your new form.",
+            "inputPlaceholder": "e.g. User Survey",
+            "cancel": "Cancel",
+            "create": "Create Form"
+          }
+        }
+      }
     }
   }
 }

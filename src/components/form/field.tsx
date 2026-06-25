@@ -12,6 +12,8 @@ import Number from "./components/number";
 import { Label } from '../ui/label';
 import type { Field } from '../../types/form';
 import type { JSX } from "react";
+
+// todo: the translation system needs to be reviewed considering the form translations are not part of i18n system but user defined, this means the form is multi language by nature and not tied to i18n library but bc we are using i18n to get the current language we have to use it somehow without breaking the multi language and type safety, this is a temporary workaround, pending review
 import { resolveLocalizedString } from '../../utils/locales';
 
 const Components = {
@@ -30,6 +32,12 @@ const Components = {
 
 const Index = <T extends Field>(props: T) => {
     const Component = Components[props.type] as (props: T) => JSX.Element;
+    const {
+        label,
+        description,
+        name,
+        readOnly
+    } = props;
 
     if (!Component) {
         return (
@@ -39,10 +47,17 @@ const Index = <T extends Field>(props: T) => {
 
     return (
         <div className="w-full space-y-2.5">
-            <Label htmlFor={props.name} className="text-base font-medium">{resolveLocalizedString(props.label)}</Label>
+            <Label
+                htmlFor={name}
+                className="text-base font-medium"
+            >
+                {resolveLocalizedString(label)}
+            </Label>
             <Component {...props} />
-            {!props.readOnly && props.description && (
-                <p className='text-sm text-muted-foreground/80 mt-1'>{resolveLocalizedString(props.description)}</p>
+            {!readOnly && description && (
+                <p className="text-sm text-muted-foreground/80 mt-1">
+                    {resolveLocalizedString(description)}
+                </p>
             )}
         </div>
     )

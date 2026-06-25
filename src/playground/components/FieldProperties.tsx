@@ -9,8 +9,14 @@ import { PropertiesSectionHeader } from '@/playground/components/PropertiesSecti
 import { FieldBasicTab } from '@/playground/components/FieldBasicTab'
 import { FieldBehaviorTab } from '@/playground/components/FieldBehaviorTab'
 import { FieldDataTab } from '@/playground/components/FieldDataTab'
+import { useTranslation } from 'react-i18next'
 
 export function FieldProperties() {
+
+  const { t: translations } = useTranslation('translation', {
+    keyPrefix: 'playground.properties.tabs'
+  })
+
   const {
     formId,
     previewMode,
@@ -31,8 +37,15 @@ export function FieldProperties() {
   const togglePropertiesExpanded = useFormBuilderStore((state) => state.togglePropertiesExpanded)
 
   const expandToggle = (
-    <Button variant="ghost" size="icon" onClick={togglePropertiesExpanded} className="h-8 w-8 text-muted-foreground hover:text-foreground">
-      {isPropertiesExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={togglePropertiesExpanded}
+      className="h-8 w-8 text-muted-foreground hover:text-foreground">
+      {isPropertiesExpanded ?
+        <Minimize2 className="h-4 w-4" /> :
+        <Maximize2 className="h-4 w-4" />
+      }
     </Button>
   )
 
@@ -62,9 +75,25 @@ export function FieldProperties() {
 
       <Tabs defaultValue="basic" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="basic">Basic</TabsTrigger>
-          <TabsTrigger value="behavior">Behavior</TabsTrigger>
-          <TabsTrigger value="data" disabled={!hasOptions}>Data</TabsTrigger>
+          <TabsTrigger
+            value="basic"
+            type="button"
+          >
+            {translations('basic')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="behavior"
+            type="button"
+          >
+            {translations('behavior')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="data"
+            disabled={!hasOptions}
+            type="button"
+          >
+            {translations('data')}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="basic">

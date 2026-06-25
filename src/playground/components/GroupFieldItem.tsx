@@ -1,5 +1,4 @@
 import React from 'react'
-import { useTranslation } from 'react-i18next'
 import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import FieldComponent from '@/components/form/field'
@@ -13,8 +12,11 @@ export type GroupFieldItemProps = {
 }
 
 export function GroupFieldItem({ field, onRemove }: GroupFieldItemProps) {
-  const { t } = useTranslation()
-  const { isSelected, handleSelect, handleKeyDown } = useGroupFieldItem(field.id)
+  const {
+    isSelected,
+    handleSelect,
+    handleKeyDown
+  } = useGroupFieldItem(field.id)
 
   const selectedStyles = 'border-primary/50 ring-1 ring-primary/20 shadow-sm shadow-primary/5'
   const defaultStyles = 'border-border/30 hover:border-primary/40 hover:shadow-xs'
@@ -37,8 +39,9 @@ export function GroupFieldItem({ field, onRemove }: GroupFieldItemProps) {
         <Trash2 className="h-3.5 w-3.5" />
       </Button>
       <div className="pointer-events-none opacity-90">
-        {/* @ts-expect-error - dynamic key for translation */}
-        <FieldComponent {...(field as Omit<typeof field, 'id'>)} translate={(key: string) => String(t(key))} />
+        <FieldComponent
+          {...field}
+        />
       </div>
     </div>
   )

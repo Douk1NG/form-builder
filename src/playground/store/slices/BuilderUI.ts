@@ -1,11 +1,12 @@
 import type { StateCreator } from 'zustand'
 import type { FormBuilderState } from '../useFormBuilderStore'
+import type { SupportedLocale } from '@/utils/locales'
 
 export type BuilderUiSlice = {
     selectedItemId: string | null
     lockedGroupId: string | null
     previewMode: boolean
-    previewLocale: string
+    previewLocale: SupportedLocale
     previewDevice: 'desktop' | 'tablet' | 'mobile'
     isPropertiesExpanded: boolean
 
@@ -13,7 +14,7 @@ export type BuilderUiSlice = {
     setLockedGroup: (groupId: string | null) => void
     toggleLockedGroup: (groupId: string) => void
     setPreviewMode: (enabled: boolean) => void
-    setPreviewLocale: (locale: string) => void
+    setPreviewLocale: (locale: SupportedLocale) => void
     setPreviewDevice: (device: 'desktop' | 'tablet' | 'mobile') => void
     togglePropertiesExpanded: () => void
 }

@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { useFieldRenderer } from '../hooks/useFieldRenderer'
 import { CanvasFieldWrapper } from './CanvasFieldWrapper'
 import FieldComponent from '../../components/form/field'
@@ -9,7 +8,7 @@ export type FieldRendererProps = {
 }
 
 export function FieldRenderer({ id, index }: FieldRendererProps) {
-  const { t } = useTranslation()
+
   const {
     field,
     isSelected,
@@ -31,8 +30,9 @@ export function FieldRenderer({ id, index }: FieldRendererProps) {
       onMoveDown={handleMoveDown}
       onRemove={handleRemove}
     >
-      {/* @ts-expect-error - dynamic key for translation */}
-      <FieldComponent {...field as Omit<typeof field, 'id' | 'kind'>} translate={(key: string) => String(t(key))} />
+      <FieldComponent
+        {...field}
+      />
     </CanvasFieldWrapper>
   )
 }

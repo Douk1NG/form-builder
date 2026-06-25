@@ -26,8 +26,18 @@ export function LayoutSection({
                 <h3 className="font-bold text-base tracking-tight text-foreground">{translation('title')}</h3>
             </div>
             <div className="grid grid-cols-2 gap-3">
-                <PaletteItem type="field_group" label={translation('group')} icon="Layers" onClick={onAddGroup} />
-                <PaletteItem type="column_row" label={translation('twoColumnRow')} icon="Columns" onClick={onAddRow} />
+                <PaletteItem
+                    type="field_group"
+                    label={translation('group')}
+                    icon="layers"
+                    onClick={onAddGroup}
+                />
+                <PaletteItem
+                    type="column_row"
+                    label={translation('twoColumnRow')}
+                    icon="columns"
+                    onClick={onAddRow}
+                />
             </div>
         </div>
     )

@@ -1,11 +1,21 @@
 import { useGroupDropZone } from '@/playground/hooks/useGroupDropZone'
+import { useTranslation } from 'react-i18next'
 
 export type GroupDropZoneProps = {
   groupId: string
 }
 
 export function GroupDropZone({ groupId }: GroupDropZoneProps) {
-  const { dropRef, isOver } = useGroupDropZone(groupId)
+  const {
+    dropRef,
+    isOver
+  } = useGroupDropZone(groupId)
+
+  const {
+    t: translations
+  } = useTranslation('translation', {
+    keyPrefix: 'playground.fields.group.dropZone'
+  })
 
   return (
     <div
@@ -14,7 +24,7 @@ export function GroupDropZone({ groupId }: GroupDropZoneProps) {
         }`}
     >
       <p className="text-sm font-medium text-muted-foreground/60">
-        {isOver ? 'Drop field here' : 'Drop a field or use buttons below'}
+        {isOver ? translations('title') : translations('titleAlt')}
       </p>
     </div>
   )

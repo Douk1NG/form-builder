@@ -48,13 +48,13 @@ export function FieldOptionsEditor({ options = [], onChange, disabled }: FieldOp
             <Input
               value={option.label}
               onChange={(event) => handleUpdateOption(index, 'label', event.target.value)}
-              placeholder="Label"
+              placeholder={translations('label')}
               disabled={disabled}
             />
             <Input
               value={String(option.value)}
               onChange={(event) => handleUpdateOption(index, 'value', event.target.value)}
-              placeholder="Value"
+              placeholder={translations('value')}
               disabled={disabled}
             />
             <Button

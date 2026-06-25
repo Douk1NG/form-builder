@@ -1,6 +1,7 @@
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
+import { findItemById } from '../utils/findItemById'
 import type { Option } from '../../types/select'
-import type { Field, CanvasField, FieldGroup, LocalizedString } from '../../types/form'
+import type { Field, FieldGroup, LocalizedString } from '../../types/form'
 
 export type SelectedItemKind = 'field' | 'field_group' | null
 
@@ -13,83 +14,47 @@ export function useFieldProperties() {
 
   const selectedItem = useFormBuilderStore((state) => {
     if (!selectedItemId || !state.itemsData) return null
-
-    const topLevelMatch = state.itemsData[selectedItemId]
-    if (topLevelMatch) return topLevelMatch
-
-    for (const item of Object.values(state.itemsData)) {
-      if (item.kind === 'field_group') {
-        for (const groupItem of item.items) {
-          if (groupItem.kind === 'field_group') {
-            if (groupItem.id === selectedItemId) return groupItem
-          } else if (groupItem.id === selectedItemId) {
-            return groupItem
-          }
-        }
-      }
-    }
-
-    return null
+    return findItemById(state.itemsData, selectedItemId)
   })
 
-  const selectedKind: SelectedItemKind = (() => {
-    if (!selectedItem) return null
-    if (selectedItem.kind === 'field_group') return 'field_group'
-    return 'field'
-  })()
+  const selectedKind: SelectedItemKind = selectedItem?.kind === 'field_group' ? 'field_group' : selectedItem ? 'field' : null
 
-  const selectedField: Field | null =
-    selectedKind === 'field' ? (selectedItem as CanvasField) : null
+  const selectedField: Field | null = selectedItem?.kind === 'field' ? selectedItem : null
+  const selectedGroup: FieldGroup | null = selectedItem?.kind === 'field_group' ? selectedItem : null
 
-  const selectedGroup: FieldGroup | null =
-    selectedKind === 'field_group' ? (selectedItem as FieldGroup) : null
+  const isFieldSelected = Boolean(selectedItemId) && selectedKind === 'field'
+  const isGroupSelected = Boolean(selectedItemId) && selectedKind === 'field_group'
 
   const handleUpdateLabel = (value: LocalizedString) => {
-    if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { label: value })
-    }
+    if (isFieldSelected) updateField(selectedItemId as string, { label: value })
   }
 
   const handleUpdateName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { name: event.target.value })
-    }
+    if (isFieldSelected) updateField(selectedItemId as string, { name: event.target.value })
   }
 
   const handleUpdateDescription = (value: LocalizedString) => {
-    if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { description: value })
-    }
+    if (isFieldSelected) updateField(selectedItemId as string, { description: value })
   }
 
   const handleUpdatePlaceholder = (value: LocalizedString) => {
-    if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { placeholder: value })
-    }
+    if (isFieldSelected) updateField(selectedItemId as string, { placeholder: value })
   }
 
   const handleUpdateReadOnly = (checked: boolean) => {
-    if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { readOnly: checked })
-    }
+    if (isFieldSelected) updateField(selectedItemId as string, { readOnly: checked })
   }
 
   const handleUpdateDisabled = (checked: boolean) => {
-    if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { disabled: checked })
-    }
+    if (isFieldSelected) updateField(selectedItemId as string, { disabled: checked })
   }
 
   const handleUpdateOptions = (options: Option[]) => {
-    if (selectedItemId && selectedKind === 'field') {
-      updateField(selectedItemId, { options })
-    }
+    if (isFieldSelected) updateField(selectedItemId as string, { options })
   }
 
   const handleUpdateGroupLabel = (value: LocalizedString) => {
-    if (selectedItemId && selectedKind === 'field_group') {
-      updateGroup(selectedItemId, { label: value })
-    }
+    if (isGroupSelected) updateGroup(selectedItemId as string, { label: value })
   }
 
   return {

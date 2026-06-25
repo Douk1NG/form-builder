@@ -1,5 +1,5 @@
 import type { LocalizedString } from '../types/form'
-
+export const DEFAULT_LOCALE = 'en' as const
 export const SUPPORTED_LOCALES = ['en', 'es'] as const
 export type SupportedLocale = typeof SUPPORTED_LOCALES[number]
 

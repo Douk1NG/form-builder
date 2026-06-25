@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { useShallow } from 'zustand/react/shallow'
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
-import type { FieldType } from '@/types/form'
 import type { FormSchema } from '@/playground/store/slices/CanvasItems'
+import { handleCanvasDrop } from '../utils/handleCanvasDrop'
 
 export function useFormCanvas() {
   const itemIds = useFormBuilderStore(useShallow((state) => state.itemIds))
@@ -26,68 +25,34 @@ export function useFormCanvas() {
         const destination = location.current.dropTargets[0]
         if (!destination) return
 
-        const sourceData = source.data
-        const destData = destination.data
-        const edge = extractClosestEdge(destData)
-
-        if (sourceData.source === 'palette') {
-          if (sourceData.type === 'field_group' || sourceData.type === 'column_row') {
-            const isColumnRow = sourceData.type === 'column_row'
-            const newGroup = {
-              id: crypto.randomUUID(),
-              kind: 'field_group' as const,
-              label: isColumnRow ? '2 Columns Row' : 'Field Group',
-              ...(isColumnRow ? { columns: 2 } : {}),
-              items: [],
-            };
-
-            if (destData.isCanvas) {
-              insertItemAt(itemIds.length, newGroup);
-            } else if (typeof destData.insertIndex === 'number') {
-              insertItemAt(destData.insertIndex as number, newGroup);
-            }
-          } else {
-            const field = {
-              type: sourceData.type as FieldType,
-              label: sourceData.label as string,
-              name: `field_${crypto.randomUUID().slice(0, 8)}`,
-              required: false,
-            }
-
-            if (edge === 'left' || edge === 'right') {
-              createGroupWithNewField(destData.id as string, field, edge)
-            } else if (destData.isCanvas) {
-              addField(field)
-            } else if (typeof destData.insertIndex === 'number') {
-              const newItem = { ...field, id: crypto.randomUUID(), kind: 'field' as const }
-              insertItemAt(destData.insertIndex as number, newItem)
-            } else if (typeof destData.groupId === 'string') {
-              addFieldToGroup(destData.groupId as string, field)
-            }
-          }
-        } else if (sourceData.source === 'canvas') {
-          const sourceId = sourceData.id as string
-          const sourceItem = itemsData[sourceId]
-          const targetId = destData.id as string
-          const targetItem = targetId ? itemsData[targetId] : null
-
-          if (typeof destData.groupId === 'string') {
-            if (sourceItem?.kind === 'field_group' && destData.groupId) {
-              mergeGroupIntoGroup(sourceId, destData.groupId as string)
-            } else {
-              moveFieldToGroup(sourceId, destData.groupId as string)
-            }
-          } else if (sourceItem?.kind === 'field_group' && targetItem?.kind === 'field_group') {
-            mergeGroupIntoGroup(sourceId, targetId)
-          } else if (edge === 'left' || edge === 'right') {
-            createGroupFromDrop(sourceId, destData.id as string, edge)
-          } else if (typeof sourceData.index === 'number' && typeof destData.index === 'number') {
-            moveItem(sourceData.index as number, destData.index as number)
-          }
-        }
+        handleCanvasDrop({
+          sourceData: source.data,
+          destinationData: destination.data,
+          itemIds,
+          itemsData,
+          insertItemAt,
+          moveItem,
+          addField,
+          addFieldToGroup,
+          createGroupFromDrop,
+          createGroupWithNewField,
+          moveFieldToGroup,
+          mergeGroupIntoGroup,
+        })
       },
     })
-  }, [addField, insertItemAt, moveItem, addFieldToGroup, createGroupFromDrop, createGroupWithNewField, moveFieldToGroup, mergeGroupIntoGroup, itemsData, itemIds])
+  }, [
+    addField,
+    insertItemAt,
+    moveItem,
+    addFieldToGroup,
+    createGroupFromDrop,
+    createGroupWithNewField,
+    moveFieldToGroup,
+    mergeGroupIntoGroup,
+    itemsData,
+    itemIds
+  ])
 
   const simulateSubmit = async () => {
     return { success: true, message: 'Simulated submission', data: {} }

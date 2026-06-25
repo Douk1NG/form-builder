@@ -21,11 +21,6 @@ export function partializeFormBuilderState(state: FormBuilderState): PersistedFo
     } as PersistedFormBuilderState
 }
 
-// Note: the original store's PersistedFormBuilderState type included savedForms,
-// but its partialize function did not actually return it — only the active form's
-// fields were persisted. This refactor preserves that original (likely unintentional)
-// behavior. If savedForms should survive a reload, add it back into the persist config.
-
 export const formBuilderPersistConfig = {
     name: 'form-builder-store',
     partialize: partializeFormBuilderState,
