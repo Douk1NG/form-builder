@@ -128,12 +128,19 @@
         "toggleBtnTitle": "Toggle translations"
       },
       "header": {
+        "untitledForm": "Untitled form",
         "editMode": "Edit Mode",
         "previewMode": "Preview",
         "exportJson": "Export JSON",
         "formSwitcher": {
           "placeholder": "Select a form...",
-          "create": "+ Create New Form",
+          "delete": "Delete form {{formName}}",
+          "deleteConfirm": {
+            "title": "Delete form {{formName}}",
+            "description": "Are you sure you want to delete form {{formName}}?",
+            "cancel": "Cancel",
+            "confirm": "Delete {{formName}}"
+          },
           "dialog": {
             "title": "Create New Form",
             "description": "Enter a name for your new form.",

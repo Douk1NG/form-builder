@@ -1,9 +1,17 @@
 import { Pencil } from 'lucide-react'
-import { Button } from '../../components/ui/button'
-import { Input } from '../../components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator } from '../../components/ui/select'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../components/ui/dialog'
-import { useFormSwitcher } from '../hooks/useFormSwitcher'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { FormSwitcherSelect } from './FormSwitcherSelect'
+
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from '@/components/ui/dialog'
+import { useFormSwitcher } from '@/playground/hooks/useFormSwitcher'
 import { useTranslation } from 'react-i18next'
 
 export function FormSwitcher() {
@@ -11,7 +19,6 @@ export function FormSwitcher() {
         formId,
         formTitle,
         savedFormsList,
-        isCurrentFormUnsaved,
         isDialogOpen,
         setIsDialogOpen,
         newTitle,
@@ -23,6 +30,8 @@ export function FormSwitcher() {
         handleCreate,
         handleTitleSubmit,
         handleSelectChange,
+        handleOpenDialog,
+        handleDelete
     } = useFormSwitcher()
 
     const { t: translations } = useTranslation('translation', {
@@ -31,34 +40,16 @@ export function FormSwitcher() {
 
     return (
         <div className="flex items-center gap-3 ml-4">
-            <Select
-                value={formId || ''}
+            <FormSwitcherSelect
+                value={formId}
                 onValueChange={handleSelectChange}
-            >
-                <SelectTrigger className="w-48 h-8 text-sm font-medium bg-muted/30 border-border/50">
-                    <SelectValue placeholder={translations('placeholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                    {savedFormsList.map((form) => (
-                        <SelectItem key={form.formId} value={form.formId}>
-                            {form.formTitle}
-                        </SelectItem>
-                    ))}
-                    {isCurrentFormUnsaved && formId && (
-                        <SelectItem key={formId} value={formId}>
-                            {formTitle}
-                        </SelectItem>
-                    )}
-                    <SelectSeparator />
-                    <SelectItem
-                        value="new_form"
-                        className="font-semibold text-primary"
-                    >
-                        {translations('create')}
-                    </SelectItem>
-                </SelectContent>
-            </Select>
-
+                options={savedFormsList.map((form) => ({
+                    value: form.formId,
+                    label: form.formTitle
+                }))}
+                handleDeleteOption={handleDelete}
+                handleCreateNew={handleOpenDialog}
+            />
             {formId && (
                 <div className="flex items-center gap-2">
                     {isEditingTitle ? (
@@ -84,7 +75,6 @@ export function FormSwitcher() {
                     )}
                 </div>
             )}
-
             <Dialog
                 open={isDialogOpen}
                 onOpenChange={setIsDialogOpen}

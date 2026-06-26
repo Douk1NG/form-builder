@@ -11,7 +11,7 @@ export type SavedForm = {
 }
 
 export type FormDocumentSlice = {
-    formId: string | null
+    formId: string
     formTitle: string
     formDescription: string
     savedForms: Record<string, SavedForm>
@@ -19,16 +19,24 @@ export type FormDocumentSlice = {
     createNewForm: (title: string) => void
     switchForm: (formId: string) => void
     updateFormTitle: (title: string) => void
+    deleteForm: (formId: string) => void
 }
 
 export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], FormDocumentSlice> = (set, get) => ({
-    formId: null,
+    formId: '',
     formTitle: '',
     formDescription: '',
     savedForms: {},
 
     createNewForm: (title) => {
-        const { formId, formTitle, formDescription, itemIds, itemsData, savedForms } = get()
+        const {
+            formId,
+            formTitle,
+            formDescription,
+            itemIds,
+            itemsData,
+            savedForms
+        } = get()
 
         const newSavedForms = { ...savedForms }
         if (formId) {
@@ -108,4 +116,15 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
             savedForms: newSavedForms,
         })
     },
+
+    deleteForm: (targetFormId) => {
+        const { savedForms } = get()
+
+        const newSavedForms = { ...savedForms }
+        delete newSavedForms[targetFormId]
+
+        set({
+            savedForms: newSavedForms,
+        })
+    }
 })
