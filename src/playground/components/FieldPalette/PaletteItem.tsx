@@ -1,6 +1,6 @@
-import type { FieldType } from '../../types/form'
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
-import { usePaletteItemDrag } from '../hooks/usePaletteItemDrag';
+import { usePaletteItemDrag } from '@/playground/hooks/usePaletteItemDrag';
+import type { FieldType } from '@/types/form'
 
 export type PaletteItemProps = {
   type: FieldType | 'field_group' | 'column_row'

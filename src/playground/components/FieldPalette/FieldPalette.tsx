@@ -1,6 +1,6 @@
-import { useFieldPalette } from '../hooks/useFieldPalette'
-import { LayoutSection } from './LayoutSection'
+import { useFieldPalette } from '../../hooks/useFieldPalette'
 import { FieldsSection } from './FieldSection'
+import { LayoutSection } from './LayoutSection'
 
 export function FieldPalette() {
   const {

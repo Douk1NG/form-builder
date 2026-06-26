@@ -8,8 +8,11 @@ import {
 
 import type {
     FieldType,
-    CanvasItem
+    CanvasItem,
+    Field
 } from '@/types/form'
+
+import type { CanvasListActions } from '../store/slices/Canvas/CanvasListActions'
 
 const twoColumnLayout = 2
 const idSuffixLength = 8
@@ -19,12 +22,12 @@ type HandleCanvasDropParameters = {
     destinationData: Record<string, unknown>
     itemIds: string[]
     itemsData: Record<string, CanvasItem>
-    insertItemAt: (index: number, item: CanvasItem) => void
-    moveItem: (sourceIndex: number, destinationIndex: number) => void
-    addField: (field: Record<string, unknown>) => void
-    addFieldToGroup: (groupId: string, field: Record<string, unknown>) => void
+    insertItemAt: CanvasListActions['insertItemAt']
+    moveItem: CanvasListActions['moveItem']
+    addField: CanvasListActions['addField']
+    addFieldToGroup: (groupId: string, field: Omit<Field, 'id'>) => void
     createGroupFromDrop: (sourceId: string, targetId: string, edge: 'left' | 'right') => void
-    createGroupWithNewField: (targetId: string, field: Record<string, unknown>, edge: 'left' | 'right') => void
+    createGroupWithNewField: (targetId: string, field: Omit<Field, 'id'>, edge: 'left' | 'right') => void
     moveFieldToGroup: (sourceId: string, groupId: string) => void
     mergeGroupIntoGroup: (sourceId: string, targetId: string) => void
 }

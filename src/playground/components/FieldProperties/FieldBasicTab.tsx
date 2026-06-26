@@ -1,8 +1,8 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { LocalizedInput } from '@/playground/components/LocalizedInput'
-import type { LocalizedString } from '@/types/form'
+import { LocalizedInput } from './LocalizedInput'
 import { useTranslation } from 'react-i18next'
+import type { LocalizedString } from '@/types/form'
 
 export type FieldBasicTabProps = {
     label: LocalizedString

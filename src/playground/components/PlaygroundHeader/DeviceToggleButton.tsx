@@ -1,7 +1,7 @@
 import { Monitor, Tablet, Smartphone } from 'lucide-react'
-import { Button } from '../../components/ui/button'
-import type { PreviewDevice } from '../utils/previewFrameConfig'
-import type { DeviceToggleOption } from '../utils/deviceToggleOptions'
+import { Button } from '@/components/ui/button'
+import type { DeviceToggleOption } from '@/playground/utils/deviceToggleOptions'
+import type { PreviewDevice } from '@/playground/utils/previewFrameConfig'
 
 const deviceIcons = {
     Monitor,

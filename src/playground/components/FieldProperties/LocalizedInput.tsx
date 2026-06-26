@@ -1,11 +1,11 @@
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Languages } from 'lucide-react'
-import { Input } from '../../components/ui/input'
-import { Button } from '../../components/ui/button'
-import { Label } from '../../components/ui/label'
-import type { LocalizedString } from '../../types/form'
-import { SUPPORTED_LOCALES } from '../../utils/locales'
-import { useLocalizedInput } from '../hooks/useLocalizedInput'
+import { SUPPORTED_LOCALES } from '@/utils/locales'
+import { useLocalizedInput } from '@/playground/hooks/useLocalizedInput'
 import { useTranslation } from 'react-i18next'
+import type { LocalizedString } from '@/types/form'
 
 type LocalizedInputProps = {
   id: string

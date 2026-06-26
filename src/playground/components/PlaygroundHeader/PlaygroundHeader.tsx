@@ -1,12 +1,12 @@
-import { Eye, Pencil, Download } from 'lucide-react'
-import { Button } from '../../components/ui/button'
-import { usePlayground } from '../hooks/usePlayground'
-import { useFormBuilderStore } from '../store/useFormBuilderStore'
+import { Button } from '@/components/ui/button'
+import { DeviceToggleButton } from './DeviceToggleButton'
+import { deviceToggleOptions } from '@/playground/utils/deviceToggleOptions'
 import { FormBuilderLogo } from './FormBuilderLogo'
 import { FormSwitcher } from './FormSwitcher'
 import { LocaleSwitcher } from './LocaleSwitcher'
-import { DeviceToggleButton } from './DeviceToggleButton'
-import { deviceToggleOptions } from '../utils/deviceToggleOptions'
+import { Eye, Pencil, Download } from 'lucide-react'
+import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
+import { usePlayground } from '@/playground/hooks/usePlayground'
 import { useTranslation } from 'react-i18next'
 
 export function PlaygroundHeader() {

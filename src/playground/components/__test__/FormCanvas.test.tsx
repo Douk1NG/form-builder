@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import { FormCanvas } from '../FormCanvas'
+import { FormCanvas } from '../FormCanvas/FormCanvas'
 import { useFormBuilderStore } from '../../store/useFormBuilderStore'
 
 vi.mock('./FieldRenderer', () => ({

@@ -1,8 +1,8 @@
 import { Layers } from 'lucide-react'
-import { LocalizedInput } from './LocalizedInput'
-import { PropertiesSectionHeader } from './PropertiesSectionHeader'
-import type { LocalizedString } from '../../types/form'
+import { LocalizedInput } from '@/playground/components/FieldProperties/LocalizedInput'
+import { PropertiesSectionHeader } from '@/playground/components/FieldProperties/PropertiesSectionHeader'
 import { useTranslation } from 'react-i18next'
+import type { LocalizedString } from '@/types/form'
 
 export type GroupPropertiesPanelProps = {
     groupLabel: LocalizedString | undefined

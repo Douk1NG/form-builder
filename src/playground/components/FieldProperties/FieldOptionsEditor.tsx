@@ -1,10 +1,10 @@
-import { useFieldOptionsEditor } from '../hooks/useFieldOptionsEditor'
-import { Button } from '../../components/ui/button'
-import { Input } from '../../components/ui/input'
-import { Label } from '../../components/ui/label'
+import { Button } from '@/components/ui/button'
 import { CircleX, Plus } from 'lucide-react'
-import type { Option } from '../../types/select'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useFieldOptionsEditor } from '@/playground/hooks/useFieldOptionsEditor'
 import { useTranslation } from 'react-i18next'
+import type { Option } from '@/types/select'
 
 type FieldOptionsEditorProps = {
   options?: Option[]

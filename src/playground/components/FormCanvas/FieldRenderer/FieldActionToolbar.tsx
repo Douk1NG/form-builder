@@ -1,4 +1,4 @@
-import { Button } from '../../components/ui/button'
+import { Button } from '../../../../components/ui/button'
 import { ArrowUp, ArrowDown, Trash2 } from 'lucide-react'
 
 export type FieldActionToolbarProps = {

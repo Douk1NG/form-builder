@@ -1,6 +1,6 @@
-import { FieldRenderer } from './FieldRenderer'
-import { FieldGroupRenderer } from './FieldGroupRenderer'
-import type { CanvasItem } from '../../types/form'
+import { FieldRenderer } from '@/playground/components/FormCanvas/FieldRenderer/FieldRenderer'
+import { FieldGroupRenderer } from '@/playground/components/FormCanvas/FieldGroupRenderer/FieldGroupRenderer'
+import type { CanvasItem } from '@/types/form'
 
 export type CanvasItemRendererProps = {
     item: CanvasItem

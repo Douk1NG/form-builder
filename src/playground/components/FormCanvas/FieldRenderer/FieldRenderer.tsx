@@ -1,6 +1,6 @@
-import { useFieldRenderer } from '../hooks/useFieldRenderer'
+import { useFieldRenderer } from '../../../hooks/useFieldRenderer'
 import { CanvasFieldWrapper } from './CanvasFieldWrapper'
-import FieldComponent from '../../components/form/field'
+import FieldComponent from '../../../../components/form/field'
 
 export type FieldRendererProps = {
   id: string

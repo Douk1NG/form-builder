@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
-import { PlaygroundHeader } from './components/PlaygroundHeader'
-import { FieldPalette } from './components/FieldPalette'
-import { FormCanvas } from './components/FormCanvas'
-import { FieldProperties } from './components/FieldProperties'
 import { AmbientBackground } from './components/AmbientBackground'
+import { FieldPalette } from './components/FieldPalette/FieldPalette'
+import { FieldProperties } from './components/FieldProperties/FieldProperties'
+import { FormCanvas } from './components/FormCanvas/FormCanvas'
+import { PlaygroundHeader } from './components/PlaygroundHeader/PlaygroundHeader'
+import { useEffect } from 'react'
 import { useFormBuilderStore } from './store/useFormBuilderStore'
 
 export function Playground() {

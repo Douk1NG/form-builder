@@ -2,7 +2,7 @@ import { GripVertical } from 'lucide-react'
 import { LEFT, RIGHT } from '@/playground/constants/edgeConstants'
 import { useEdgeDraggable } from '@/playground/hooks/useEdgeDraggable'
 import { useCanvasFieldWrapper } from '@/playground/hooks/useCanvasFieldWrapper'
-import { FieldActionToolbar } from '@/playground/components/FieldActionToolbar'
+import { FieldActionToolbar } from '@/playground/components/FormCanvas/FieldRenderer/FieldActionToolbar'
 
 export type CanvasFieldWrapperProps = {
   id: string

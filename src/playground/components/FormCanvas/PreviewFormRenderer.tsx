@@ -1,9 +1,9 @@
+import { getPreviewFrameConfig } from '@/playground/utils/previewFrameConfig'
+import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import { useTranslation } from 'react-i18next'
-import FormBuilder from '../../components/form'
-import { useFormBuilderStore } from '../store/useFormBuilderStore'
-import { getPreviewFrameConfig } from '../utils/previewFrameConfig'
+import FormBuilder from '@/components/form'
+import type { ActionResponse } from '@/types/form'
 import type { FormSchema } from '@/playground/store/slices/CanvasItems'
-import type { ActionResponse } from '../../types/form'
 
 export type PreviewFormRendererProps = {
     currentFormSchema: FormSchema
