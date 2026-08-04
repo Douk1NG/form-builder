@@ -310,17 +310,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
             updatedItemsData[groupId] = { ...existingItem, items: [...existingItem.items, removedItem as CanvasField | FieldGroup] }
             found = true
         } else {
-            for (const itemId of Object.keys(updatedItemsData)) {
-                const item = updatedItemsData[itemId]
-                if (item.kind === 'field_group') {
-                    const newItems = addItemToGroupItems(item.items, groupId, removedItem as CanvasField | FieldGroup)
-                    if (newItems !== item.items) {
-                        updatedItemsData[itemId] = { ...item, items: newItems }
-                        found = true
-                        break
-                    }
-                }
-            }
+            found = tryAddNestedGroupItem(updatedItemsData, groupId, removedItem as CanvasField | FieldGroup)
         }
 
         if (found) {
@@ -357,3 +347,21 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         })
     },
 })
+
+function tryAddNestedGroupItem(
+    itemsData: Record<string, CanvasItem>,
+    groupId: string,
+    itemToInsert: CanvasField | FieldGroup
+): boolean {
+    for (const itemId of Object.keys(itemsData)) {
+        const item = itemsData[itemId]
+        if (item.kind === 'field_group') {
+            const newItems = addItemToGroupItems(item.items, groupId, itemToInsert)
+            if (newItems !== item.items) {
+                itemsData[itemId] = { ...item, items: newItems }
+                return true
+            }
+        }
+    }
+    return false
+}

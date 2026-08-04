@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import type { Option } from '../../types/select'
 
 export function useFieldOptionsEditor(
@@ -6,10 +6,12 @@ export function useFieldOptionsEditor(
   onChange: (options: Option[]) => void
 ) {
   const [options, setOptions] = useState<Option[]>(initialOptions)
+  const [prevInitialOptions, setPrevInitialOptions] = useState<Option[]>(initialOptions)
 
-  useEffect(() => {
+  if (initialOptions !== prevInitialOptions) {
     setOptions(initialOptions)
-  }, [initialOptions])
+    setPrevInitialOptions(initialOptions)
+  }
 
   const handleAddOption = () => {
     const newOptions = [...options, { label: `Option ${options.length + 1}`, value: `option-${options.length + 1}` }]

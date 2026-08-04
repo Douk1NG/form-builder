@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 
 export function useFormSwitcher() {
@@ -10,28 +10,20 @@ export function useFormSwitcher() {
     const updateFormTitle = useFormBuilderStore((state) => state.updateFormTitle)
     const deleteForm = useFormBuilderStore((state) => state.deleteForm)
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const hasSavedForms = Object.keys(savedForms).length > 0
+    const hasActiveForm = Boolean(formId)
+    const shouldShowInitialDialog = !hasSavedForms && !hasActiveForm
+
+    const [isDialogOpen, setIsDialogOpen] = useState(shouldShowInitialDialog)
     const [newTitle, setNewTitle] = useState('')
     const [isEditingTitle, setIsEditingTitle] = useState(false)
     const [editTitleValue, setEditTitleValue] = useState(formTitle)
+    const [prevFormTitle, setPrevFormTitle] = useState(formTitle)
 
-    useEffect(() => {
+    if (formTitle !== prevFormTitle) {
         setEditTitleValue(formTitle)
-    }, [formTitle])
-
-    const hasShownInitialDialogReference = useRef(false)
-
-    useEffect(() => {
-        if (hasShownInitialDialogReference.current) return
-
-        const hasSavedForms = Object.keys(savedForms).length > 0
-        const hasActiveForm = Boolean(formId)
-
-        if (!hasSavedForms && !hasActiveForm) {
-            hasShownInitialDialogReference.current = true
-            setIsDialogOpen(true)
-        }
-    }, [savedForms, formId])
+        setPrevFormTitle(formTitle)
+    }
 
     // Auto-sync active form into savedForms list if it's missing (e.g., on first reload or legacy load)
     useEffect(() => {

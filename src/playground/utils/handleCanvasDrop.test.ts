@@ -1,13 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { handleCanvasDrop } from './handleCanvasDrop'
+import { handleCanvasDrop, type HandleCanvasDropParameters } from './handleCanvasDrop'
 import type { PaletteDragData, CanvasDragData, CanvasDropData } from '@/playground/types/dragDropTypes'
 
 vi.mock('@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge', () => ({
-    extractClosestEdge: vi.fn((data: any) => data.closestEdge ?? null)
+    extractClosestEdge: vi.fn((data: Record<string, unknown>) => data.closestEdge ?? null)
 }))
 
+type TestDependencies = Omit<HandleCanvasDropParameters, 'sourceData' | 'destinationData'>
+
 describe('handleCanvasDrop', () => {
-    let dependencies: any
+    let dependencies: TestDependencies
 
     beforeEach(() => {
         vi.clearAllMocks()
@@ -16,8 +18,11 @@ describe('handleCanvasDrop', () => {
             itemsData: {},
             insertItemAt: vi.fn(),
             moveItem: vi.fn(),
+            moveCanvasItem: vi.fn(),
             addField: vi.fn(),
             addFieldToGroup: vi.fn(),
+            addGroupToGroup: vi.fn(),
+            addRowToGroup: vi.fn(),
             createGroupFromDrop: vi.fn(),
             createGroupWithNewField: vi.fn(),
             moveFieldToGroup: vi.fn(),
@@ -144,7 +149,7 @@ describe('handleCanvasDrop', () => {
             const destinationData: CanvasDropData = { groupId: 'group-1' }
 
             dependencies.itemsData = {
-                'field-1': { id: 'field-1', kind: 'field', type: 'text', label: 'T', name: 't', required: false }
+                'field-1': { id: 'field-1', kind: 'field', type: 'text', label: 'T', name: 't' }
             }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
@@ -184,8 +189,8 @@ describe('handleCanvasDrop', () => {
             const destinationData: CanvasDropData & { closestEdge: string } = { id: 'field-2', closestEdge: 'right' }
 
             dependencies.itemsData = {
-                'field-1': { id: 'field-1', kind: 'field', type: 'text', label: 'T', name: 't', required: false },
-                'field-2': { id: 'field-2', kind: 'field', type: 'text', label: 'T2', name: 't2', required: false }
+                'field-1': { id: 'field-1', kind: 'field', type: 'text', label: 'T', name: 't' },
+                'field-2': { id: 'field-2', kind: 'field', type: 'text', label: 'T2', name: 't2' }
             }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })

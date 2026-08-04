@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import type { LocalizedString } from '../../types/form'
 
 const defaultLocale = 'en'
@@ -14,10 +14,12 @@ function isLocalizedObject(value: LocalizedString | undefined): value is Record<
 
 export function useLocalizedInput({ value, onChange }: UseLocalizedInputParameters) {
     const [isLocalized, setIsLocalized] = useState(isLocalizedObject(value))
+    const [prevValue, setPrevValue] = useState(value)
 
-    useEffect(() => {
+    if (value !== prevValue) {
         setIsLocalized(isLocalizedObject(value))
-    }, [value])
+        setPrevValue(value)
+    }
 
     const toggleLocalization = () => {
         if (!isLocalized) {

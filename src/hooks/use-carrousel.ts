@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import type { CarouselImage } from '../types/image-uploader'
 
 export function useCarousel(images: CarouselImage[], onClose: () => void, initialIndex: number) {
@@ -6,17 +6,17 @@ export function useCarousel(images: CarouselImage[], onClose: () => void, initia
 
     const isSingleImage = images.length === 1
 
-    const goToPrevious = () => {
+    const goToPrevious = useCallback(() => {
         const isFirstSlide = currentIndex === 0
         const newIndex = isFirstSlide ? images.length - 1 : currentIndex - 1
         setCurrentIndex(newIndex)
-    }
+    }, [currentIndex, images.length])
 
-    const goToNext = () => {
+    const goToNext = useCallback(() => {
         const isLastSlide = currentIndex === images.length - 1
         const newIndex = isLastSlide ? 0 : currentIndex + 1
         setCurrentIndex(newIndex)
-    }
+    }, [currentIndex, images.length])
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {

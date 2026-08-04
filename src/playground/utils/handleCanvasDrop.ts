@@ -3,6 +3,7 @@ import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/clo
 import {
     isPaletteDragData,
     isCanvasDragData,
+    type PaletteDragData,
     type CanvasDropData
 } from '@/playground/types/dragDropTypes'
 
@@ -18,7 +19,7 @@ import { findItemById, isDescendantOrSelf } from '@/playground/utils/findItemByI
 const twoColumnLayout = 2
 const idSuffixLength = 8
 
-type HandleCanvasDropParameters = {
+export type HandleCanvasDropParameters = {
     sourceData: Record<string, unknown>
     destinationData: Record<string, unknown>
     itemIds: string[]
@@ -69,10 +70,7 @@ function handlePaletteLayoutDrop(
 }
 
 function handlePaletteFieldDrop(
-    paletteData: {
-        type: FieldType;
-        label: string
-    },
+    paletteData: Omit<PaletteDragData, 'type'> & { type: FieldType },
     destinationData: CanvasDropData,
     edge: ReturnType<typeof extractClosestEdge>,
     dependencies: Pick<HandleCanvasDropParameters, 'createGroupWithNewField' | 'addField' | 'insertItemAt' | 'addFieldToGroup'>
@@ -81,7 +79,6 @@ function handlePaletteFieldDrop(
         type: paletteData.type,
         label: paletteData.label,
         name: `field_${crypto.randomUUID().slice(0, idSuffixLength)}`,
-        required: false,
     }
 
     if ((edge === 'left' || edge === 'right') && destinationData.id) {
@@ -94,6 +91,42 @@ function handlePaletteFieldDrop(
     } else if (destinationData.groupId) {
         dependencies.addFieldToGroup(destinationData.groupId, field)
     }
+}
+
+function handleGroupDestinationDrop(
+    sourceItem: CanvasItem | null,
+    sourceId: string,
+    destinationGroupId: string,
+    dependencies: Pick<HandleCanvasDropParameters, 'mergeGroupIntoGroup' | 'moveFieldToGroup'>
+) {
+    if (sourceItem?.kind === 'field_group') {
+        dependencies.mergeGroupIntoGroup(sourceId, destinationGroupId)
+    } else {
+        dependencies.moveFieldToGroup(sourceId, destinationGroupId)
+    }
+}
+
+function tryTargetSpecificDrop(
+    sourceItem: CanvasItem | null,
+    sourceId: string,
+    targetItem: CanvasItem | null,
+    targetId: string | undefined,
+    edge: ReturnType<typeof extractClosestEdge>,
+    dependencies: Pick<HandleCanvasDropParameters, 'mergeGroupIntoGroup' | 'createGroupFromDrop'>
+): boolean {
+    if (!targetId) return false
+
+    if (sourceItem?.kind === 'field_group' && targetItem?.kind === 'field_group') {
+        dependencies.mergeGroupIntoGroup(sourceId, targetId)
+        return true
+    }
+
+    if ((edge === 'left' || edge === 'right') && sourceItem?.kind === 'field' && targetItem?.kind === 'field') {
+        dependencies.createGroupFromDrop(sourceId, targetId, edge)
+        return true
+    }
+
+    return false
 }
 
 function handleCanvasSourceDrop(
@@ -117,21 +150,11 @@ function handleCanvasSourceDrop(
     }
 
     if (destinationData.groupId) {
-        if (sourceItem?.kind === 'field_group') {
-            dependencies.mergeGroupIntoGroup(sourceId, destinationData.groupId)
-        } else {
-            dependencies.moveFieldToGroup(sourceId, destinationData.groupId)
-        }
+        handleGroupDestinationDrop(sourceItem, sourceId, destinationData.groupId, dependencies)
         return
     }
 
-    if (sourceItem?.kind === 'field_group' && targetItem?.kind === 'field_group' && targetId) {
-        dependencies.mergeGroupIntoGroup(sourceId, targetId)
-        return
-    }
-
-    if ((edge === 'left' || edge === 'right') && targetId && sourceItem?.kind === 'field' && targetItem?.kind === 'field') {
-        dependencies.createGroupFromDrop(sourceId, targetId, edge)
+    if (tryTargetSpecificDrop(sourceItem, sourceId, targetItem, targetId, edge, dependencies)) {
         return
     }
 
@@ -175,10 +198,7 @@ export function handleCanvasDrop({
             )
         } else {
             handlePaletteFieldDrop(
-                {
-                    type: sourceData.type,
-                    label: sourceData.label
-                },
+                sourceData as Omit<PaletteDragData, 'type'> & { type: FieldType },
                 typedDestinationData,
                 edge,
                 {
