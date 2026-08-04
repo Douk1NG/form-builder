@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { attachClosestEdge, extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import type { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types'
+import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
+import { isDescendantOrSelf } from '@/playground/utils/findItemById'
 
 type UseEdgeDraggableParameters = {
     id: string
@@ -15,6 +17,7 @@ export function useEdgeDraggable({ id, index, allowedEdges }: UseEdgeDraggablePa
     const [isDragging, setIsDragging] = useState(false)
     const [isDragOver, setIsDragOver] = useState(false)
     const [closestEdge, setClosestEdge] = useState<Edge | null>(null)
+    const itemsData = useFormBuilderStore((state) => state.itemsData)
 
     useEffect(() => {
         const element = elementRef.current
@@ -37,6 +40,11 @@ export function useEdgeDraggable({ id, index, allowedEdges }: UseEdgeDraggablePa
                     { element, input, allowedEdges }
                 )
             },
+            canDrop: ({ source }) => {
+                if (source.data.source !== 'canvas') return true
+                const sourceId = source.data.id as string
+                return !isDescendantOrSelf(itemsData, sourceId, id)
+            },
             onDragEnter: ({ self }) => {
                 setIsDragOver(true)
                 setClosestEdge(extractClosestEdge(self.data))
@@ -58,7 +66,7 @@ export function useEdgeDraggable({ id, index, allowedEdges }: UseEdgeDraggablePa
             cleanupDraggable()
             cleanupDropTarget()
         }
-    }, [id, index, allowedEdges])
+    }, [id, index, allowedEdges, itemsData])
 
     return {
         elementRef,
@@ -67,4 +75,4 @@ export function useEdgeDraggable({ id, index, allowedEdges }: UseEdgeDraggablePa
         isDragOver,
         closestEdge,
     }
-}
+}

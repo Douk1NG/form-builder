@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next'
 
 export type GroupDropZoneProps = {
   groupId: string
+  label?: string
 }
 
-export function GroupDropZone({ groupId }: GroupDropZoneProps) {
+export function GroupDropZone({ groupId, label }: GroupDropZoneProps) {
   const {
     dropRef,
     isOver
@@ -20,11 +21,11 @@ export function GroupDropZone({ groupId }: GroupDropZoneProps) {
   return (
     <div
       ref={dropRef}
-      className={`rounded-xl border-2 border-dashed transition-all duration-200 py-6 flex items-center justify-center ${isOver ? 'border-primary/50 bg-primary/10 shadow-inner' : 'border-border/40 bg-muted/20 hover:border-primary/30'
+      className={`w-full rounded-xl border-2 border-dashed transition-all duration-200 py-6 flex items-center justify-center ${isOver ? 'border-primary/50 bg-primary/10 shadow-inner' : 'border-border/40 bg-muted/20 hover:border-primary/30'
         }`}
     >
       <p className="text-sm font-medium text-muted-foreground/60">
-        {isOver ? translations('title') : translations('titleAlt')}
+        {isOver ? translations('title') : (label ?? translations('titleAlt'))}
       </p>
     </div>
   )

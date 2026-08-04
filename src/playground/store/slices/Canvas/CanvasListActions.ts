@@ -1,6 +1,12 @@
 import type { StateCreator } from 'zustand'
 import type { Field, CanvasItem, CanvasField, FieldGroup } from '@/types/form'
 import type { FormBuilderState } from '@/playground/store/useFormBuilderStore'
+import {
+    removeFieldFromGroupItems,
+    removeItemFromTree,
+    insertItemIntoTree
+} from '@/playground/store/CanvasItemTree'
+import { isDescendantOrSelf } from '@/playground/utils/findItemById'
 
 export type CanvasListActions = {
     addField: (field: Omit<Field, 'id'>) => void
@@ -10,6 +16,7 @@ export type CanvasListActions = {
     reorderItem: (itemId: string, direction: 'up' | 'down') => void
     insertItemAt: (index: number, item: CanvasItem) => void
     moveItem: (sourceIndex: number, destinationIndex: number) => void
+    moveCanvasItem: (sourceId: string, targetId: string, edge: 'top' | 'bottom' | 'left' | 'right') => void
 }
 
 export const createCanvasListActions: StateCreator<FormBuilderState, [], [], CanvasListActions> = (set, get) => ({
@@ -46,11 +53,13 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         if (!formId) return
 
         const id = crypto.randomUUID()
-        const newGroup: FieldGroup = { id, kind: 'field_group', label: `${columns} Columns Row`, columns, items: [] }
+        const newGroup: FieldGroup = { id, kind: 'field_group', label: '', columns, items: [] }
 
         set({
             itemIds: [...itemIds, id],
             itemsData: { ...itemsData, [id]: newGroup },
+            lockedGroupId: id,
+            selectedItemId: id,
         })
     },
 
@@ -76,8 +85,8 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         for (const parentId of Object.keys(newItemsData)) {
             const parent = newItemsData[parentId]
             if (parent.kind === 'field_group') {
-                const filtered = parent.items.filter((child) => child.id !== itemId)
-                if (filtered.length !== parent.items.length) {
+                const filtered = removeFieldFromGroupItems(parent.items, itemId)
+                if (filtered !== parent.items) {
                     newItemsData[parentId] = { ...parent, items: filtered }
                     break
                 }
@@ -132,5 +141,22 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         newItemIds.splice(destinationIndex, 0, movedId)
 
         set({ itemIds: newItemIds })
+    },
+
+    moveCanvasItem: (sourceId, targetId, edge) => {
+        const { formId, itemIds, itemsData } = get()
+        if (!formId) return
+        if (isDescendantOrSelf(itemsData, sourceId, targetId)) return
+
+        const { removedItem, newItemIds, newItemsData } = removeItemFromTree(itemIds, itemsData, sourceId)
+        if (!removedItem) return
+
+        const position = (edge === 'top' || edge === 'left') ? 'before' : 'after'
+        const result = insertItemIntoTree(newItemIds, newItemsData, targetId, removedItem, position)
+
+        set({
+            itemIds: result.newItemIds,
+            itemsData: result.newItemsData,
+        })
     },
 })

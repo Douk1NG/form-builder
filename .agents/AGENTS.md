@@ -329,19 +329,24 @@ The core library exports:
 | File | Type | Location |
 |---|---|---|
 | `src/utils/file.test.ts` | Unit (utility) | ✅ Co-located |
+| `src/playground/utils/handleCanvasDrop.test.ts` | Unit (utility) | ✅ Co-located |
+| `src/playground/utils/findItemById.test.ts` | Unit (utility) | ✅ Co-located |
 | `src/playground/store/useFormBuilderStore.test.ts` | Unit (store) | ✅ Co-located |
+| `src/playground/store/BuilderPersistence.test.ts` | Unit (store) | ✅ Co-located |
 | `src/playground/components/FormCanvas/FieldRenderer/CanvasFieldWrapper.test.tsx` | Component | ✅ Co-located |
 | `src/playground/components/FieldPalette/FieldPalette.test.tsx` | Component | ✅ Co-located |
 | `src/playground/components/FormCanvas/FormCanvas.test.tsx` | Component | ✅ Co-located |
-| `tests/e2e/playground.spec.ts` | E2E (skeleton) | ⚠️ Placeholder only |
+| `tests/e2e/uc1-first-load.spec.ts` | E2E (Playwright) | ✅ Dedicated tests/e2e |
+| `tests/e2e/uc2-palette-selection.spec.ts` | E2E (Playwright) | ✅ Dedicated tests/e2e |
+| `tests/e2e/uc3-field-properties.spec.ts` | E2E (Playwright) | ✅ Dedicated tests/e2e |
+| `tests/e2e/uc4-preview-form.spec.ts` | E2E (Playwright) | ✅ Dedicated tests/e2e |
+| `tests/e2e/uc5-export-json.spec.ts` | E2E (Playwright) | ✅ Dedicated tests/e2e |
 
 ### Testing Gaps (Priority Targets)
 
 These areas have **zero test coverage** and are the most bug-prone:
-1. **`handleCanvasDrop.ts`** — the central drop handler; complex branching logic
-2. **Store slices** — `CanvasListActions`, `CanvasGroupActions` (only the combined store has tests)
-3. **`CanvasItemTree.ts`** — recursive tree traversal (update/remove nested fields)
-4. **`findItemById.ts`** — recursive item lookup
-5. **`resolveLocalizedString`** — locale resolution with fallback chain
-6. **All playground hooks** — 18 hooks with zero tests
-7. **`safeParse.ts`** — parsing utilities
+1. **Store slices** — `CanvasListActions`, `CanvasGroupActions` (only the combined store has tests)
+2. **`CanvasItemTree.ts`** — recursive tree traversal (update/remove nested fields)
+3. **`resolveLocalizedString`** — locale resolution with fallback chain
+4. **All playground hooks** — 18 hooks with zero tests
+5. **`safeParse.ts`** — parsing utilities

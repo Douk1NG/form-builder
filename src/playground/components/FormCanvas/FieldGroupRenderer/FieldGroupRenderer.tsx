@@ -1,4 +1,4 @@
-import { GripVertical, Trash2, Layers, ArrowUp, ArrowDown, Lock, Unlock, Plus } from 'lucide-react'
+import { GripVertical, Trash2, Layers, ArrowUp, ArrowDown, Lock, Unlock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { resolveLocalizedString } from '@/utils/locales'
 import type { Field } from '@/types/form'
@@ -23,7 +23,6 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
     handleRemoveFieldFromGroup,
     handleKeyDown,
     handleToggleLock,
-    handleAddRow,
     elementRef,
     dragHandleRef,
     isDragging,
@@ -55,6 +54,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
 
   const headerClass = isLocked ? lockedClassValues.header : unlockedClassValues.header
   const iconClass = isLocked ? lockedClassValues.icon : unlockedClassValues.icon
+  const labelClass = isLocked ? lockedClassValues.label : unlockedClassValues.label
 
   const lockGroupTranslationLabel = isLocked
     ? translations('status.unlock')
@@ -65,8 +65,6 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
   const closestEdgeMap = {
     isTopEdge: closestEdge === 'top',
     isBottomEdge: closestEdge === 'bottom',
-    isLeftEdge: closestEdge === 'left',
-    isRightEdge: closestEdge === 'right'
   }
 
   return (
@@ -91,9 +89,9 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
           <GripVertical className="h-4 w-4" />
         </button>
         <div className={`p-1.5 rounded-lg ${iconClass}`}>
-          <Layers className={`h-4 w-4 ${lockedClassValues.label}`} />
+          <Layers className={`h-4 w-4 ${labelClass}`} />
         </div>
-        <span className={`font-bold text-base text-foreground tracking-tight flex-1 ${lockedClassValues.label}`}>
+        <span className={`font-bold text-base text-foreground tracking-tight flex-1 ${labelClass}`}>
           {resolveLocalizedString(group.label)}
         </span>
 
@@ -103,11 +101,17 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
           </span>
         )}
 
+        {group.columns && group.columns > 1 && (
+          <span className="text-xs font-semibold text-violet-600 dark:text-violet-400 px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 mr-1">
+            {group.columns} Columns
+          </span>
+        )}
+
         <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1">
           <Button
             variant="ghost"
             size="icon"
-            className={`h-7 w-7 rounded-md hover:bg-muted ${lockedClassValues.label}`}
+            className={`h-7 w-7 rounded-md hover:bg-muted ${labelClass}`}
             onClick={handleToggleLock}
             title={lockGroupTranslationLabel}
           >
@@ -164,39 +168,33 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
               key={id}
               field={groupItem as Field}
               groupId={groupId}
+              index={itemIndex}
               onRemove={handleRemoveFieldFromGroup(id)}
             />
           )
         })}
 
-        {Array.from({ length: emptySlotCount }).map((_, slotIndex) => (
-          <GroupDropZone key={`dropzone-${slotIndex}`} groupId={groupId} />
-        ))}
+        {Array.from({ length: emptySlotCount }).map((_, slotIndex) => {
+          const customLabel = group.columns === 2 
+            ? 'Drop field' 
+            : undefined
+          
+          return (
+            <GroupDropZone 
+              key={`dropzone-${slotIndex}`} 
+              groupId={groupId} 
+              label={customLabel}
+            />
+          )
+        })}
       </div>
 
-      {/* Add Row Button */}
-      <div className="px-5 pb-4">
-        <button
-          type="button"
-          className="w-full py-2.5 rounded-xl border-2 border-dashed border-border/30 hover:border-primary/40 bg-muted/10 hover:bg-primary/5 text-muted-foreground/60 hover:text-primary transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium"
-          onClick={handleAddRow}
-        >
-          <Plus className="h-4 w-4" />
-          {translations('add-two-column-row-btn')}
-        </button>
-      </div>
 
       {closestEdgeMap.isTopEdge && (
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary rounded-t-2xl z-20 pointer-events-none" />
       )}
       {closestEdgeMap.isBottomEdge && (
         <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-primary rounded-b-2xl z-20 pointer-events-none" />
-      )}
-      {closestEdgeMap.isLeftEdge && (
-        <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-primary rounded-l-2xl z-20 pointer-events-none" />
-      )}
-      {closestEdgeMap.isRightEdge && (
-        <div className="absolute top-0 bottom-0 right-0 w-1.5 bg-primary rounded-r-2xl z-20 pointer-events-none" />
       )}
     </div>
   )

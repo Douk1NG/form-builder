@@ -13,6 +13,7 @@ import type {
 } from '@/types/form'
 
 import type { CanvasListActions } from '../store/slices/Canvas/CanvasListActions'
+import { findItemById, isDescendantOrSelf } from '@/playground/utils/findItemById'
 
 const twoColumnLayout = 2
 const idSuffixLength = 8
@@ -24,8 +25,11 @@ type HandleCanvasDropParameters = {
     itemsData: Record<string, CanvasItem>
     insertItemAt: CanvasListActions['insertItemAt']
     moveItem: CanvasListActions['moveItem']
+    moveCanvasItem: CanvasListActions['moveCanvasItem']
     addField: CanvasListActions['addField']
     addFieldToGroup: (groupId: string, field: Omit<Field, 'id'>) => void
+    addGroupToGroup: (groupId: string, label: string) => void
+    addRowToGroup: (groupId: string) => void
     createGroupFromDrop: (sourceId: string, targetId: string, edge: 'left' | 'right') => void
     createGroupWithNewField: (targetId: string, field: Omit<Field, 'id'>, edge: 'left' | 'right') => void
     moveFieldToGroup: (sourceId: string, groupId: string) => void
@@ -36,21 +40,31 @@ function handlePaletteLayoutDrop(
     fieldType: 'field_group' | 'column_row',
     destinationData: CanvasDropData,
     itemIds: string[],
-    insertItemAt: HandleCanvasDropParameters['insertItemAt']
+    dependencies: Pick<HandleCanvasDropParameters, 'insertItemAt' | 'addGroupToGroup' | 'addRowToGroup'>
 ) {
     const isColumnRow = fieldType === 'column_row'
+    
+    if (destinationData.groupId) {
+        if (isColumnRow) {
+            dependencies.addRowToGroup(destinationData.groupId)
+        } else {
+            dependencies.addGroupToGroup(destinationData.groupId, 'Field Group')
+        }
+        return
+    }
+
     const newGroup: CanvasItem = {
         id: crypto.randomUUID(),
         kind: 'field_group',
-        label: isColumnRow ? '2 Columns Row' : 'Field Group',
+        label: isColumnRow ? '' : 'Field Group',
         ...(isColumnRow ? { columns: twoColumnLayout } : {}),
         items: [],
     }
 
     if (destinationData.isCanvas) {
-        insertItemAt(itemIds.length, newGroup)
+        dependencies.insertItemAt(itemIds.length, newGroup)
     } else if (typeof destinationData.insertIndex === 'number') {
-        insertItemAt(destinationData.insertIndex, newGroup)
+        dependencies.insertItemAt(destinationData.insertIndex, newGroup)
     }
 }
 
@@ -87,12 +101,20 @@ function handleCanvasSourceDrop(
     destinationData: CanvasDropData,
     edge: ReturnType<typeof extractClosestEdge>,
     itemsData: Record<string, CanvasItem>,
-    dependencies: Pick<HandleCanvasDropParameters, 'mergeGroupIntoGroup' | 'moveFieldToGroup' | 'createGroupFromDrop' | 'moveItem'>
+    dependencies: Pick<HandleCanvasDropParameters, 'mergeGroupIntoGroup' | 'moveFieldToGroup' | 'createGroupFromDrop' | 'moveItem' | 'moveCanvasItem'>
 ) {
     const sourceId = canvasData.id
-    const sourceItem = itemsData[sourceId]
+    const sourceItem = findItemById(itemsData, sourceId)
     const targetId = destinationData.id
-    const targetItem = targetId ? itemsData[targetId] : null
+    const targetItem = targetId ? findItemById(itemsData, targetId) : null
+
+    if (targetId && isDescendantOrSelf(itemsData, sourceId, targetId)) {
+        return
+    }
+
+    if (destinationData.groupId && isDescendantOrSelf(itemsData, sourceId, destinationData.groupId)) {
+        return
+    }
 
     if (destinationData.groupId) {
         if (sourceItem?.kind === 'field_group') {
@@ -108,8 +130,13 @@ function handleCanvasSourceDrop(
         return
     }
 
-    if ((edge === 'left' || edge === 'right') && targetId) {
+    if ((edge === 'left' || edge === 'right') && targetId && sourceItem?.kind === 'field' && targetItem?.kind === 'field') {
         dependencies.createGroupFromDrop(sourceId, targetId, edge)
+        return
+    }
+
+    if (targetId && edge) {
+        dependencies.moveCanvasItem(sourceId, targetId, edge)
         return
     }
 
@@ -125,8 +152,11 @@ export function handleCanvasDrop({
     itemsData,
     insertItemAt,
     moveItem,
+    moveCanvasItem,
     addField,
     addFieldToGroup,
+    addGroupToGroup,
+    addRowToGroup,
     createGroupFromDrop,
     createGroupWithNewField,
     moveFieldToGroup,
@@ -141,7 +171,7 @@ export function handleCanvasDrop({
                 sourceData.type,
                 typedDestinationData,
                 itemIds,
-                insertItemAt
+                { insertItemAt, addGroupToGroup, addRowToGroup }
             )
         } else {
             handlePaletteFieldDrop(
@@ -171,7 +201,7 @@ export function handleCanvasDrop({
             typedDestinationData,
             edge,
             itemsData,
-            { mergeGroupIntoGroup, moveFieldToGroup, createGroupFromDrop, moveItem }
+            { mergeGroupIntoGroup, moveFieldToGroup, createGroupFromDrop, moveItem, moveCanvasItem }
         )
     }
 }

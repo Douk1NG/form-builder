@@ -5,6 +5,7 @@ import { LayoutSection } from './LayoutSection'
 export function FieldPalette() {
   const {
     previewMode,
+    isLayoutDisabled,
     handleAddField,
     handleAddGroup,
     handleAddRow
@@ -17,6 +18,7 @@ export function FieldPalette() {
       <LayoutSection
         onAddGroup={handleAddGroup}
         onAddRow={handleAddRow}
+        disabled={isLayoutDisabled}
       />
       <FieldsSection
         onAddField={handleAddField}

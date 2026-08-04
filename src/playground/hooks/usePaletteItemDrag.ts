@@ -4,15 +4,16 @@ import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 type UsePaletteItemDragParameters = {
     type: string
     label: string
+    disabled?: boolean
 }
 
-export function usePaletteItemDrag({ type, label }: UsePaletteItemDragParameters) {
+export function usePaletteItemDrag({ type, label, disabled }: UsePaletteItemDragParameters) {
     const buttonRef = useRef<HTMLButtonElement>(null)
     const [isDragging, setIsDragging] = useState(false)
 
     useEffect(() => {
         const element = buttonRef.current
-        if (!element) return
+        if (!element || disabled) return
 
         return draggable({
             element,
@@ -20,7 +21,7 @@ export function usePaletteItemDrag({ type, label }: UsePaletteItemDragParameters
             onDragStart: () => setIsDragging(true),
             onDrop: () => setIsDragging(false),
         })
-    }, [type, label])
+    }, [type, label, disabled])
 
     return {
         buttonRef,

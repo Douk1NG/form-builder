@@ -11,8 +11,11 @@ export function useFormCanvas() {
   const getFormSchema = useFormBuilderStore((state) => state.getFormSchema)
   const insertItemAt = useFormBuilderStore((state) => state.insertItemAt)
   const moveItem = useFormBuilderStore((state) => state.moveItem)
+  const moveCanvasItem = useFormBuilderStore((state) => state.moveCanvasItem)
   const addField = useFormBuilderStore((state) => state.addField)
   const addFieldToGroup = useFormBuilderStore((state) => state.addFieldToGroup)
+  const addGroupToGroup = useFormBuilderStore((state) => state.addGroupToGroup)
+  const addRowToGroup = useFormBuilderStore((state) => state.addRowToGroup)
   const createGroupFromDrop = useFormBuilderStore((state) => state.createGroupFromDrop)
   const createGroupWithNewField = useFormBuilderStore((state) => state.createGroupWithNewField)
   const moveFieldToGroup = useFormBuilderStore((state) => state.moveFieldToGroup)
@@ -32,8 +35,11 @@ export function useFormCanvas() {
           itemsData,
           insertItemAt,
           moveItem,
+          moveCanvasItem,
           addField,
           addFieldToGroup,
+          addGroupToGroup,
+          addRowToGroup,
           createGroupFromDrop,
           createGroupWithNewField,
           moveFieldToGroup,
@@ -45,7 +51,10 @@ export function useFormCanvas() {
     addField,
     insertItemAt,
     moveItem,
+    moveCanvasItem,
     addFieldToGroup,
+    addGroupToGroup,
+    addRowToGroup,
     createGroupFromDrop,
     createGroupWithNewField,
     moveFieldToGroup,

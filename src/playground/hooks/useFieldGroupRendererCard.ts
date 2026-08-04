@@ -2,7 +2,7 @@ import type React from 'react'
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import { useFieldGroupRenderer } from '@/playground/hooks/useFieldGroupRenderer'
 import { useEdgeDraggable } from './useEdgeDraggable'
-import { Edges } from '@/playground/constants/edgeConstants'
+import { TOP, BOTTOM } from '@/playground/constants/edgeConstants'
 
 const minimumEmptySlots = 1
 
@@ -28,7 +28,7 @@ export function useFieldGroupRendererCard(groupId: string, index: number) {
     dragHandleRef, isDragging, isDragOver, closestEdge } = useEdgeDraggable({
       id: groupId,
       index,
-      allowedEdges: Edges,
+      allowedEdges: [TOP, BOTTOM],
     })
 
   const selectedStyles = 'border-primary/60 ring-2 ring-primary/15 shadow-md shadow-primary/5 bg-card/90'
@@ -61,9 +61,9 @@ export function useFieldGroupRendererCard(groupId: string, index: number) {
     addRowToGroup(groupId)
   }
 
-  const emptySlotCount = group?.columns
-    ? Math.max(minimumEmptySlots, group.columns - group.items.length)
-    : minimumEmptySlots
+  const emptySlotCount = group?.items.length === 0
+    ? (group.columns || minimumEmptySlots)
+    : 0
 
   return {
     group,

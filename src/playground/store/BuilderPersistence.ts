@@ -18,7 +18,8 @@ export function partializeFormBuilderState(state: FormBuilderState): PersistedFo
         formDescription: state.formDescription,
         itemIds: state.itemIds,
         itemsData: state.itemsData,
-    } as PersistedFormBuilderState
+        savedForms: state.savedForms,
+    }
 }
 
 export const formBuilderPersistConfig = {

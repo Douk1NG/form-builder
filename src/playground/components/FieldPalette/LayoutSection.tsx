@@ -5,11 +5,13 @@ import { useTranslation } from 'react-i18next'
 type LayoutSectionProps = {
     onAddGroup: () => void
     onAddRow: () => void
+    disabled?: boolean
 }
 
 export function LayoutSection({
     onAddGroup,
-    onAddRow
+    onAddRow,
+    disabled
 }: LayoutSectionProps) {
 
     const { t: translation } = useTranslation(
@@ -31,12 +33,14 @@ export function LayoutSection({
                     label={translation('group')}
                     icon="layers"
                     onClick={onAddGroup}
+                    disabled={disabled}
                 />
                 <PaletteItem
                     type="column_row"
                     label={translation('twoColumnRow')}
                     icon="columns"
                     onClick={onAddRow}
+                    disabled={disabled}
                 />
             </div>
         </div>

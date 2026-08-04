@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 
 export function useFormSwitcher() {
@@ -19,16 +19,37 @@ export function useFormSwitcher() {
         setEditTitleValue(formTitle)
     }, [formTitle])
 
-    //code needs review, saved form is always 0 until I create a new and suddenly appers 2, plus new I create a new one the last is being erased
+    const hasShownInitialDialogReference = useRef(false)
+
     useEffect(() => {
-        const savedFormsList = Object.values(savedForms)
-        if (savedFormsList.length === 0 && !isDialogOpen) {
-            // only exec 1, if the user close the dialog then it won't open again.
-            // This logic is flawed, when the user closes the dialog it will still open again due to state change
+        if (hasShownInitialDialogReference.current) return
+
+        const hasSavedForms = Object.keys(savedForms).length > 0
+        const hasActiveForm = Boolean(formId)
+
+        if (!hasSavedForms && !hasActiveForm) {
+            hasShownInitialDialogReference.current = true
             setIsDialogOpen(true)
-            return
         }
-    }, [savedForms])
+    }, [savedForms, formId])
+
+    // Auto-sync active form into savedForms list if it's missing (e.g., on first reload or legacy load)
+    useEffect(() => {
+        if (formId && !savedForms[formId]) {
+            useFormBuilderStore.setState((state) => ({
+                savedForms: {
+                    ...state.savedForms,
+                    [formId]: {
+                        formId,
+                        formTitle,
+                        formDescription: state.formDescription,
+                        itemIds: state.itemIds,
+                        itemsData: state.itemsData,
+                    }
+                }
+            }))
+        }
+    }, [formId, formTitle, savedForms])
 
     const handleCreate = () => {
         const trimmedTitle = newTitle.trim()

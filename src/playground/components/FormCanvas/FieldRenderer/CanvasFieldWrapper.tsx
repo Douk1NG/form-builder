@@ -1,5 +1,5 @@
 import { GripVertical } from 'lucide-react'
-import { LEFT, RIGHT } from '@/playground/constants/edgeConstants'
+import { LEFT, RIGHT, TOP, BOTTOM } from '@/playground/constants/edgeConstants'
 import { useEdgeDraggable } from '@/playground/hooks/useEdgeDraggable'
 import { useCanvasFieldWrapper } from '@/playground/hooks/useCanvasFieldWrapper'
 import { FieldActionToolbar } from '@/playground/components/FormCanvas/FieldRenderer/FieldActionToolbar'
@@ -34,12 +34,14 @@ export function CanvasFieldWrapper({
   } = useEdgeDraggable({
     id,
     index,
-    allowedEdges: [LEFT, RIGHT]
+    allowedEdges: [LEFT, RIGHT, TOP, BOTTOM]
   })
 
   const {
     isLeftEdge,
     isRightEdge,
+    isTopEdge,
+    isBottomEdge,
     draggingClassName,
     borderClass,
     handleOnKeyDown
@@ -57,6 +59,7 @@ export function CanvasFieldWrapper({
       onClick={onSelect}
       role="button"
       tabIndex={0}
+      data-canvas-field-wrapper="true"
       onKeyDown={(event) => handleOnKeyDown(event, onSelect)}
     >
       <button
@@ -82,6 +85,12 @@ export function CanvasFieldWrapper({
       )}
       {isRightEdge && (
         <div className="absolute top-0 bottom-0 right-0 w-2 bg-primary rounded-r-xl z-20" />
+      )}
+      {isTopEdge && (
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary rounded-t-xl z-20 pointer-events-none" />
+      )}
+      {isBottomEdge && (
+        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-primary rounded-b-xl z-20 pointer-events-none" />
       )}
     </div>
   )

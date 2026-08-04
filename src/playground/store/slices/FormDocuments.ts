@@ -118,13 +118,40 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
     },
 
     deleteForm: (targetFormId) => {
-        const { savedForms } = get()
+        const { formId, savedForms } = get()
 
         const newSavedForms = { ...savedForms }
         delete newSavedForms[targetFormId]
 
-        set({
-            savedForms: newSavedForms,
-        })
+        if (formId === targetFormId) {
+            const remainingFormIds = Object.keys(newSavedForms)
+            if (remainingFormIds.length > 0) {
+                const nextFormId = remainingFormIds[0]
+                const nextForm = newSavedForms[nextFormId]
+                set({
+                    formId: nextForm.formId,
+                    formTitle: nextForm.formTitle,
+                    formDescription: nextForm.formDescription,
+                    itemIds: nextForm.itemIds,
+                    itemsData: nextForm.itemsData,
+                    selectedItemId: null,
+                    savedForms: newSavedForms,
+                })
+            } else {
+                set({
+                    formId: '',
+                    formTitle: '',
+                    formDescription: '',
+                    itemIds: [],
+                    itemsData: {},
+                    selectedItemId: null,
+                    savedForms: newSavedForms,
+                })
+            }
+        } else {
+            set({
+                savedForms: newSavedForms,
+            })
+        }
     }
 })

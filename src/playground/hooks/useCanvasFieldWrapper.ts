@@ -1,5 +1,5 @@
 import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types"
-import { LEFT, RIGHT } from "@/playground/constants/edgeConstants"
+import { LEFT, RIGHT, TOP, BOTTOM } from "@/playground/constants/edgeConstants"
 import { getBorderClass, draggingClassName } from "@/playground/utils/canvasFieldWrapperStyles"
 
 type useCanvasFieldWrapperParameters = {
@@ -17,6 +17,8 @@ const useCanvasFieldWrapper = ({
 }: useCanvasFieldWrapperParameters) => {
     const isLeftEdge = closestEdge === LEFT
     const isRightEdge = closestEdge === RIGHT
+    const isTopEdge = closestEdge === TOP
+    const isBottomEdge = closestEdge === BOTTOM
 
     const borderClass = getBorderClass(isSelected, isDragOver)
     const draggingClassNameValue = isDragging ? draggingClassName : ''
@@ -33,6 +35,8 @@ const useCanvasFieldWrapper = ({
     return {
         isLeftEdge,
         isRightEdge,
+        isTopEdge,
+        isBottomEdge,
         borderClass,
         draggingClassName: draggingClassNameValue,
         handleOnKeyDown
