@@ -67,6 +67,11 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         const { formId, itemIds, itemsData, selectedItemId, lockedGroupId } = get()
         if (!formId) return
 
+        const shouldClearSelectedItem = selectedItemId === itemId ||
+            (selectedItemId !== null && isDescendantOrSelf(itemsData, itemId, selectedItemId))
+        const shouldClearLockedGroup = lockedGroupId === itemId ||
+            (lockedGroupId !== null && isDescendantOrSelf(itemsData, itemId, lockedGroupId))
+
         if (itemsData[itemId]) {
             const newItemIds = itemIds.filter((id) => id !== itemId)
             const newItemsData = { ...itemsData }
@@ -75,8 +80,8 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
             set({
                 itemIds: newItemIds,
                 itemsData: newItemsData,
-                selectedItemId: selectedItemId === itemId ? null : selectedItemId,
-                lockedGroupId: lockedGroupId === itemId ? null : lockedGroupId,
+                selectedItemId: shouldClearSelectedItem ? null : selectedItemId,
+                lockedGroupId: shouldClearLockedGroup ? null : lockedGroupId,
             })
             return
         }
@@ -95,8 +100,8 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
 
         set({
             itemsData: newItemsData,
-            selectedItemId: selectedItemId === itemId ? null : selectedItemId,
-            lockedGroupId: lockedGroupId === itemId ? null : lockedGroupId,
+            selectedItemId: shouldClearSelectedItem ? null : selectedItemId,
+            lockedGroupId: shouldClearLockedGroup ? null : lockedGroupId,
         })
     },
 

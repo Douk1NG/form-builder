@@ -18,14 +18,14 @@ export const resolveLocalizedString = (
         return value
     }
 
-    if (value[locale]) {
+    if (typeof value[locale] === 'string' && value[locale].trim() !== '') {
         return value[locale]
     }
 
-    if (value['en']) {
+    if (typeof value['en'] === 'string' && value['en'].trim() !== '') {
         return value['en']
     }
 
-    const firstKey = Object.keys(value)[0]
+    const firstKey = Object.keys(value).find((key) => typeof value[key] === 'string' && value[key].trim() !== '')
     return firstKey ? value[firstKey] : ''
 }

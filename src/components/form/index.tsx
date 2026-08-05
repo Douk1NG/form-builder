@@ -76,10 +76,14 @@ const FormBuilder = ({
         if ('kind' in item) {
             if (item.kind === 'field_group') {
                 const group = item as FieldGroup;
+                const groupColumnsClass = group.columns === 2 ? 'md:grid-cols-2' : '';
+                const resolvedLabel = translate(resolveLocalizedString(group.label, locale));
                 return (
                     <div key={group.id} className="space-y-6 p-6 rounded-2xl border border-border/40 bg-card/40 backdrop-blur-sm">
-                        <h3 className="font-bold text-xl tracking-tight text-foreground">{translate(resolveLocalizedString(group.label, locale))}</h3>
-                        <div className="space-y-4">
+                        {resolvedLabel && (
+                            <h3 className="font-bold text-xl tracking-tight text-foreground">{resolvedLabel}</h3>
+                        )}
+                        <div className={`grid gap-4 grid-cols-1 ${groupColumnsClass}`}>
                             {group.items.map((groupItem, index) => (
                                 <div key={'id' in groupItem ? groupItem.id : index}>
                                     {renderItem(groupItem)}

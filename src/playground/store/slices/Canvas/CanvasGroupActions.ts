@@ -7,7 +7,8 @@ import {
     addItemToGroupItems,
     updateGroupInGroupItems,
     removeItemFromTree,
-    mergeItemsIntoGroupInTree
+    mergeItemsIntoGroupInTree,
+    replaceItemInGroupItems
 } from '@/playground/store/CanvasItemTree'
 import { findItemById, isDescendantOrSelf } from '@/playground/utils/findItemById'
 
@@ -40,9 +41,13 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
             }
 
             if (item.kind === 'field_group') {
-                updatedItemsData[itemId] = {
-                    ...item,
-                    items: updateFieldInGroupItems(item.items, fieldId, updates),
+                const updatedGroupItems = updateFieldInGroupItems(item.items, fieldId, updates)
+                if (updatedGroupItems !== item.items) {
+                    updatedItemsData[itemId] = {
+                        ...item,
+                        items: updatedGroupItems,
+                    }
+                    break
                 }
             }
         }
@@ -256,7 +261,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         const { formId, itemIds, itemsData } = get()
         if (!formId) return
 
-        const targetItem = itemsData[targetId]
+        const targetItem = findItemById(itemsData, targetId)
         if (!targetItem || targetItem.kind !== 'field') return
 
         const newFieldId = crypto.randomUUID()
@@ -274,24 +279,44 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
             items: [leftItem as CanvasField, rightItem as CanvasField],
         }
 
-        const finalItemIds: string[] = []
-        for (const id of itemIds) {
-            if (id === targetId) {
-                finalItemIds.push(groupId)
-            } else {
-                finalItemIds.push(id)
+        const isTopLevel = itemIds.includes(targetId)
+        if (isTopLevel) {
+            const finalItemIds: string[] = []
+            for (const id of itemIds) {
+                if (id === targetId) {
+                    finalItemIds.push(groupId)
+                } else {
+                    finalItemIds.push(id)
+                }
             }
+            const newItemsData = { ...itemsData }
+            delete newItemsData[targetId]
+            newItemsData[groupId] = newGroup
+
+            set({
+                itemIds: finalItemIds,
+                itemsData: newItemsData,
+                selectedItemId: groupId,
+            })
+        } else {
+            const newItemsData = { ...itemsData }
+            for (const parentId of Object.keys(newItemsData)) {
+                const parent = newItemsData[parentId]
+                if (parent.kind === 'field_group') {
+                    const replacedItems = replaceItemInGroupItems(parent.items, targetId, newGroup)
+                    if (replacedItems !== parent.items) {
+                        newItemsData[parentId] = { ...parent, items: replacedItems }
+                        break
+                    }
+                }
+            }
+
+            set({
+                itemIds: itemIds,
+                itemsData: newItemsData,
+                selectedItemId: groupId,
+            })
         }
-
-        const newItemsData = { ...itemsData }
-        delete newItemsData[targetId]
-        newItemsData[groupId] = newGroup
-
-        set({
-            itemIds: finalItemIds,
-            itemsData: newItemsData,
-            selectedItemId: groupId,
-        })
     },
 
     moveFieldToGroup: (fieldId, groupId) => {

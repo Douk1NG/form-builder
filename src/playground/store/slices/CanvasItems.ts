@@ -36,7 +36,7 @@ export const createCanvasItemsSlice: StateCreator<FormBuilderState, [], [], Canv
                 id: formId,
                 title: formTitle,
                 description: formDescription,
-                items: itemIds.map((id) => itemsData[id]),
+                items: itemIds.map((id) => itemsData[id]).filter(Boolean),
             }
         },
     }

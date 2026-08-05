@@ -228,6 +228,29 @@ function insertItemIntoGroupItems(
     return changed ? mapped : items
 }
 
+export function replaceItemInGroupItems(
+    items: Array<CanvasField | FieldGroup>,
+    targetId: string,
+    newItem: CanvasField | FieldGroup
+): Array<CanvasField | FieldGroup> {
+    let changed = false
+    const mapped = items.map((item) => {
+        if (item.id === targetId) {
+            changed = true
+            return newItem
+        }
+        if (item.kind === 'field_group') {
+            const updatedSubItems = replaceItemInGroupItems(item.items, targetId, newItem)
+            if (updatedSubItems !== item.items) {
+                changed = true
+                return { ...item, items: updatedSubItems }
+            }
+        }
+        return item
+    })
+    return changed ? mapped : items
+}
+
 export function mergeItemsIntoGroupInTree(
     itemIds: string[],
     itemsData: Record<string, CanvasItem>,

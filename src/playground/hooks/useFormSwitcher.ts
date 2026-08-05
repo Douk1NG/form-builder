@@ -27,7 +27,8 @@ export function useFormSwitcher() {
 
     // Auto-sync active form into savedForms list if it's missing (e.g., on first reload or legacy load)
     useEffect(() => {
-        if (formId && !savedForms[formId]) {
+        const currentSavedForms = useFormBuilderStore.getState().savedForms
+        if (formId && !currentSavedForms[formId]) {
             useFormBuilderStore.setState((state) => ({
                 savedForms: {
                     ...state.savedForms,
@@ -41,7 +42,7 @@ export function useFormSwitcher() {
                 }
             }))
         }
-    }, [formId, formTitle, savedForms])
+    }, [formId, formTitle])
 
     const handleCreate = () => {
         const trimmedTitle = newTitle.trim()
@@ -72,10 +73,8 @@ export function useFormSwitcher() {
         return
     }
 
-    // I have to delete twice.. 1st call is not deleting at all, probably has a corelation with prev bug reported
     const handleDelete = (targetFormId: string) => {
         deleteForm(targetFormId)
-        //should I switch form after delete?
         return
     }
 
