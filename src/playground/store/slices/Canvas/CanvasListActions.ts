@@ -1,15 +1,15 @@
 import type { StateCreator } from 'zustand'
-import type { Field, CanvasItem, CanvasField, FieldGroup } from '@/types/form'
+import type { Field, CanvasItem, CanvasField, FieldGroup, NewFieldInput } from '@/types/form'
 import type { FormBuilderState } from '@/playground/store/useFormBuilderStore'
 import {
     removeFieldFromGroupItems,
-    removeItemFromTree,
-    insertItemIntoTree
+    removeItemFromTree
 } from '@/playground/store/CanvasItemTree'
+import { insertItemIntoTree } from '@/playground/store/CanvasItemTreeMerge'
 import { isDescendantOrSelf } from '@/playground/utils/findItemById'
 
 export type CanvasListActions = {
-    addField: (field: Omit<Field, 'id'>) => void
+    addField: (field: NewFieldInput) => void
     addGroup: (label: string) => void
     addRow: (columns: number) => void
     removeCanvasItem: (itemId: string) => void
@@ -72,33 +72,21 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         const shouldClearLockedGroup = lockedGroupId === itemId ||
             (lockedGroupId !== null && isDescendantOrSelf(itemsData, itemId, lockedGroupId))
 
+        let newItemsData = { ...itemsData }
+        let newItemIds = itemIds
+
         if (itemsData[itemId]) {
-            const newItemIds = itemIds.filter((id) => id !== itemId)
-            const newItemsData = { ...itemsData }
+            newItemIds = itemIds.filter((id) => id !== itemId)
             delete newItemsData[itemId]
-
-            set({
-                itemIds: newItemIds,
-                itemsData: newItemsData,
-                selectedItemId: shouldClearSelectedItem ? null : selectedItemId,
-                lockedGroupId: shouldClearLockedGroup ? null : lockedGroupId,
-            })
-            return
-        }
-
-        const newItemsData = { ...itemsData }
-        for (const parentId of Object.keys(newItemsData)) {
-            const parent = newItemsData[parentId]
-            if (parent.kind === 'field_group') {
-                const filtered = removeFieldFromGroupItems(parent.items, itemId)
-                if (filtered !== parent.items) {
-                    newItemsData[parentId] = { ...parent, items: filtered }
-                    break
-                }
+        } else {
+            const nestedResult = tryRemoveNestedItem(itemsData, itemId)
+            if (nestedResult) {
+                newItemsData = nestedResult
             }
         }
 
         set({
+            itemIds: newItemIds,
             itemsData: newItemsData,
             selectedItemId: shouldClearSelectedItem ? null : selectedItemId,
             lockedGroupId: shouldClearLockedGroup ? null : lockedGroupId,
@@ -165,3 +153,21 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         })
     },
 })
+
+function tryRemoveNestedItem(
+    itemsData: Record<string, CanvasItem>,
+    itemId: string
+): Record<string, CanvasItem> | null {
+    const newItemsData = { ...itemsData }
+    for (const parentId of Object.keys(newItemsData)) {
+        const parent = newItemsData[parentId]
+        if (parent.kind === 'field_group') {
+            const filtered = removeFieldFromGroupItems(parent.items, itemId)
+            if (filtered !== parent.items) {
+                newItemsData[parentId] = { ...parent, items: filtered }
+                return newItemsData
+            }
+        }
+    }
+    return null
+}

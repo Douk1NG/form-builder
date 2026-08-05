@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import { useShallow } from 'zustand/react/shallow'
 import type { FormSchema } from '@/playground/store/slices/CanvasItems'
+import type { CanvasItem } from '@/types/form'
 
 export function useFormCanvas() {
   const itemIds = useFormBuilderStore(useShallow((state) => state.itemIds))
@@ -68,9 +69,10 @@ export function useFormCanvas() {
   }
 
   const currentFormSchema: FormSchema | null = previewMode ? getFormSchema() : null
+  const canvasItems = itemIds.map((id) => itemsData[id]).filter((item): item is CanvasItem => Boolean(item))
 
   return {
-    itemIds,
+    canvasItems,
     previewMode,
     currentFormSchema,
     simulateSubmit,

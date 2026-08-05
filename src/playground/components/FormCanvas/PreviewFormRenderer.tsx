@@ -29,8 +29,7 @@ export function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: Previ
                             fields={currentFormSchema.items}
                             values={{}}
                             locale={previewLocale}
-                            // @ts-expect-error - dynamic key for translation
-                            translate={(key: string) => String(t(key))}
+                            translate={(key: string) => String(t(key as never))}
                             action={simulateSubmit}
                             isCreating={true}
                         />

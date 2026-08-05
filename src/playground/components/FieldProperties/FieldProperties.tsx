@@ -8,7 +8,6 @@ import { PropertiesSectionHeader } from './PropertiesSectionHeader'
 import { Settings2, Maximize2, Minimize2 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useFieldProperties } from '@/playground/hooks/useFieldProperties'
-import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import { useTranslation } from 'react-i18next'
 
 export function FieldProperties() {
@@ -23,6 +22,8 @@ export function FieldProperties() {
     selectedKind,
     selectedField,
     selectedGroup,
+    isPropertiesExpanded,
+    togglePropertiesExpanded,
     handleUpdateLabel,
     handleUpdateName,
     handleUpdateDescription,
@@ -32,9 +33,6 @@ export function FieldProperties() {
     handleUpdateOptions,
     handleUpdateGroupLabel
   } = useFieldProperties()
-
-  const isPropertiesExpanded = useFormBuilderStore((state) => state.isPropertiesExpanded)
-  const togglePropertiesExpanded = useFormBuilderStore((state) => state.togglePropertiesExpanded)
 
   const expandToggle = (
     <Button

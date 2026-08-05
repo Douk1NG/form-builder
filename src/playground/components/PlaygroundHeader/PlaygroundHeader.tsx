@@ -5,7 +5,6 @@ import { FormBuilderLogo } from './FormBuilderLogo'
 import { FormSwitcher } from './FormSwitcher'
 import { LocaleSwitcher } from './LocaleSwitcher'
 import { Eye, Pencil, Download } from 'lucide-react'
-import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import { usePlayground } from '@/playground/hooks/usePlayground'
 import { useTranslation } from 'react-i18next'
 
@@ -13,6 +12,8 @@ export function PlaygroundHeader() {
   const {
     formId,
     previewMode,
+    previewDevice,
+    setPreviewDevice,
     handleTogglePreview,
     handleExportJson,
   } = usePlayground()
@@ -20,9 +21,6 @@ export function PlaygroundHeader() {
   const { t: translations } = useTranslation('translation', {
     keyPrefix: 'playground.builder.header'
   })
-
-  const previewDevice = useFormBuilderStore((state) => state.previewDevice)
-  const setPreviewDevice = useFormBuilderStore((state) => state.setPreviewDevice)
 
   return (
     <header className="px-6 py-3 border-b bg-card/80 backdrop-blur-xl border-border/50 shadow-xs sticky top-0 z-50">

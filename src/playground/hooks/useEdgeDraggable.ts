@@ -4,6 +4,7 @@ import { attachClosestEdge, extractClosestEdge } from '@atlaskit/pragmatic-drag-
 import type { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types'
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import { isDescendantOrSelf } from '@/playground/utils/findItemById'
+import { isCanvasDragData } from '@/playground/types/dragDropTypes'
 
 type UseEdgeDraggableParameters = {
     id: string
@@ -41,8 +42,8 @@ export function useEdgeDraggable({ id, index, allowedEdges }: UseEdgeDraggablePa
                 )
             },
             canDrop: ({ source }) => {
-                if (source.data.source !== 'canvas') return true
-                const sourceId = source.data.id as string
+                if (!isCanvasDragData(source.data)) return true
+                const sourceId = source.data.id
                 return !isDescendantOrSelf(itemsData, sourceId, id)
             },
             onDragEnter: ({ self }) => {

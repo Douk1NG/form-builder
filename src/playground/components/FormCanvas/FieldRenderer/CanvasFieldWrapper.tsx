@@ -1,8 +1,9 @@
-import { GripVertical } from 'lucide-react'
 import { LEFT, RIGHT, TOP, BOTTOM } from '@/playground/constants/edgeConstants'
 import { useEdgeDraggable } from '@/playground/hooks/useEdgeDraggable'
 import { useCanvasFieldWrapper } from '@/playground/hooks/useCanvasFieldWrapper'
 import { FieldActionToolbar } from '@/playground/components/FormCanvas/FieldRenderer/FieldActionToolbar'
+import { EdgeIndicators } from '@/playground/components/FormCanvas/EdgeIndicators'
+import { DragHandle } from '@/playground/components/FormCanvas/DragHandle'
 
 export type CanvasFieldWrapperProps = {
   id: string
@@ -38,15 +39,10 @@ export function CanvasFieldWrapper({
   })
 
   const {
-    isLeftEdge,
-    isRightEdge,
-    isTopEdge,
-    isBottomEdge,
     draggingClassName,
     borderClass,
     handleOnKeyDown
   } = useCanvasFieldWrapper({
-    closestEdge,
     isSelected,
     isDragOver,
     isDragging
@@ -62,13 +58,7 @@ export function CanvasFieldWrapper({
       data-canvas-field-wrapper="true"
       onKeyDown={(event) => handleOnKeyDown(event, onSelect)}
     >
-      <button
-        ref={dragHandleRef}
-        type="button"
-        className="absolute left-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 cursor-grab active:cursor-grabbing transition-colors"
-      >
-        <GripVertical className="h-4 w-4" />
-      </button>
+      <DragHandle ref={dragHandleRef} />
 
       <FieldActionToolbar
         onMoveUp={onMoveUp}
@@ -80,18 +70,7 @@ export function CanvasFieldWrapper({
         {children}
       </div>
 
-      {isLeftEdge && (
-        <div className="absolute top-0 bottom-0 left-0 w-2 bg-primary rounded-l-xl z-20" />
-      )}
-      {isRightEdge && (
-        <div className="absolute top-0 bottom-0 right-0 w-2 bg-primary rounded-r-xl z-20" />
-      )}
-      {isTopEdge && (
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary rounded-t-xl z-20 pointer-events-none" />
-      )}
-      {isBottomEdge && (
-        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-primary rounded-b-xl z-20 pointer-events-none" />
-      )}
+      <EdgeIndicators closestEdge={closestEdge} />
     </div>
   )
 }

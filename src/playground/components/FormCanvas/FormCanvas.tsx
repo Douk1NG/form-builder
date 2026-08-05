@@ -3,22 +3,18 @@ import { EmptyCanvasPlaceholder } from './EmptyCanvasPlaceholder'
 import { InheritanceProvider } from '@/context/InheritanceProvider'
 import { PreviewFormRenderer } from './PreviewFormRenderer'
 import { useCanvasDropTarget } from '@/playground/hooks/useCanvasDropTarget'
-import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import { useFormCanvas } from '@/playground/hooks/useFormCanvas'
-import type { CanvasItem } from '@/types/form'
 
 const activeDropZoneStyles = 'bg-primary/5 border-primary/40 shadow-inner shadow-primary/5'
 const idleDropZoneStyles = 'bg-transparent border-transparent hover:border-border/20'
 
 export function FormCanvas() {
   const {
-    itemIds,
+    canvasItems,
     previewMode,
     currentFormSchema,
     simulateSubmit,
   } = useFormCanvas()
-
-  const itemsData = useFormBuilderStore((state) => state.itemsData)
 
   const {
     dropTargetRef,
@@ -34,7 +30,6 @@ export function FormCanvas() {
     )
   }
 
-  const canvasItems = itemIds.map((id) => itemsData[id]).filter((item): item is CanvasItem => Boolean(item))
   const dropZoneClassName = isDragOver ? activeDropZoneStyles : idleDropZoneStyles
 
   return (

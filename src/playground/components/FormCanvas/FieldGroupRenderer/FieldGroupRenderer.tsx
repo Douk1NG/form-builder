@@ -1,11 +1,14 @@
-import { GripVertical, Trash2, Layers, ArrowUp, ArrowDown, Lock, Unlock } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Layers } from 'lucide-react'
 import { resolveLocalizedString } from '@/utils/locales'
 import type { Field } from '@/types/form'
 import { GroupFieldItem } from './GroupFieldItem'
 import { GroupDropZone } from './GroupDropZone'
+import { GroupActionToolbar } from './GroupActionToolbar'
 import { useFieldGroupRendererCard } from '@/playground/hooks/useFieldGroupRendererCard'
 import { useTranslation } from 'react-i18next'
+import { EdgeIndicators } from '@/playground/components/FormCanvas/EdgeIndicators'
+import { DragHandle } from '@/playground/components/FormCanvas/DragHandle'
+import { FieldGroupRenderer as NestedFieldGroupRenderer } from './FieldGroupRenderer'
 
 export type FieldGroupRendererProps = {
   groupId: string
@@ -37,35 +40,21 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
 
   if (!group) return null
 
-  const draggingClassValue = 'opacity-40 scale-[0.98] shadow-none border-dashed'
-  const draggingClass = isDragging ? draggingClassValue : ''
+  const draggingClass = isDragging ? 'opacity-40 scale-[0.98] shadow-none border-dashed' : ''
 
-  const lockedClassValues = {
-    header: 'border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10',
-    icon: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
-    label: 'text-emerald-600 dark:text-emerald-400'
-  }
+  const lockedHeaderStyles = 'border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10'
+  const unlockedHeaderStyles = 'border-border/40 bg-muted/30 hover:bg-muted/50'
+  const headerClass = isLocked ? lockedHeaderStyles : unlockedHeaderStyles
 
-  const unlockedClassValues = {
-    header: 'border-border/40 bg-muted/30 hover:bg-muted/50',
-    icon: 'bg-violet-500/15 text-violet-600 dark:text-violet-400',
-    label: 'text-violet-600 dark:text-violet-400'
-  }
-
-  const headerClass = isLocked ? lockedClassValues.header : unlockedClassValues.header
-  const iconClass = isLocked ? lockedClassValues.icon : unlockedClassValues.icon
-  const labelClass = isLocked ? lockedClassValues.label : unlockedClassValues.label
+  const lockedAccentStyles = { icon: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400', label: 'text-emerald-600 dark:text-emerald-400' }
+  const unlockedAccentStyles = { icon: 'bg-violet-500/15 text-violet-600 dark:text-violet-400', label: 'text-violet-600 dark:text-violet-400' }
+  const accentStyles = isLocked ? lockedAccentStyles : unlockedAccentStyles
 
   const lockGroupTranslationLabel = isLocked
     ? translations('status.unlock')
     : translations('status.lock')
 
   const groupColumnsClass = group.columns === 2 ? 'md:grid-cols-2' : ''
-
-  const closestEdgeMap = {
-    isTopEdge: closestEdge === 'top',
-    isBottomEdge: closestEdge === 'bottom',
-  }
 
   return (
     <div
@@ -80,18 +69,11 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
         tabIndex={0}
         onKeyDown={handleKeyDown}
       >
-        <button
-          ref={dragHandleRef}
-          type="button"
-          className="p-1 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 cursor-grab active:cursor-grabbing transition-colors"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <GripVertical className="h-4 w-4" />
-        </button>
-        <div className={`p-1.5 rounded-lg ${iconClass}`}>
-          <Layers className={`h-4 w-4 ${labelClass}`} />
+        <DragHandle ref={dragHandleRef} />
+        <div className={`p-1.5 rounded-lg ${accentStyles.icon}`}>
+          <Layers className={`h-4 w-4 ${accentStyles.label}`} />
         </div>
-        <span className={`font-bold text-base text-foreground tracking-tight flex-1 ${labelClass}`}>
+        <span className={`font-bold text-base text-foreground tracking-tight flex-1 ${accentStyles.label}`}>
           {resolveLocalizedString(group.label)}
         </span>
 
@@ -107,48 +89,15 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
           </span>
         )}
 
-        <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`h-7 w-7 rounded-md hover:bg-muted ${labelClass}`}
-            onClick={handleToggleLock}
-            title={lockGroupTranslationLabel}
-          >
-            {isLocked ?
-              <Lock className="h-3.5 w-3.5" /> :
-              <Unlock className="h-3.5 w-3.5" />
-            }
-          </Button>
-          <div className="w-px h-4 bg-border mx-0.5" />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 rounded-md hover:bg-muted"
-            onClick={handleMoveUp}
-          >
-            <ArrowUp className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 rounded-md hover:bg-muted"
-            onClick={handleMoveDown}
-          >
-            <ArrowDown className="h-3.5 w-3.5" />
-          </Button>
-          <div className="w-px h-4 bg-border mx-0.5" />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 rounded-md text-destructive hover:text-destructive hover:bg-destructive/10"
-            onClick={handleRemoveGroup}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+        <GroupActionToolbar
+          isLocked={isLocked}
+          lockLabel={lockGroupTranslationLabel}
+          labelClass={accentStyles.label}
+          onToggleLock={handleToggleLock}
+          onMoveUp={handleMoveUp}
+          onMoveDown={handleMoveDown}
+          onRemove={handleRemoveGroup}
+        />
       </div>
 
       {/* Group Body */}
@@ -156,7 +105,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
         {group.items.map((groupItem, itemIndex) => {
           const { kind, id } = groupItem
           if (kind === 'field_group') {
-            return <FieldGroupRenderer
+            return <NestedFieldGroupRenderer
               key={id}
               groupId={id}
               index={itemIndex}
@@ -175,27 +124,21 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
         })}
 
         {Array.from({ length: emptySlotCount }).map((_, slotIndex) => {
-          const customLabel = group.columns === 2 
-            ? 'Drop field' 
+          const customLabel = group.columns === 2
+            ? 'Drop field'
             : undefined
-          
+
           return (
-            <GroupDropZone 
-              key={`dropzone-${slotIndex}`} 
-              groupId={groupId} 
+            <GroupDropZone
+              key={`dropzone-${slotIndex}`}
+              groupId={groupId}
               label={customLabel}
             />
           )
         })}
       </div>
 
-
-      {closestEdgeMap.isTopEdge && (
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary rounded-t-2xl z-20 pointer-events-none" />
-      )}
-      {closestEdgeMap.isBottomEdge && (
-        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-primary rounded-b-2xl z-20 pointer-events-none" />
-      )}
+      <EdgeIndicators closestEdge={closestEdge} borderRadius="2xl" />
     </div>
   )
 }

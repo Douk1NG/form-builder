@@ -10,14 +10,12 @@ import {
 import type {
     FieldType,
     CanvasItem,
-    Field
+    NewFieldInput
 } from '@/types/form'
 
 import type { CanvasListActions } from '../store/slices/Canvas/CanvasListActions'
 import { findItemById, isDescendantOrSelf } from '@/playground/utils/findItemById'
-
-const twoColumnLayout = 2
-const idSuffixLength = 8
+import { DEFAULT_GROUP_LABEL, DEFAULT_TWO_COLUMN_COUNT, FIELD_ID_SUFFIX_LENGTH } from '../constants/fieldDefaults'
 
 export type HandleCanvasDropParameters = {
     sourceData: Record<string, unknown>
@@ -28,11 +26,11 @@ export type HandleCanvasDropParameters = {
     moveItem: CanvasListActions['moveItem']
     moveCanvasItem: CanvasListActions['moveCanvasItem']
     addField: CanvasListActions['addField']
-    addFieldToGroup: (groupId: string, field: Omit<Field, 'id'>) => void
+    addFieldToGroup: (groupId: string, field: NewFieldInput) => void
     addGroupToGroup: (groupId: string, label: string) => void
     addRowToGroup: (groupId: string) => void
     createGroupFromDrop: (sourceId: string, targetId: string, edge: 'left' | 'right') => void
-    createGroupWithNewField: (targetId: string, field: Omit<Field, 'id'>, edge: 'left' | 'right') => void
+    createGroupWithNewField: (targetId: string, field: NewFieldInput, edge: 'left' | 'right') => void
     moveFieldToGroup: (sourceId: string, groupId: string) => void
     mergeGroupIntoGroup: (sourceId: string, targetId: string) => void
 }
@@ -49,7 +47,7 @@ function handlePaletteLayoutDrop(
         if (isColumnRow) {
             dependencies.addRowToGroup(destinationData.groupId)
         } else {
-            dependencies.addGroupToGroup(destinationData.groupId, 'Field Group')
+            dependencies.addGroupToGroup(destinationData.groupId, DEFAULT_GROUP_LABEL)
         }
         return
     }
@@ -57,8 +55,8 @@ function handlePaletteLayoutDrop(
     const newGroup: CanvasItem = {
         id: crypto.randomUUID(),
         kind: 'field_group',
-        label: isColumnRow ? '' : 'Field Group',
-        ...(isColumnRow ? { columns: twoColumnLayout } : {}),
+        label: isColumnRow ? '' : DEFAULT_GROUP_LABEL,
+        ...(isColumnRow ? { columns: DEFAULT_TWO_COLUMN_COUNT } : {}),
         items: [],
     }
 
@@ -78,7 +76,7 @@ function handlePaletteFieldDrop(
     const field = {
         type: paletteData.type,
         label: paletteData.label,
-        name: `field_${crypto.randomUUID().slice(0, idSuffixLength)}`,
+        name: `field_${crypto.randomUUID().slice(0, FIELD_ID_SUFFIX_LENGTH)}`,
     }
 
     if ((edge === 'left' || edge === 'right') && destinationData.id) {

@@ -42,6 +42,9 @@ Test files follow the **exact same TypeScript rules** as production code. `any` 
 ### Rule T7: Run Tests Before Completing Work
 Always run `npm run test` and confirm **all tests pass** before considering work complete. If a test breaks, fix it — do not skip it.
 
+### Rule T10: Run Lint Before Completing Work
+Always run `npm run lint` and confirm **zero lint errors or warnings** before considering work complete. Any lint issues must be resolved.
+
 ### Rule T8: Frameworks
 - **Unit & Integration tests:** Vitest + React Testing Library
 - **E2E tests:** Playwright
@@ -53,6 +56,7 @@ npm run test          # Run all unit/integration tests once
 npm run test:watch    # Watch mode during development
 npm run test:ui       # Vitest UI
 npm run test:e2e      # Playwright E2E tests
+npm run lint          # Run ESLint check
 ```
 
 ---

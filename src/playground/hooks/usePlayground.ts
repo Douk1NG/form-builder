@@ -1,30 +1,13 @@
-import { useState, type KeyboardEvent } from 'react'
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 
 export function usePlayground() {
   const formId = useFormBuilderStore((state) => state.formId)
   const formTitle = useFormBuilderStore((state) => state.formTitle)
-  const createForm = useFormBuilderStore((state) => state.createNewForm)
   const setPreviewMode = useFormBuilderStore((state) => state.setPreviewMode)
   const previewMode = useFormBuilderStore((state) => state.previewMode)
   const getFormSchema = useFormBuilderStore((state) => state.getFormSchema)
-
-  const [newTitle, setNewTitle] = useState('')
-
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTitle(event.target.value)
-  }
-
-  const handleCreate = () => {
-    createForm(newTitle.trim() || 'Untitled Form')
-    setNewTitle('')
-  }
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      handleCreate()
-    }
-  }
+  const previewDevice = useFormBuilderStore((state) => state.previewDevice)
+  const setPreviewDevice = useFormBuilderStore((state) => state.setPreviewDevice)
 
   const handleTogglePreview = () => {
     setPreviewMode(!previewMode)
@@ -49,10 +32,8 @@ export function usePlayground() {
     formId,
     formTitle,
     previewMode,
-    newTitle,
-    handleTitleChange,
-    handleCreate,
-    handleKeyDown,
+    previewDevice,
+    setPreviewDevice,
     handleTogglePreview,
     handleExportJson,
   }

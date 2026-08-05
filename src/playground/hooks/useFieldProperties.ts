@@ -26,36 +26,39 @@ export function useFieldProperties() {
   const isGroupSelected = Boolean(selectedItemId) && selectedKind === 'field_group'
 
   const handleUpdateLabel = (value: LocalizedString) => {
-    if (isFieldSelected) updateField(selectedItemId as string, { label: value })
+    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { label: value })
   }
 
   const handleUpdateName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (isFieldSelected) updateField(selectedItemId as string, { name: event.target.value })
+    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { name: event.target.value })
   }
 
   const handleUpdateDescription = (value: LocalizedString) => {
-    if (isFieldSelected) updateField(selectedItemId as string, { description: value })
+    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { description: value })
   }
 
   const handleUpdatePlaceholder = (value: LocalizedString) => {
-    if (isFieldSelected) updateField(selectedItemId as string, { placeholder: value })
+    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { placeholder: value })
   }
 
   const handleUpdateReadOnly = (checked: boolean) => {
-    if (isFieldSelected) updateField(selectedItemId as string, { readOnly: checked })
+    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { readOnly: checked })
   }
 
   const handleUpdateDisabled = (checked: boolean) => {
-    if (isFieldSelected) updateField(selectedItemId as string, { disabled: checked })
+    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { disabled: checked })
   }
 
   const handleUpdateOptions = (options: Option[]) => {
-    if (isFieldSelected) updateField(selectedItemId as string, { options })
+    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { options })
   }
 
   const handleUpdateGroupLabel = (value: LocalizedString) => {
-    if (isGroupSelected) updateGroup(selectedItemId as string, { label: value })
+    if (isGroupSelected && selectedItemId) updateGroup(selectedItemId, { label: value })
   }
+
+  const isPropertiesExpanded = useFormBuilderStore((state) => state.isPropertiesExpanded)
+  const togglePropertiesExpanded = useFormBuilderStore((state) => state.togglePropertiesExpanded)
 
   return {
     formId,
@@ -63,6 +66,8 @@ export function useFieldProperties() {
     selectedKind,
     selectedField,
     selectedGroup,
+    isPropertiesExpanded,
+    togglePropertiesExpanded,
     handleUpdateLabel,
     handleUpdateName,
     handleUpdateDescription,

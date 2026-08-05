@@ -91,6 +91,15 @@ export type Field =
 
 export type Fields = Field[];
 
+export type NewFieldInput = {
+    type: FieldType;
+    label: LocalizedString;
+    name?: string;
+    description?: LocalizedString;
+    placeholder?: LocalizedString;
+    options?: Option[];
+};
+
 /**
  * A canvas-aware field — a plain Field tagged with kind:'field' so it can
  * participate in discriminated unions alongside FieldGroup.
