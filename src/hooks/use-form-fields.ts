@@ -12,7 +12,7 @@ export function useFormFields(initialValues: Record<string, unknown>) {
     }, [])
 
     const getFieldValue = useCallback((name?: string) => {
-        if (!name) return
+        if (!name) return undefined
         return fieldValues?.[name]
     }, [fieldValues])
 

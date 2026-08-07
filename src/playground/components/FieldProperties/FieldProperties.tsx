@@ -1,14 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { EmptyPropertiesPanel } from './EmptyPropertiesPanel'
-import { FieldBasicTab } from './FieldBasicTab'
-import { FieldBehaviorTab } from './FieldBehaviorTab'
-import { FieldDataTab } from './FieldDataTab'
 import { GroupPropertiesPanel } from './GroupPropertiesPanel'
-import { PropertiesSectionHeader } from './PropertiesSectionHeader'
-import { Settings2, Maximize2, Minimize2 } from 'lucide-react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { FieldTabsPanel } from './FieldTabsPanel'
+import { Maximize2, Minimize2 } from 'lucide-react'
 import { useFieldProperties } from '@/playground/hooks/useFieldProperties'
 import { useTranslation } from 'react-i18next'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export function FieldProperties() {
 
@@ -51,7 +48,7 @@ export function FieldProperties() {
 
   if (!selectedKind) return <EmptyPropertiesPanel />
 
-  if (selectedKind === 'field_group' && selectedGroup) {
+  if (selectedKind === ITEM_KINDS.FIELD_GROUP && selectedGroup) {
     return (
       <div className="relative">
         <div className="absolute top-0 right-0 z-20">{expandToggle}</div>
@@ -65,66 +62,18 @@ export function FieldProperties() {
 
   if (!selectedField) return <EmptyPropertiesPanel />
 
-  const hasOptions = selectedField.type === 'select' || selectedField.type === 'multiselect'
-
   return (
-    <div className="space-y-5">
-      <PropertiesSectionHeader icon={<Settings2 className="w-5 h-5" />} title="Field Properties" rightAction={expandToggle} />
-
-      <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger
-            value="basic"
-            type="button"
-          >
-            {translations('basic')}
-          </TabsTrigger>
-          <TabsTrigger
-            value="behavior"
-            type="button"
-          >
-            {translations('behavior')}
-          </TabsTrigger>
-          <TabsTrigger
-            value="data"
-            disabled={!hasOptions}
-            type="button"
-          >
-            {translations('data')}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="basic">
-          <FieldBasicTab
-            label={selectedField.label}
-            name={selectedField.name}
-            description={selectedField.description}
-            placeholder={selectedField.placeholder}
-            onLabelChange={handleUpdateLabel}
-            onNameChange={handleUpdateName}
-            onDescriptionChange={handleUpdateDescription}
-            onPlaceholderChange={handleUpdatePlaceholder}
-          />
-        </TabsContent>
-
-        <TabsContent value="behavior" className="mt-4">
-          <FieldBehaviorTab
-            readOnly={selectedField.readOnly || false}
-            disabled={selectedField.disabled || false}
-            onReadOnlyChange={handleUpdateReadOnly}
-            onDisabledChange={handleUpdateDisabled}
-          />
-        </TabsContent>
-
-        {hasOptions && (
-          <TabsContent value="data" className="mt-4">
-            <FieldDataTab
-              options={selectedField.options || []}
-              onChange={handleUpdateOptions}
-            />
-          </TabsContent>
-        )}
-      </Tabs>
-    </div>
+    <FieldTabsPanel
+      selectedField={selectedField}
+      expandToggle={expandToggle}
+      translations={translations}
+      onLabelChange={handleUpdateLabel}
+      onNameChange={handleUpdateName}
+      onDescriptionChange={handleUpdateDescription}
+      onPlaceholderChange={handleUpdatePlaceholder}
+      onReadOnlyChange={handleUpdateReadOnly}
+      onDisabledChange={handleUpdateDisabled}
+      onActionOptionsChange={handleUpdateOptions}
+    />
   )
 }

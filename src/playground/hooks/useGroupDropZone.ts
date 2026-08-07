@@ -3,6 +3,7 @@ import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import { findItemById, isDescendantOrSelf } from '@/playground/utils/findItemById'
 import { isCanvasDragData, isPaletteDragData } from '@/playground/types/dragDropTypes'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export function useGroupDropZone(groupId: string) {
   const dropRef = useRef<HTMLDivElement>(null)
@@ -11,10 +12,10 @@ export function useGroupDropZone(groupId: string) {
 
   useEffect(() => {
     const element = dropRef.current
-    if (!element) return
+    if (!element) return undefined
 
     const group = findItemById(itemsData, groupId)
-    const isLockedGroupTwoColumns = group && group.kind === 'field_group' && (group.columns || 0) > 1
+    const isLockedGroupTwoColumns = group && group.kind === ITEM_KINDS.FIELD_GROUP && (group.columns || 0) > 1
 
     return dropTargetForElements({
       element,
@@ -22,27 +23,14 @@ export function useGroupDropZone(groupId: string) {
       canDrop: ({ source }) => {
         if (isCanvasDragData(source.data)) {
           const dragItemId = source.data.id
-          if (isDescendantOrSelf(itemsData, dragItemId, groupId)) {
-            return false
-          }
-
-          if (isLockedGroupTwoColumns) {
-            const dragItem = findItemById(itemsData, dragItemId)
-            if (dragItem?.kind === 'field_group') {
-              return false
-            }
-          }
-          return true
+          if (isDescendantOrSelf(itemsData, dragItemId, groupId)) return false
+          if (!isLockedGroupTwoColumns) return true
+          return findItemById(itemsData, dragItemId)?.kind !== ITEM_KINDS.FIELD_GROUP
         }
 
         if (isPaletteDragData(source.data)) {
-          if (isLockedGroupTwoColumns) {
-            const type = source.data.type
-            if (type === 'field_group' || type === 'column_row') {
-              return false
-            }
-          }
-          return true
+          if (!isLockedGroupTwoColumns) return true
+          return source.data.type !== ITEM_KINDS.FIELD_GROUP && source.data.type !== ITEM_KINDS.COLUMN_ROW
         }
 
         return false

@@ -1,9 +1,10 @@
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 import { usePaletteItemDrag } from '@/playground/hooks/usePaletteItemDrag';
 import type { FieldType } from '@/types/form'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export type PaletteItemProps = {
-  type: FieldType | 'field_group' | 'column_row'
+  type: FieldType | typeof ITEM_KINDS.FIELD_GROUP | typeof ITEM_KINDS.COLUMN_ROW
   label: string
   icon: IconName
   onClick: () => void

@@ -65,17 +65,14 @@ export function useFormSwitcher() {
 
     const handleSelectChange = (selectedValue: string) => {
         switchForm(selectedValue)
-        return
     }
 
     const handleOpenDialog = () => {
         setIsDialogOpen(true)
-        return
     }
 
     const handleDelete = (targetFormId: string) => {
         deleteForm(targetFormId)
-        return
     }
 
     const savedFormsList = Object.values(savedForms)

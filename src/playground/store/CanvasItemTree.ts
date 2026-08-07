@@ -1,4 +1,5 @@
 import type { Field, CanvasField, FieldGroup, CanvasItem } from '../../types/form'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export function applyFieldUpdates<T extends Field>(field: T, fieldId: string, updates: Partial<Field>): T {
     if (field.id === fieldId) {
@@ -13,7 +14,7 @@ export function updateFieldInGroupItems(
     updates: Partial<Field>
 ): Array<CanvasField | FieldGroup> {
     return items.map((groupItem) => {
-        if (groupItem.kind === 'field_group') {
+        if (groupItem.kind === ITEM_KINDS.FIELD_GROUP) {
             return { ...groupItem, items: updateFieldInGroupItems(groupItem.items, fieldId, updates) }
         }
         return applyFieldUpdates(groupItem as CanvasField, fieldId, updates)
@@ -34,7 +35,7 @@ export function removeFieldFromGroupItems(
     })
 
     const mapped = filtered.map((item) => {
-        if (item.kind === 'field_group') {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
             const updatedSubItems = removeFieldFromGroupItems(item.items, fieldId)
             if (updatedSubItems !== item.items) {
                 changed = true
@@ -54,11 +55,11 @@ export function addItemToGroupItems(
 ): Array<CanvasField | FieldGroup> {
     let changed = false
     const newItems = items.map((item) => {
-        if (item.id === groupId && item.kind === 'field_group') {
+        if (item.id === groupId && item.kind === ITEM_KINDS.FIELD_GROUP) {
             changed = true
             return { ...item, items: [...item.items, itemToAdd] }
         }
-        if (item.kind === 'field_group') {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
             const updatedSubItems = addItemToGroupItems(item.items, groupId, itemToAdd)
             if (updatedSubItems !== item.items) {
                 changed = true
@@ -77,11 +78,11 @@ export function updateGroupInGroupItems(
 ): Array<CanvasField | FieldGroup> {
     let changed = false
     const newItems = items.map((item) => {
-        if (item.id === groupId && item.kind === 'field_group') {
+        if (item.id === groupId && item.kind === ITEM_KINDS.FIELD_GROUP) {
             changed = true
             return { ...item, ...updates }
         }
-        if (item.kind === 'field_group') {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
             const updatedSubItems = updateGroupInGroupItems(item.items, groupId, updates)
             if (updatedSubItems !== item.items) {
                 changed = true
@@ -115,7 +116,7 @@ export function removeItemFromTree(
     const newItemIds = [...itemIds]
     for (const parentId of Object.keys(newItemsData)) {
         const parent = newItemsData[parentId]
-        if (parent.kind === 'field_group') {
+        if (parent.kind === ITEM_KINDS.FIELD_GROUP) {
             const result = removeItemFromGroupItems(parent.items, sourceId)
             if (result.removedItem) {
                 removedItem = result.removedItem
@@ -149,7 +150,7 @@ function removeItemFromGroupItems(
     }
 
     const mapped = items.map((item) => {
-        if (item.kind === 'field_group') {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
             const result = removeItemFromGroupItems(item.items, sourceId)
             if (result.removedItem) {
                 removedItem = result.removedItem
@@ -172,25 +173,22 @@ export function findAndUpdateInTree(
     found: boolean
 } {
     const newItemsData = { ...itemsData }
-    let found = false
 
     const existingItem = newItemsData[targetGroupId]
-    if (existingItem && existingItem.kind === 'field_group') {
+    if (existingItem && existingItem.kind === ITEM_KINDS.FIELD_GROUP) {
         newItemsData[targetGroupId] = updateFn(existingItem)
-        found = true
-    } else {
-        for (const itemId of Object.keys(newItemsData)) {
-            const item = newItemsData[itemId]
-            if (item.kind === 'field_group') {
-                const newItems = recurseFn(item.items, targetGroupId)
-                if (newItems !== item.items) {
-                    newItemsData[itemId] = { ...item, items: newItems }
-                    found = true
-                    break
-                }
-            }
+        return { newItemsData, found: true }
+    }
+
+    for (const itemId of Object.keys(newItemsData)) {
+        const item = newItemsData[itemId]
+        if (item.kind !== ITEM_KINDS.FIELD_GROUP) continue
+        const newItems = recurseFn(item.items, targetGroupId)
+        if (newItems !== item.items) {
+            newItemsData[itemId] = { ...item, items: newItems }
+            return { newItemsData, found: true }
         }
     }
 
-    return { newItemsData, found }
+    return { newItemsData, found: false }
 }

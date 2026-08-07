@@ -12,6 +12,7 @@ import FieldError from './field-error'
 
 import type { FormProps, Field, CanvasItem, FieldGroup } from '../../types/form'
 import { resolveLocalizedString } from '../../utils/locales'
+import { ITEM_KINDS } from '../../types/itemKinds'
 
 const FormBuilder = ({
     fields,
@@ -74,7 +75,7 @@ const FormBuilder = ({
 
     const renderItem = (item: Field | CanvasItem): React.ReactNode => {
         if ('kind' in item) {
-            if (item.kind === 'field_group') {
+            if (item.kind === ITEM_KINDS.FIELD_GROUP) {
                 const group = item as FieldGroup;
                 const groupColumnsClass = group.columns === 2 ? 'md:grid-cols-2' : '';
                 const resolvedLabel = translate(resolveLocalizedString(group.label, locale));

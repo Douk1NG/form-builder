@@ -69,7 +69,10 @@ export function useFormCanvas() {
   }
 
   const currentFormSchema: FormSchema | null = previewMode ? getFormSchema() : null
-  const canvasItems = itemIds.map((id) => itemsData[id]).filter((item): item is CanvasItem => Boolean(item))
+  const canvasItems =
+    itemIds
+      .map((id) => itemsData[id])
+      .filter((item): item is CanvasItem => Boolean(item))
 
   return {
     canvasItems,

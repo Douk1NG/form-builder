@@ -36,13 +36,9 @@ export function useFieldGroupRendererCard(groupId: string, index: number) {
   const defaultStyles = 'border-border/40 hover:border-primary/30 shadow-xs bg-card/70 hover:shadow-sm'
   const dragOverStyles = 'border-primary/40 shadow-sm bg-card/80'
 
-  const computedBorderClass = isLocked
-    ? lockedStyles
-    : isSelected
-      ? selectedStyles
-      : isDragOver
-        ? dragOverStyles
-        : defaultStyles
+  const computedBorderClass =
+    [isLocked && lockedStyles, isSelected && selectedStyles, isDragOver && dragOverStyles]
+      .find(Boolean) ?? defaultStyles
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {

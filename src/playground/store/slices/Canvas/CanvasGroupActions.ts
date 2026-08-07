@@ -12,6 +12,7 @@ import {
 import { isDescendantOrSelf } from '@/playground/utils/findItemById'
 import { handleCreateGroupFromDrop, handleCreateGroupWithNewField } from './canvasGroupCreationUtils'
 import { DEFAULT_TWO_COLUMN_COUNT } from '@/playground/constants/fieldDefaults'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export type CanvasGroupActions = {
     updateField: (fieldId: string, updates: Partial<Field>) => void
@@ -36,12 +37,12 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         for (const itemId of Object.keys(updatedItemsData)) {
             const item = updatedItemsData[itemId]
 
-            if (item.kind === 'field' && item.id === fieldId) {
+            if (item.kind === ITEM_KINDS.FIELD && item.id === fieldId) {
                 updatedItemsData[itemId] = { ...item, ...updates } as CanvasItem
                 break
             }
 
-            if (item.kind === 'field_group') {
+            if (item.kind === ITEM_KINDS.FIELD_GROUP) {
                 const updatedGroupItems = updateFieldInGroupItems(item.items, fieldId, updates)
                 if (updatedGroupItems !== item.items) {
                     updatedItemsData[itemId] = {
@@ -77,7 +78,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         if (!formId) return
 
         const id = crypto.randomUUID()
-        const newField: CanvasField = { ...(field as Field), id, kind: 'field' }
+        const newField: CanvasField = { ...(field as Field), id, kind: ITEM_KINDS.FIELD }
 
         const { newItemsData, found } = findAndUpdateInTree(
             itemsData,
@@ -96,7 +97,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         if (!formId) return
 
         const id = crypto.randomUUID()
-        const newGroup: FieldGroup = { id, kind: 'field_group', label, items: [] }
+        const newGroup: FieldGroup = { id, kind: ITEM_KINDS.FIELD_GROUP, label, items: [] }
 
         const { newItemsData, found } = findAndUpdateInTree(
             itemsData,
@@ -121,7 +122,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         const rowId = crypto.randomUUID()
         const newRow: FieldGroup = {
             id: rowId,
-            kind: 'field_group',
+            kind: ITEM_KINDS.FIELD_GROUP,
             columns: DEFAULT_TWO_COLUMN_COUNT,
             items: [],
         }
@@ -194,7 +195,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         let found = false
 
         const existingItem = updatedItemsData[groupId]
-        if (existingItem && existingItem.kind === 'field_group') {
+        if (existingItem && existingItem.kind === ITEM_KINDS.FIELD_GROUP) {
             updatedItemsData[groupId] = { ...existingItem, items: [...existingItem.items, removedItem as CanvasField | FieldGroup] }
             found = true
         } else {
@@ -221,7 +222,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         const targetGroup = itemsData[targetGroupId]
 
         if (!sourceGroup || !targetGroup) return
-        if (sourceGroup.kind !== 'field_group' || targetGroup.kind !== 'field_group') return
+        if (sourceGroup.kind !== ITEM_KINDS.FIELD_GROUP || targetGroup.kind !== ITEM_KINDS.FIELD_GROUP) return
         if (sourceGroupId === targetGroupId) return
         if (isDescendantOrSelf(itemsData, sourceGroupId, targetGroupId)) return
         if (isDescendantOrSelf(itemsData, targetGroupId, sourceGroupId)) return
@@ -248,7 +249,7 @@ function tryAddNestedGroupItem(
     const newItemsData = { ...itemsData }
     for (const itemId of Object.keys(newItemsData)) {
         const item = newItemsData[itemId]
-        if (item.kind === 'field_group') {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
             const newItems = addItemToGroupItems(item.items, groupId, itemToInsert)
             if (newItems !== item.items) {
                 newItemsData[itemId] = { ...item, items: newItems }

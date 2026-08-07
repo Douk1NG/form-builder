@@ -3,12 +3,12 @@ import { safeParseFloat, safeParseBoolean, safeParseJSON } from './safeParse'
 
 describe('safeParseFloat', () => {
   it('parses valid float strings', () => {
-    expect(safeParseFloat('1.23')).toBe(1.23)
+    expect(safeParseFloat('1.23')).toBeCloseTo(1.23)
   })
 
   it('returns original value if not a string', () => {
     expect(safeParseFloat(123)).toBe(123)
-    expect(safeParseFloat(null)).toBe(null)
+    expect(safeParseFloat(null)).toBeNull()
   })
 
   it('returns original string when parsing produces NaN', () => {
@@ -38,7 +38,7 @@ describe('safeParseBoolean', () => {
   it('returns original value for non-strings', () => {
     expect(safeParseBoolean(true)).toBe(true)
     expect(safeParseBoolean(false)).toBe(false)
-    expect(safeParseBoolean(null)).toBe(null)
+    expect(safeParseBoolean(null)).toBeNull()
   })
 })
 

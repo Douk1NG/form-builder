@@ -23,7 +23,7 @@ export function useEdgeDraggable({ id, index, allowedEdges }: UseEdgeDraggablePa
     useEffect(() => {
         const element = elementRef.current
         const handle = dragHandleRef.current
-        if (!element || !handle) return
+        if (!element || !handle) return undefined
 
         const cleanupDraggable = draggable({
             element,

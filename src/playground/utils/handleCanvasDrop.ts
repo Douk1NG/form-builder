@@ -16,6 +16,7 @@ import type {
 import type { CanvasListActions } from '../store/slices/Canvas/CanvasListActions'
 import { findItemById, isDescendantOrSelf } from '@/playground/utils/findItemById'
 import { DEFAULT_GROUP_LABEL, DEFAULT_TWO_COLUMN_COUNT, FIELD_ID_SUFFIX_LENGTH } from '../constants/fieldDefaults'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export type HandleCanvasDropParameters = {
     sourceData: Record<string, unknown>
@@ -36,12 +37,12 @@ export type HandleCanvasDropParameters = {
 }
 
 function handlePaletteLayoutDrop(
-    fieldType: 'field_group' | 'column_row',
+    fieldType: typeof ITEM_KINDS.FIELD_GROUP | typeof ITEM_KINDS.COLUMN_ROW,
     destinationData: CanvasDropData,
     itemIds: string[],
     dependencies: Pick<HandleCanvasDropParameters, 'insertItemAt' | 'addGroupToGroup' | 'addRowToGroup'>
 ) {
-    const isColumnRow = fieldType === 'column_row'
+    const isColumnRow = fieldType === ITEM_KINDS.COLUMN_ROW
     
     if (destinationData.groupId) {
         if (isColumnRow) {
@@ -54,7 +55,7 @@ function handlePaletteLayoutDrop(
 
     const newGroup: CanvasItem = {
         id: crypto.randomUUID(),
-        kind: 'field_group',
+        kind: ITEM_KINDS.FIELD_GROUP,
         label: isColumnRow ? '' : DEFAULT_GROUP_LABEL,
         ...(isColumnRow ? { columns: DEFAULT_TWO_COLUMN_COUNT } : {}),
         items: [],
@@ -84,7 +85,7 @@ function handlePaletteFieldDrop(
     } else if (destinationData.isCanvas) {
         dependencies.addField(field)
     } else if (typeof destinationData.insertIndex === 'number') {
-        const newItem: CanvasItem = { ...field, id: crypto.randomUUID(), kind: 'field' }
+        const newItem: CanvasItem = { ...field, id: crypto.randomUUID(), kind: ITEM_KINDS.FIELD }
         dependencies.insertItemAt(destinationData.insertIndex, newItem)
     } else if (destinationData.groupId) {
         dependencies.addFieldToGroup(destinationData.groupId, field)
@@ -97,7 +98,7 @@ function handleGroupDestinationDrop(
     destinationGroupId: string,
     dependencies: Pick<HandleCanvasDropParameters, 'mergeGroupIntoGroup' | 'moveFieldToGroup'>
 ) {
-    if (sourceItem?.kind === 'field_group') {
+    if (sourceItem?.kind === ITEM_KINDS.FIELD_GROUP) {
         dependencies.mergeGroupIntoGroup(sourceId, destinationGroupId)
     } else {
         dependencies.moveFieldToGroup(sourceId, destinationGroupId)
@@ -114,12 +115,12 @@ function tryTargetSpecificDrop(
 ): boolean {
     if (!targetId) return false
 
-    if (sourceItem?.kind === 'field_group' && targetItem?.kind === 'field_group') {
+    if (sourceItem?.kind === ITEM_KINDS.FIELD_GROUP && targetItem?.kind === ITEM_KINDS.FIELD_GROUP) {
         dependencies.mergeGroupIntoGroup(sourceId, targetId)
         return true
     }
 
-    if ((edge === 'left' || edge === 'right') && sourceItem?.kind === 'field' && targetItem?.kind === 'field') {
+    if ((edge === 'left' || edge === 'right') && sourceItem?.kind === ITEM_KINDS.FIELD && targetItem?.kind === ITEM_KINDS.FIELD) {
         dependencies.createGroupFromDrop(sourceId, targetId, edge)
         return true
     }
@@ -187,7 +188,7 @@ export function handleCanvasDrop({
     const typedDestinationData = destinationData as CanvasDropData
 
     if (isPaletteDragData(sourceData)) {
-        if (sourceData.type === 'field_group' || sourceData.type === 'column_row') {
+        if (sourceData.type === ITEM_KINDS.FIELD_GROUP || sourceData.type === ITEM_KINDS.COLUMN_ROW) {
             handlePaletteLayoutDrop(
                 sourceData.type,
                 typedDestinationData,

@@ -1,4 +1,5 @@
 import type { CanvasField, FieldGroup, CanvasItem } from '../../types/form'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export function replaceItemInGroupItems(
     items: Array<CanvasField | FieldGroup>,
@@ -11,7 +12,7 @@ export function replaceItemInGroupItems(
             changed = true
             return newItem
         }
-        if (item.kind === 'field_group') {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
             const updatedSubItems = replaceItemInGroupItems(item.items, targetId, newItem)
             if (updatedSubItems !== item.items) {
                 changed = true
@@ -47,7 +48,7 @@ export function insertItemIntoTree(
     const newItemIds = [...itemIds]
     for (const parentId of Object.keys(newItemsData)) {
         const parent = newItemsData[parentId]
-        if (parent.kind === 'field_group') {
+        if (parent.kind === ITEM_KINDS.FIELD_GROUP) {
             const newItems = insertItemIntoGroupItems(parent.items, targetId, itemToInsert, position)
             if (newItems !== parent.items) {
                 newItemsData[parentId] = { ...parent, items: newItems }
@@ -76,7 +77,7 @@ function insertItemIntoGroupItems(
     }
 
     const mapped = items.map((item) => {
-        if (item.kind === 'field_group') {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
             const updatedSubItems = insertItemIntoGroupItems(item.items, targetId, itemToInsert, position)
             if (updatedSubItems !== item.items) {
                 changed = true
@@ -124,7 +125,7 @@ export function mergeItemsIntoGroupInTree(
     const newItemIds = [...itemIds]
     for (const parentId of Object.keys(newItemsData)) {
         const parent = newItemsData[parentId]
-        if (parent.kind === 'field_group') {
+        if (parent.kind === ITEM_KINDS.FIELD_GROUP) {
             const updatedItems = mergeItemsInGroupItems(parent.items, sourceId, targetId, newGroup)
             if (updatedItems !== parent.items) {
                 newItemsData[parentId] = { ...parent, items: updatedItems }
@@ -161,7 +162,7 @@ function mergeItemsInGroupItems(
     // Recurse into nested groups
     let changed = false
     const mapped = items.map((item) => {
-        if (item.kind === 'field_group') {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
             const updatedSubItems = mergeItemsInGroupItems(item.items, sourceId, targetId, newGroup)
             if (updatedSubItems !== item.items) {
                 changed = true

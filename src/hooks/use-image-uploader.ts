@@ -22,6 +22,14 @@ const getExternalImages = (images: UseImageUploaderProps['value']) => {
     return []
 }
 
+const mergeImages = (previousImages: ImageFile[], newImages: ImageFile[], maximumFiles: number): ImageFile[] => {
+    const newImageNames = new Set(newImages.map((image) => image.name))
+    return [
+        ...previousImages.filter((previousImage) => !newImageNames.has(previousImage.name)),
+        ...newImages
+    ].slice(0, maximumFiles)
+}
+
 export const useImageUploader = ({
     maxFiles,
     maxFileSize,
@@ -55,15 +63,9 @@ export const useImageUploader = ({
                 })
             })
 
-            setImages((prevImages) => {
-                const updatedImages = [
-                    ...prevImages.filter(prevImage =>
-                        !newImages.some(newImage => newImage.name === prevImage.name)
-                    ),
-                    ...newImages
-                ].slice(0, maxFiles)
-                return updatedImages
-            })
+            setImages((previousImages) =>
+                mergeImages(previousImages, newImages, maxFiles)
+            )
 
             if (fileInputRef.current) {
                 fileInputRef.current.value = ""

@@ -41,29 +41,18 @@ describe('findItemById', () => {
         },
     }
 
-    it('should find a top-level field', () => {
-        const item = findItemById(itemsData, 'field-1')
+    it.each([
+        { id: 'field-1', expectedKind: 'field' },
+        { id: 'field-2', expectedKind: 'field' },
+        { id: 'field-3', expectedKind: 'field' },
+        { id: 'group-2', expectedKind: 'field_group' },
+    ])('should find item $id in tree', ({ id, expectedKind }) => {
+        const item = findItemById(itemsData, id)
         expect(item).not.toBeNull()
-        expect(item?.id).toBe('field-1')
-        expect(item?.kind).toBe('field')
-    })
-
-    it('should find a nested field inside a group', () => {
-        const item = findItemById(itemsData, 'field-2')
-        expect(item).not.toBeNull()
-        expect(item?.id).toBe('field-2')
-    })
-
-    it('should find a deeply nested field', () => {
-        const item = findItemById(itemsData, 'field-3')
-        expect(item).not.toBeNull()
-        expect(item?.id).toBe('field-3')
-    })
-
-    it('should find a nested group', () => {
-        const item = findItemById(itemsData, 'group-2')
-        expect(item).not.toBeNull()
-        expect(item?.id).toBe('group-2')
+        expect(item?.id).toBe(id)
+        if (expectedKind) {
+            expect(item?.kind).toBe(expectedKind)
+        }
     })
 
     it('should return null for non-existent items', () => {

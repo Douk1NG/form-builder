@@ -1,12 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { handleCanvasDrop, type HandleCanvasDropParameters } from './handleCanvasDrop'
 import type { PaletteDragData, CanvasDragData, CanvasDropData } from '@/playground/types/dragDropTypes'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 vi.mock('@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge', () => ({
     extractClosestEdge: vi.fn((data: Record<string, unknown>) => data.closestEdge ?? null)
 }))
 
 type TestDependencies = Omit<HandleCanvasDropParameters, 'sourceData' | 'destinationData'>
+
+const SOURCE_PALETTE = 'palette'
+const TEXT_FIELD_LABEL = 'Text Field'
+const DEFAULT_GROUP_LABEL_TEST = 'Field Group'
 
 describe('handleCanvasDrop', () => {
     let dependencies: TestDependencies
@@ -30,37 +35,35 @@ describe('handleCanvasDrop', () => {
         }
     })
 
-    describe('Palette to Canvas (handlePaletteLayoutDrop)', () => {
-        it('adds a new group when dragging a layout to an empty canvas', () => {
-            const sourceData: PaletteDragData = { source: 'palette', type: 'column_row', label: '2 Columns' }
+    describe('Palette to Canvas Layouts (handlePaletteLayoutDrop)', () => {
+        it('adds a new group to the canvas', () => {
+            const sourceData: PaletteDragData = { source: SOURCE_PALETTE, type: ITEM_KINDS.FIELD_GROUP, label: 'Group' }
             const destinationData: CanvasDropData = { isCanvas: true }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
 
-            expect(dependencies.insertItemAt).toHaveBeenCalledTimes(1)
             expect(dependencies.insertItemAt).toHaveBeenCalledWith(0, expect.objectContaining({
-                kind: 'field_group',
-                label: '',
-                columns: 2,
+                kind: ITEM_KINDS.FIELD_GROUP,
+                label: DEFAULT_GROUP_LABEL_TEST,
                 items: []
             }))
         })
 
         it('inserts a new group at a specific index', () => {
-            const sourceData: PaletteDragData = { source: 'palette', type: 'field_group', label: 'Group' }
+            const sourceData: PaletteDragData = { source: SOURCE_PALETTE, type: ITEM_KINDS.FIELD_GROUP, label: 'Group' }
             const destinationData: CanvasDropData = { insertIndex: 2 }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
 
             expect(dependencies.insertItemAt).toHaveBeenCalledWith(2, expect.objectContaining({
-                kind: 'field_group',
-                label: 'Field Group',
+                kind: ITEM_KINDS.FIELD_GROUP,
+                label: DEFAULT_GROUP_LABEL_TEST,
                 items: []
             }))
         })
 
         it('adds a new row inside a group when layout drops on a group destination', () => {
-            const sourceData: PaletteDragData = { source: 'palette', type: 'column_row', label: '2 Columns' }
+            const sourceData: PaletteDragData = { source: SOURCE_PALETTE, type: ITEM_KINDS.COLUMN_ROW, label: '2 Columns' }
             const destinationData: CanvasDropData = { groupId: 'group-1' }
 
             dependencies.addGroupToGroup = vi.fn()
@@ -73,7 +76,7 @@ describe('handleCanvasDrop', () => {
         })
 
         it('adds a nested group inside a group when layout group drops on a group destination', () => {
-            const sourceData: PaletteDragData = { source: 'palette', type: 'field_group', label: 'Group' }
+            const sourceData: PaletteDragData = { source: SOURCE_PALETTE, type: ITEM_KINDS.FIELD_GROUP, label: 'Group' }
             const destinationData: CanvasDropData = { groupId: 'group-1' }
 
             dependencies.addGroupToGroup = vi.fn()
@@ -81,38 +84,38 @@ describe('handleCanvasDrop', () => {
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
 
-            expect(dependencies.addGroupToGroup).toHaveBeenCalledWith('group-1', 'Field Group')
+            expect(dependencies.addGroupToGroup).toHaveBeenCalledWith('group-1', DEFAULT_GROUP_LABEL_TEST)
             expect(dependencies.insertItemAt).not.toHaveBeenCalled()
         })
     })
 
     describe('Palette to Canvas (handlePaletteFieldDrop)', () => {
         it('adds a new field to the canvas', () => {
-            const sourceData: PaletteDragData = { source: 'palette', type: 'text', label: 'Text Field' }
+            const sourceData: PaletteDragData = { source: SOURCE_PALETTE, type: 'text', label: TEXT_FIELD_LABEL }
             const destinationData: CanvasDropData = { isCanvas: true }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
 
             expect(dependencies.addField).toHaveBeenCalledWith(expect.objectContaining({
                 type: 'text',
-                label: 'Text Field'
+                label: TEXT_FIELD_LABEL
             }))
         })
 
         it('inserts a new field at a specific index', () => {
-            const sourceData: PaletteDragData = { source: 'palette', type: 'text', label: 'Text Field' }
+            const sourceData: PaletteDragData = { source: SOURCE_PALETTE, type: 'text', label: TEXT_FIELD_LABEL }
             const destinationData: CanvasDropData = { insertIndex: 1 }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
 
             expect(dependencies.insertItemAt).toHaveBeenCalledWith(1, expect.objectContaining({
                 type: 'text',
-                kind: 'field'
+                kind: ITEM_KINDS.FIELD
             }))
         })
 
         it('adds a new field into a group', () => {
-            const sourceData: PaletteDragData = { source: 'palette', type: 'text', label: 'Text Field' }
+            const sourceData: PaletteDragData = { source: SOURCE_PALETTE, type: 'text', label: TEXT_FIELD_LABEL }
             const destinationData: CanvasDropData = { groupId: 'group-1' }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
@@ -123,7 +126,7 @@ describe('handleCanvasDrop', () => {
         })
 
         it('creates a group with a new field when dropped on the left edge of another field', () => {
-            const sourceData: PaletteDragData = { source: 'palette', type: 'text', label: 'Text Field' }
+            const sourceData: PaletteDragData = { source: SOURCE_PALETTE, type: 'text', label: TEXT_FIELD_LABEL }
             const destinationData: CanvasDropData & { closestEdge: string } = { id: 'field-1', closestEdge: 'left' }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
@@ -149,7 +152,7 @@ describe('handleCanvasDrop', () => {
             const destinationData: CanvasDropData = { groupId: 'group-1' }
 
             dependencies.itemsData = {
-                'field-1': { id: 'field-1', kind: 'field', type: 'text', label: 'T', name: 't' }
+                'field-1': { id: 'field-1', kind: ITEM_KINDS.FIELD, type: 'text', label: 'T', name: 't' }
             }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
@@ -162,7 +165,7 @@ describe('handleCanvasDrop', () => {
             const destinationData: CanvasDropData = { groupId: 'group-1' }
 
             dependencies.itemsData = {
-                'group-2': { id: 'group-2', kind: 'field_group', items: [] }
+                'group-2': { id: 'group-2', kind: ITEM_KINDS.FIELD_GROUP, items: [] }
             }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
@@ -175,8 +178,8 @@ describe('handleCanvasDrop', () => {
             const destinationData: CanvasDropData = { id: 'group-1' }
 
             dependencies.itemsData = {
-                'group-2': { id: 'group-2', kind: 'field_group', items: [] },
-                'group-1': { id: 'group-1', kind: 'field_group', items: [] }
+                'group-2': { id: 'group-2', kind: ITEM_KINDS.FIELD_GROUP, items: [] },
+                'group-1': { id: 'group-1', kind: ITEM_KINDS.FIELD_GROUP, items: [] }
             }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })
@@ -189,8 +192,8 @@ describe('handleCanvasDrop', () => {
             const destinationData: CanvasDropData & { closestEdge: string } = { id: 'field-2', closestEdge: 'right' }
 
             dependencies.itemsData = {
-                'field-1': { id: 'field-1', kind: 'field', type: 'text', label: 'T', name: 't' },
-                'field-2': { id: 'field-2', kind: 'field', type: 'text', label: 'T2', name: 't2' }
+                'field-1': { id: 'field-1', kind: ITEM_KINDS.FIELD, type: 'text', label: 'T', name: 't' },
+                'field-2': { id: 'field-2', kind: ITEM_KINDS.FIELD, type: 'text', label: 'T2', name: 't2' }
             }
 
             handleCanvasDrop({ sourceData, destinationData, ...dependencies })

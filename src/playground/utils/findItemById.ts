@@ -1,10 +1,11 @@
 import type { CanvasItem } from '../../types/form'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export function findItemById(items: Record<string, CanvasItem>, itemId: string): CanvasItem | null {
     for (const item of Object.values(items)) {
         if (item.id === itemId) return item
 
-        if (item.kind === 'field_group') {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
             const nestedItems = Object.fromEntries(item.items.map((child) => [child.id, child]))
             const nestedMatch = findItemById(nestedItems, itemId)
             if (nestedMatch) return nestedMatch
@@ -19,7 +20,7 @@ function isItemInGroupItems(groupItems: Array<CanvasItem>, itemId: string): bool
         if (item.id === itemId) {
             return true
         }
-        if (item.kind === 'field_group' && isItemInGroupItems(item.items, itemId)) {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP && isItemInGroupItems(item.items, itemId)) {
             return true
         }
     }
@@ -36,7 +37,7 @@ export function isDescendantOrSelf(
     }
 
     const parentItem = items[parentId] || findItemById(items, parentId)
-    if (parentItem && parentItem.kind === 'field_group') {
+    if (parentItem && parentItem.kind === ITEM_KINDS.FIELD_GROUP) {
         return isItemInGroupItems(parentItem.items, childId)
     }
 

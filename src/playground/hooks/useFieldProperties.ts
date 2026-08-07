@@ -2,8 +2,9 @@ import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import { findItemById } from '../utils/findItemById'
 import type { Option } from '../../types/select'
 import type { Field, FieldGroup, LocalizedString } from '../../types/form'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
-export type SelectedItemKind = 'field' | 'field_group' | null
+export type SelectedItemKind = typeof ITEM_KINDS.FIELD | typeof ITEM_KINDS.FIELD_GROUP | null
 
 export function useFieldProperties() {
   const formId = useFormBuilderStore((state) => state.formId)
@@ -17,41 +18,28 @@ export function useFieldProperties() {
     return findItemById(state.itemsData, selectedItemId)
   })
 
-  const selectedKind: SelectedItemKind = selectedItem?.kind === 'field_group' ? 'field_group' : selectedItem ? 'field' : null
-
-  const selectedField: Field | null = selectedItem?.kind === 'field' ? selectedItem : null
-  const selectedGroup: FieldGroup | null = selectedItem?.kind === 'field_group' ? selectedItem : null
-
-  const isFieldSelected = Boolean(selectedItemId) && selectedKind === 'field'
-  const isGroupSelected = Boolean(selectedItemId) && selectedKind === 'field_group'
-
-  const handleUpdateLabel = (value: LocalizedString) => {
-    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { label: value })
+  let selectedKind: SelectedItemKind = null
+  if (selectedItem) {
+    selectedKind = selectedItem.kind === ITEM_KINDS.FIELD_GROUP ? ITEM_KINDS.FIELD_GROUP : ITEM_KINDS.FIELD
   }
 
-  const handleUpdateName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { name: event.target.value })
+  const selectedField: Field | null = selectedItem?.kind === ITEM_KINDS.FIELD ? selectedItem : null
+  const selectedGroup: FieldGroup | null = selectedItem?.kind === ITEM_KINDS.FIELD_GROUP ? selectedItem : null
+
+  const isFieldSelected = Boolean(selectedItemId) && selectedKind === ITEM_KINDS.FIELD
+  const isGroupSelected = Boolean(selectedItemId) && selectedKind === ITEM_KINDS.FIELD_GROUP
+
+  const withFieldGuard = <Value,>(updater: (itemId: string, value: Value) => void) => (value: Value) => {
+    if (isFieldSelected && selectedItemId) updater(selectedItemId, value)
   }
 
-  const handleUpdateDescription = (value: LocalizedString) => {
-    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { description: value })
-  }
-
-  const handleUpdatePlaceholder = (value: LocalizedString) => {
-    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { placeholder: value })
-  }
-
-  const handleUpdateReadOnly = (checked: boolean) => {
-    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { readOnly: checked })
-  }
-
-  const handleUpdateDisabled = (checked: boolean) => {
-    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { disabled: checked })
-  }
-
-  const handleUpdateOptions = (options: Option[]) => {
-    if (isFieldSelected && selectedItemId) updateField(selectedItemId, { options })
-  }
+  const handleUpdateLabel = withFieldGuard<LocalizedString>((itemId, value) => updateField(itemId, { label: value }))
+  const handleUpdateName = withFieldGuard<React.ChangeEvent<HTMLInputElement>>((itemId, event) => updateField(itemId, { name: event.target.value }))
+  const handleUpdateDescription = withFieldGuard<LocalizedString>((itemId, value) => updateField(itemId, { description: value }))
+  const handleUpdatePlaceholder = withFieldGuard<LocalizedString>((itemId, value) => updateField(itemId, { placeholder: value }))
+  const handleUpdateReadOnly = withFieldGuard<boolean>((itemId, checked) => updateField(itemId, { readOnly: checked }))
+  const handleUpdateDisabled = withFieldGuard<boolean>((itemId, checked) => updateField(itemId, { disabled: checked }))
+  const handleUpdateOptions = withFieldGuard<Option[]>((itemId, options) => updateField(itemId, { options }))
 
   const handleUpdateGroupLabel = (value: LocalizedString) => {
     if (isGroupSelected && selectedItemId) updateGroup(selectedItemId, { label: value })

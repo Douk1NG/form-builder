@@ -8,9 +8,6 @@ export const getBorderClass = (
     isSelected: boolean,
     isDragOver: boolean
 ) => {
-    return isSelected
-        ? selectedStyles
-        : isDragOver
-            ? dragOverStyles
-            : defaultStyles
+    return [isSelected && selectedStyles, isDragOver && dragOverStyles]
+        .find(Boolean) ?? defaultStyles
 }

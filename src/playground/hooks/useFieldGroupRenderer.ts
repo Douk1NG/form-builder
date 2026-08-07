@@ -1,9 +1,10 @@
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import type { FieldGroup, CanvasItem } from '@/types/form'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 function findGroupById(items: Record<string, CanvasItem>, groupId: string): FieldGroup | null {
   for (const item of Object.values(items)) {
-    if (item.kind !== 'field_group') continue
+    if (item.kind !== ITEM_KINDS.FIELD_GROUP) continue
     if (item.id === groupId) return item as FieldGroup
 
     const nested = findGroupById(

@@ -4,35 +4,35 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import sonarjs from 'eslint-plugin-sonarjs';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'playwright-report', 'test-results'] },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  reactHooks.configs.flat.recommended,
+  sonarjs.configs.recommended,
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended,
-    ],
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: {
-        window: 'readonly',
-        document: 'readonly',
-        console: 'readonly',
-        process: 'readonly',
-        setTimeout: 'readonly',
-        clearTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearInterval: 'readonly',
-        import: 'readonly',
-      },
-    },
-    plugins: {
-      'react-hooks': reactHooks,
-      'sonarjs': sonarjs,
-    },
     rules: {
-      ...reactHooks.configs.recommended.rules,
-      'sonarjs/cognitive-complexity': ['error', 15],
-      'sonarjs/no-collapsible-if': 'error',
+      // --- Complexity ---
+      'sonarjs/cognitive-complexity': ['warn', 15],
+      'complexity': ['warn', { max: 12 }],
+      'max-depth': ['warn', 3],
+
+      // --- Early return / guard clauses ---
+      'no-else-return': ['warn', { allowElseIf: false }],
+      'no-lonely-if': 'warn',
+      'consistent-return': 'warn',
+
+      // --- Nested ifs / redundant conditionals ---
+      'no-nested-ternary': 'error',
+      'sonarjs/no-collapsible-if': 'warn',
+      'sonarjs/no-identical-conditions': 'error',
+      'sonarjs/no-all-duplicated-branches': 'error',
+      'sonarjs/no-duplicated-branches': 'warn',
+
+      // --- Loops ---
+      'no-unmodified-loop-condition': 'error',
+      'for-direction': 'error',
+
+      // --- Duplicated Strings ---
+      'sonarjs/no-duplicate-string': ['error', { threshold: 3 }],
     },
   },
 );

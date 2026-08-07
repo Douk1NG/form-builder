@@ -2,9 +2,15 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { useFormBuilderStore } from './useFormBuilderStore'
 import type { CanvasField, FieldGroup, TextField } from '@/types/form'
 
+const OUTER_GROUP = 'Outer Group'
+const INNER_GROUP = 'Inner Group'
+const NESTED_FIELD = 'Nested Field'
+const UPDATED_NESTED_FIELD = 'Updated Nested Field'
+const EMPTY_STRING = ''
+
 function getFieldLabel(item: CanvasField): string {
   if (typeof item.label === 'string') return item.label
-  return ''
+  return EMPTY_STRING
 }
 
 function assertCanvasField(item: unknown): asserts item is CanvasField {
@@ -202,13 +208,13 @@ describe('useFormBuilderStore', () => {
       store.createNewForm('Nested Test')
 
       // Add a group first
-      store.addGroup('Outer Group')
+      store.addGroup(OUTER_GROUP)
       const state1 = useFormBuilderStore.getState()
       const outerGroupId = state1.itemIds[0]
       expect(state1.lockedGroupId).toBe(outerGroupId)
 
       // Add group to group
-      store.addGroupToGroup(outerGroupId, 'Inner Group')
+      store.addGroupToGroup(outerGroupId, INNER_GROUP)
       const state2 = useFormBuilderStore.getState()
       const outerGroup = state2.itemsData[outerGroupId]
       expect(outerGroup.kind).toBe('field_group')
@@ -217,7 +223,7 @@ describe('useFormBuilderStore', () => {
       const innerGroup = outerGroup.items[0]
       expect(innerGroup.kind).toBe('field_group')
       assertFieldGroup(innerGroup)
-      expect(innerGroup.label).toBe('Inner Group')
+      expect(innerGroup.label).toBe(INNER_GROUP)
 
       // Now add row to the inner group
       store.addRowToGroup(innerGroup.id)
@@ -237,18 +243,18 @@ describe('useFormBuilderStore', () => {
       store.createNewForm('Nested Recursive Test')
 
       // Add an outer group
-      store.addGroup('Outer Group')
+      store.addGroup(OUTER_GROUP)
       const outerGroupId = useFormBuilderStore.getState().itemIds[0]
 
       // Add inner group
-      store.addGroupToGroup(outerGroupId, 'Inner Group')
+      store.addGroupToGroup(outerGroupId, INNER_GROUP)
       const outerGroupData = useFormBuilderStore.getState().itemsData[outerGroupId]
       assertFieldGroup(outerGroupData)
       const innerGroup = outerGroupData.items[0]
       const innerGroupId = innerGroup.id
 
       // Add field to nested group
-      const newField: Omit<TextField, 'id'> = { type: 'text', label: 'Nested Field', name: 'nested_field' }
+      const newField: Omit<TextField, 'id'> = { type: 'text', label: NESTED_FIELD, name: 'nested_field' }
       store.addFieldToGroup(innerGroupId, newField)
 
       let state = useFormBuilderStore.getState()
@@ -258,16 +264,16 @@ describe('useFormBuilderStore', () => {
       assertFieldGroup(updatedInnerGroup)
       expect(updatedInnerGroup.items).toHaveLength(1)
       const fieldId = updatedInnerGroup.items[0].id
-      expect(updatedInnerGroup.items[0].label).toBe('Nested Field')
+      expect(updatedInnerGroup.items[0].label).toBe(NESTED_FIELD)
 
       // Update nested field
-      store.updateField(fieldId, { label: 'Updated Nested Field' })
+      store.updateField(fieldId, { label: UPDATED_NESTED_FIELD })
       state = useFormBuilderStore.getState()
       outerGroupItem = state.itemsData[outerGroupId]
       assertFieldGroup(outerGroupItem)
       updatedInnerGroup = outerGroupItem.items[0]
       assertFieldGroup(updatedInnerGroup)
-      expect(updatedInnerGroup.items[0].label).toBe('Updated Nested Field')
+      expect(updatedInnerGroup.items[0].label).toBe(UPDATED_NESTED_FIELD)
 
       // Remove nested field
       store.removeFieldFromGroup(innerGroupId, fieldId)
@@ -390,7 +396,7 @@ describe('useFormBuilderStore', () => {
       const groupItem = state2.itemsData[createdGroupId]
       expect(groupItem.kind).toBe('field_group')
       assertFieldGroup(groupItem)
-      expect(groupItem.label).toBe('')
+      expect(groupItem.label).toBe(EMPTY_STRING)
     })
 
     it('sets a default label of "" when creating a group with a new field from drop', () => {
@@ -410,7 +416,7 @@ describe('useFormBuilderStore', () => {
       const groupItem = state2.itemsData[createdGroupId]
       expect(groupItem.kind).toBe('field_group')
       assertFieldGroup(groupItem)
-      expect(groupItem.label).toBe('')
+      expect(groupItem.label).toBe(EMPTY_STRING)
     })
 
     it('creates a 2 Columns Row from two fields inside a group using createGroupFromDrop', () => {
@@ -442,7 +448,7 @@ describe('useFormBuilderStore', () => {
       expect(updatedParent.items[0].kind).toBe('field_group')
       const nestedRow = updatedParent.items[0]
       assertFieldGroup(nestedRow)
-      expect(nestedRow.label).toBe('')
+      expect(nestedRow.label).toBe(EMPTY_STRING)
       expect(nestedRow.columns).toBe(2)
       expect(nestedRow.items).toHaveLength(2)
       expect(nestedRow.items[0].id).toBe(fieldAId)

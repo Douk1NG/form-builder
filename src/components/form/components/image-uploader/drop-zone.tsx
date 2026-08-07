@@ -4,6 +4,8 @@ import { Upload } from "lucide-react"
 
 import type { DropZoneProps } from '../../../../types/image-uploader'
 
+const DISABLED_CLASSES = "opacity-50 cursor-not-allowed"
+
 export const DropZone = ({
     isLimitReached,
     isSingleImage,
@@ -26,7 +28,7 @@ export const DropZone = ({
             className={`p-4 border-2 border-dashed rounded-lg
                 ${dragActive ? "border-blue-400 bg-blue-50" : "border-gray-300"}
                 ${isSingleImage ? "hidden" : ""}
-                ${isLimitReached ? "opacity-50 cursor-not-allowed" : ""}`
+                ${isLimitReached ? DISABLED_CLASSES : ""}`
             }
             onDragEnter={handlers.drag}
             onDragLeave={handlers.drag}
@@ -45,7 +47,7 @@ export const DropZone = ({
                 accept="image/*"
                 className="hidden"
             />
-            <div className={`text-center ${isLimitReached ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}>
+            <div className={`text-center ${isLimitReached ? DISABLED_CLASSES : "cursor-pointer"}`}>
                 <Upload
                     className="mx-auto text-gray-400 w-10 h-10"
                 />
@@ -63,7 +65,7 @@ export const DropZone = ({
                         handleOpenFileDialog()
                     }}
                     disabled={isLimitReached}
-                    className={`mt-2 ${isLimitReached ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200 cursor-pointer"}`}
+                    className={`mt-2 ${isLimitReached ? DISABLED_CLASSES : "hover:bg-gray-200 cursor-pointer"}`}
                 >
                     Select files
                 </Button>

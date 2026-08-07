@@ -14,8 +14,9 @@ export function useFieldOptionsEditor(
   }
 
   const handleAddOption = () => {
-    let nextNumber = options.length + 1
-    while (options.some((option) => option.value === `option-${nextNumber}`)) {
+    const usedValues = new Set(options.map((option) => option.value))
+    let nextNumber = 1
+    while (usedValues.has(`option-${nextNumber}`)) {
       nextNumber++
     }
     const newOptions = [...options, { label: `Option ${nextNumber}`, value: `option-${nextNumber}` }]

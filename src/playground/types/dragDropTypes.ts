@@ -1,9 +1,10 @@
 import type { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/types'
 import type { FieldType } from '@/types/form'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export type PaletteDragData = {
     source: 'palette'
-    type: FieldType | 'field_group' | 'column_row'
+    type: FieldType | typeof ITEM_KINDS.FIELD_GROUP | typeof ITEM_KINDS.COLUMN_ROW
     label: string
 }
 

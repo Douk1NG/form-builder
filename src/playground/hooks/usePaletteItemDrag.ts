@@ -13,7 +13,7 @@ export function usePaletteItemDrag({ type, label, disabled }: UsePaletteItemDrag
 
     useEffect(() => {
         const element = buttonRef.current
-        if (!element || disabled) return
+        if (!element || disabled) return undefined
 
         return draggable({
             element,

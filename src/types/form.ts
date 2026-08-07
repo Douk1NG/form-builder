@@ -1,5 +1,6 @@
 import type { ImageUploaderProps } from './image-uploader';
 import type { Option } from './select';
+import { ITEM_KINDS } from './itemKinds';
 
 export type ActionResponse = {
     success: boolean;
@@ -106,7 +107,7 @@ export type NewFieldInput = {
  */
 export type CanvasField = Field & {
     id: string;
-    kind: 'field';
+    kind: typeof ITEM_KINDS.FIELD;
 };
 
 /**
@@ -115,7 +116,7 @@ export type CanvasField = Field & {
  */
 export type FieldGroup = {
     id: string;
-    kind: 'field_group';
+    kind: typeof ITEM_KINDS.FIELD_GROUP;
     label?: LocalizedString;
     columns?: number;
     items: Array<CanvasField | FieldGroup>;

@@ -7,7 +7,7 @@ export function useCanvasDropTarget() {
 
     useEffect(() => {
         const element = dropTargetRef.current
-        if (!element) return
+        if (!element) return undefined
 
         return dropTargetForElements({
             element,

@@ -6,6 +6,7 @@ import { GroupDropZone } from './GroupDropZone'
 import { GroupActionToolbar } from './GroupActionToolbar'
 import { useFieldGroupRendererCard } from '@/playground/hooks/useFieldGroupRendererCard'
 import { useTranslation } from 'react-i18next'
+import { ITEM_KINDS } from '@/types/itemKinds'
 import { EdgeIndicators } from '@/playground/components/FormCanvas/EdgeIndicators'
 import { DragHandle } from '@/playground/components/FormCanvas/DragHandle'
 import { FieldGroupRenderer as NestedFieldGroupRenderer } from './FieldGroupRenderer'
@@ -104,7 +105,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
       <div className={`p-5 grid gap-4 grid-cols-1 ${groupColumnsClass}`}>
         {group.items.map((groupItem, itemIndex) => {
           const { kind, id } = groupItem
-          if (kind === 'field_group') {
+          if (kind === ITEM_KINDS.FIELD_GROUP) {
             return <NestedFieldGroupRenderer
               key={id}
               groupId={id}

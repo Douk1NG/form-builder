@@ -7,6 +7,7 @@ import {
 } from '@/playground/store/CanvasItemTree'
 import { insertItemIntoTree } from '@/playground/store/CanvasItemTreeMerge'
 import { isDescendantOrSelf } from '@/playground/utils/findItemById'
+import { ITEM_KINDS } from '@/types/itemKinds'
 
 export type CanvasListActions = {
     addField: (field: NewFieldInput) => void
@@ -25,7 +26,7 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         if (!formId) return
 
         const id = crypto.randomUUID()
-        const newItem: CanvasField = { ...(field as Field), id, kind: 'field' }
+        const newItem: CanvasField = { ...(field as Field), id, kind: ITEM_KINDS.FIELD }
 
         set({
             itemIds: [...itemIds, id],
@@ -38,7 +39,7 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         if (!formId) return
 
         const id = crypto.randomUUID()
-        const newGroup: FieldGroup = { id, kind: 'field_group', label, items: [] }
+        const newGroup: FieldGroup = { id, kind: ITEM_KINDS.FIELD_GROUP, label, items: [] }
 
         set({
             itemIds: [...itemIds, id],
@@ -53,7 +54,7 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         if (!formId) return
 
         const id = crypto.randomUUID()
-        const newGroup: FieldGroup = { id, kind: 'field_group', label: '', columns, items: [] }
+        const newGroup: FieldGroup = { id, kind: ITEM_KINDS.FIELD_GROUP, label: '', columns, items: [] }
 
         set({
             itemIds: [...itemIds, id],
@@ -161,7 +162,7 @@ function tryRemoveNestedItem(
     const newItemsData = { ...itemsData }
     for (const parentId of Object.keys(newItemsData)) {
         const parent = newItemsData[parentId]
-        if (parent.kind === 'field_group') {
+        if (parent.kind === ITEM_KINDS.FIELD_GROUP) {
             const filtered = removeFieldFromGroupItems(parent.items, itemId)
             if (filtered !== parent.items) {
                 newItemsData[parentId] = { ...parent, items: filtered }

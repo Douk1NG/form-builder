@@ -10,7 +10,7 @@ export function useSelectState() {
 
   // Close on outside click
   useEffect(() => {
-    if (!open) return
+    if (!open) return undefined
 
     function onPointerDown(e: PointerEvent) {
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
@@ -24,7 +24,7 @@ export function useSelectState() {
 
   // Close on Escape key
   useEffect(() => {
-    if (!open) return
+    if (!open) return undefined
 
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
