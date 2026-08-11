@@ -29,7 +29,7 @@ export function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: Previ
                             fields={currentFormSchema.items}
                             values={{}}
                             locale={previewLocale}
-                            translate={(key: string) => String(t(key as never))}
+                            translate={t as (key: string) => string}
                             action={simulateSubmit}
                             isCreating={true}
                         />

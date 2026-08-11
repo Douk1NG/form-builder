@@ -66,7 +66,7 @@ export function FieldProperties() {
     <FieldTabsPanel
       selectedField={selectedField}
       expandToggle={expandToggle}
-      translations={translations}
+      translations={translations as (key: string) => string}
       onLabelChange={handleUpdateLabel}
       onNameChange={handleUpdateName}
       onDescriptionChange={handleUpdateDescription}

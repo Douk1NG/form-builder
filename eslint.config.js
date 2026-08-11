@@ -33,6 +33,19 @@ export default tseslint.config(
 
       // --- Duplicated Strings ---
       'sonarjs/no-duplicate-string': ['error', { threshold: 3 }],
+
+      // --- Unsafe type assertions ---
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'TSAsExpression > TSNeverKeyword',
+          message: '"as never" is forbidden. Use a proper type cast like "as (key: string) => string" or a type guard instead.',
+        },
+        {
+          selector: 'TSAsExpression > TSUnknownKeyword',
+          message: '"as unknown" intermediate casts are forbidden. Use a type guard or a direct type-safe cast instead.',
+        },
+      ],
     },
   },
 );
