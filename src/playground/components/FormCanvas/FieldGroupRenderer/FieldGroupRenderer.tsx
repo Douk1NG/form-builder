@@ -55,7 +55,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
     ? translations('status.unlock')
     : translations('status.lock')
 
-  const groupColumnsClass = group.columns === 2 ? 'md:grid-cols-2' : ''
+  const groupColumnsClass = Number(group.columns) === 2 ? 'md:grid-cols-2' : ''
 
   return (
     <div
@@ -102,7 +102,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
       </div>
 
       {/* Group Body */}
-      <div className={`p-5 grid gap-4 grid-cols-1 ${groupColumnsClass}`}>
+      <div className={`p-5 grid gap-4 grid-cols-1 ${groupColumnsClass} form-group-grid`}>
         {group.items.map((groupItem, itemIndex) => {
           const { kind, id } = groupItem
           if (kind === ITEM_KINDS.FIELD_GROUP) {

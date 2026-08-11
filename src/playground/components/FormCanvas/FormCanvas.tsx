@@ -33,7 +33,7 @@ export function FormCanvas() {
   const dropZoneClassName = isDragOver ? activeDropZoneStyles : idleDropZoneStyles
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-20">
+    <div className="max-w-3xl mx-auto space-y-6 pb-20 form-container">
       <InheritanceProvider onChange={() => { }} getFieldValue={() => undefined}>
         <div
           ref={dropTargetRef}

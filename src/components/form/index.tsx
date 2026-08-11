@@ -77,14 +77,14 @@ const FormBuilder = ({
         if ('kind' in item) {
             if (item.kind === ITEM_KINDS.FIELD_GROUP) {
                 const group = item as FieldGroup;
-                const groupColumnsClass = group.columns === 2 ? 'md:grid-cols-2' : '';
+                const groupColumnsClass = Number(group.columns) === 2 ? 'md:grid-cols-2' : '';
                 const resolvedLabel = translate(resolveLocalizedString(group.label, locale));
                 return (
                     <div key={group.id} className="space-y-6 p-6 rounded-2xl border border-border/40 bg-card/40 backdrop-blur-sm">
                         {resolvedLabel && (
                             <h3 className="font-bold text-xl tracking-tight text-foreground">{resolvedLabel}</h3>
                         )}
-                        <div className={`grid gap-4 grid-cols-1 ${groupColumnsClass}`}>
+                        <div className={`grid gap-4 grid-cols-1 ${groupColumnsClass} form-group-grid`}>
                             {group.items.map((groupItem, index) => (
                                 <div key={'id' in groupItem ? groupItem.id : index}>
                                     {renderItem(groupItem)}
@@ -105,10 +105,11 @@ const FormBuilder = ({
 
     return (
         <InheritanceProvider getFieldValue={getFieldValue} onChange={handleFieldChange}>
-            <form
-                action={formAction}
-                className='flex flex-col gap-8'
-            >
+            <div className="form-container">
+                <form
+                    action={formAction}
+                    className='flex flex-col gap-8'
+                >
                 <div className="space-y-8">
                     {fields.map((item, index) => (
                         <div key={'id' in item && item.id ? item.id : index}>
@@ -128,7 +129,8 @@ const FormBuilder = ({
                         />
                     </div>)
                 }
-            </form>
+                </form>
+            </div>
         </InheritanceProvider>
     )
 }

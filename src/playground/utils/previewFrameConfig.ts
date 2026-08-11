@@ -10,7 +10,7 @@ export type PreviewFrameConfig = {
 export function getPreviewFrameConfig(previewDevice: PreviewDevice): PreviewFrameConfig {
     if (previewDevice === 'desktop') {
         return {
-            maxWidthClassName: 'max-w-4xl',
+            maxWidthClassName: 'max-w-full w-full',
             frameClassName: 'border rounded-xl shadow-2xl shadow-black/10 overflow-hidden bg-card/95 backdrop-blur-xl border-border/50',
         }
     }

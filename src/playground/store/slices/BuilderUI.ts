@@ -9,6 +9,8 @@ export type BuilderUiSlice = {
     previewLocale: SupportedLocale
     previewDevice: 'desktop' | 'tablet' | 'mobile'
     isPropertiesExpanded: boolean
+    isPaletteCollapsed: boolean
+    isPropertiesCollapsed: boolean
 
     setSelectedItem: (itemId: string | null) => void
     setLockedGroup: (groupId: string | null) => void
@@ -17,6 +19,8 @@ export type BuilderUiSlice = {
     setPreviewLocale: (locale: SupportedLocale) => void
     setPreviewDevice: (device: 'desktop' | 'tablet' | 'mobile') => void
     togglePropertiesExpanded: () => void
+    setPaletteCollapsed: (collapsed: boolean) => void
+    setPropertiesCollapsed: (collapsed: boolean) => void
 }
 
 export const createBuilderUiSlice: StateCreator<FormBuilderState, [], [], BuilderUiSlice> = (set, get) => ({
@@ -26,6 +30,8 @@ export const createBuilderUiSlice: StateCreator<FormBuilderState, [], [], Builde
     previewLocale: 'en',
     previewDevice: 'desktop',
     isPropertiesExpanded: false,
+    isPaletteCollapsed: false,
+    isPropertiesCollapsed: false,
 
     setSelectedItem: (itemId) => {
         set({ selectedItemId: itemId })
@@ -54,5 +60,13 @@ export const createBuilderUiSlice: StateCreator<FormBuilderState, [], [], Builde
 
     togglePropertiesExpanded: () => {
         set((state) => ({ isPropertiesExpanded: !state.isPropertiesExpanded }))
+    },
+
+    setPaletteCollapsed: (collapsed) => {
+        set({ isPaletteCollapsed: collapsed })
+    },
+
+    setPropertiesCollapsed: (collapsed) => {
+        set({ isPropertiesCollapsed: collapsed })
     },
 })

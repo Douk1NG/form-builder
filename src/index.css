@@ -136,3 +136,16 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.35);
 }
+
+/* Container query container */
+.form-container {
+  container-type: inline-size;
+  width: 100%;
+}
+
+/* Force 1 column when the group parent width is narrow */
+@container (max-width: 639px) {
+  .form-group-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+}

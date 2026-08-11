@@ -4,8 +4,6 @@ import { useFieldGroupRenderer } from '@/playground/hooks/useFieldGroupRenderer'
 import { useEdgeDraggable } from './useEdgeDraggable'
 import { TOP, BOTTOM } from '@/playground/constants/edgeConstants'
 
-const minimumEmptySlots = 1
-
 export function useFieldGroupRendererCard(groupId: string, index: number) {
   const {
     group,
@@ -57,9 +55,9 @@ export function useFieldGroupRendererCard(groupId: string, index: number) {
     addRowToGroup(groupId)
   }
 
-  const emptySlotCount = group?.items.length === 0
-    ? (group.columns || minimumEmptySlots)
-    : 0
+  const columns = group?.columns || 1
+  const emptySlotCount = Math.max(0, columns - (group?.items.length || 0))
+
 
   return {
     group,
