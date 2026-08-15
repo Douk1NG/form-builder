@@ -11,6 +11,9 @@ export type BuilderUiSlice = {
     isPropertiesExpanded: boolean
     isPaletteCollapsed: boolean
     isPropertiesCollapsed: boolean
+    isCreateFormDialogOpen: boolean
+    isRenameFormDialogOpen: boolean
+    isMobilePropertiesHudOpen: boolean
 
     setSelectedItem: (itemId: string | null) => void
     setLockedGroup: (groupId: string | null) => void
@@ -21,6 +24,9 @@ export type BuilderUiSlice = {
     togglePropertiesExpanded: () => void
     setPaletteCollapsed: (collapsed: boolean) => void
     setPropertiesCollapsed: (collapsed: boolean) => void
+    setCreateFormDialogOpen: (open: boolean) => void
+    setRenameFormDialogOpen: (open: boolean) => void
+    setMobilePropertiesHudOpen: (open: boolean) => void
 }
 
 export const createBuilderUiSlice: StateCreator<FormBuilderState, [], [], BuilderUiSlice> = (set, get) => ({
@@ -32,6 +38,9 @@ export const createBuilderUiSlice: StateCreator<FormBuilderState, [], [], Builde
     isPropertiesExpanded: false,
     isPaletteCollapsed: false,
     isPropertiesCollapsed: false,
+    isCreateFormDialogOpen: false,
+    isRenameFormDialogOpen: false,
+    isMobilePropertiesHudOpen: false,
 
     setSelectedItem: (itemId) => {
         set({ selectedItemId: itemId })
@@ -68,5 +77,17 @@ export const createBuilderUiSlice: StateCreator<FormBuilderState, [], [], Builde
 
     setPropertiesCollapsed: (collapsed) => {
         set({ isPropertiesCollapsed: collapsed })
+    },
+
+    setCreateFormDialogOpen: (open) => {
+        set({ isCreateFormDialogOpen: open })
+    },
+
+    setRenameFormDialogOpen: (open) => {
+        set({ isRenameFormDialogOpen: open })
+    },
+
+    setMobilePropertiesHudOpen: (open) => {
+        set({ isMobilePropertiesHudOpen: open })
     },
 })

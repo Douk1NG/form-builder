@@ -1,4 +1,5 @@
 import type { StateCreator } from 'zustand'
+import { generateUuid } from '@/lib/utils'
 import type { Field, CanvasItem, CanvasField, FieldGroup, NewFieldInput } from '@/types/form'
 import type { FormBuilderState } from '@/playground/store/useFormBuilderStore'
 import {
@@ -25,7 +26,7 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         const { formId, itemIds, itemsData } = get()
         if (!formId) return
 
-        const id = crypto.randomUUID()
+        const id = generateUuid()
         const newItem: CanvasField = { ...(field as Field), id, kind: ITEM_KINDS.FIELD }
 
         set({
@@ -38,7 +39,7 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         const { formId, itemIds, itemsData } = get()
         if (!formId) return
 
-        const id = crypto.randomUUID()
+        const id = generateUuid()
         const newGroup: FieldGroup = { id, kind: ITEM_KINDS.FIELD_GROUP, label, items: [] }
 
         set({
@@ -53,7 +54,7 @@ export const createCanvasListActions: StateCreator<FormBuilderState, [], [], Can
         const { formId, itemIds, itemsData } = get()
         if (!formId) return
 
-        const id = crypto.randomUUID()
+        const id = generateUuid()
         const newGroup: FieldGroup = { id, kind: ITEM_KINDS.FIELD_GROUP, label: '', columns, items: [] }
 
         set({

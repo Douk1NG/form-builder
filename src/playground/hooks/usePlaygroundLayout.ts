@@ -1,5 +1,4 @@
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
-import { useState } from 'react'
 
 export function usePlaygroundLayout() {
     const formId = useFormBuilderStore((state) => state.formId)
@@ -10,9 +9,6 @@ export function usePlaygroundLayout() {
     const setPaletteCollapsed = useFormBuilderStore((state) => state.setPaletteCollapsed)
     const setPropertiesCollapsed = useFormBuilderStore((state) => state.setPropertiesCollapsed)
     const previewMode = useFormBuilderStore((state) => state.previewMode)
-
-    const [isMobilePaletteOpen, setIsMobilePaletteOpen] = useState(false)
-    const [isMobilePropertiesOpen, setIsMobilePropertiesOpen] = useState(false)
 
     const propertiesSidebarWidth = (() => {
         if (isPropertiesCollapsed) return 'w-0 p-0 overflow-hidden border-none opacity-0'
@@ -42,9 +38,5 @@ export function usePlaygroundLayout() {
         handleTogglePalette,
         handleToggleProperties,
         hasSelectedItem,
-        isMobilePaletteOpen,
-        setIsMobilePaletteOpen,
-        isMobilePropertiesOpen,
-        setIsMobilePropertiesOpen,
     }
 }

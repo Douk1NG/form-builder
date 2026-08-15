@@ -21,7 +21,7 @@ export function GroupActionToolbar({
     onRemove,
 }: GroupActionToolbarProps) {
     return (
-        <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1">
+        <div className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1">
             <Button
                 variant="ghost"
                 size="icon"

@@ -1,4 +1,5 @@
 import type { StateCreator } from 'zustand'
+import { generateUuid } from '@/lib/utils'
 import type { Field, CanvasItem, CanvasField, FieldGroup, NewFieldInput } from '@/types/form'
 import type { FormBuilderState } from '@/playground/store/useFormBuilderStore'
 import {
@@ -21,6 +22,7 @@ export type CanvasGroupActions = {
     addGroupToGroup: (groupId: string, label: string) => void
     addRowToGroup: (groupId: string) => void
     removeFieldFromGroup: (groupId: string, fieldId: string) => void
+    reorderFieldInGroup: (groupId: string, fieldId: string, direction: 'up' | 'down') => void
     createGroupFromDrop: (sourceId: string, targetId: string, side: 'left' | 'right') => void
     createGroupWithNewField: (targetId: string, field: NewFieldInput, side: 'left' | 'right') => void
     moveFieldToGroup: (fieldId: string, groupId: string) => void
@@ -77,7 +79,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         const { formId, itemsData } = get()
         if (!formId) return
 
-        const id = crypto.randomUUID()
+        const id = generateUuid()
         const newField: CanvasField = { ...(field as Field), id, kind: ITEM_KINDS.FIELD }
 
         const { newItemsData, found } = findAndUpdateInTree(
@@ -96,7 +98,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         const { formId, itemsData } = get()
         if (!formId) return
 
-        const id = crypto.randomUUID()
+        const id = generateUuid()
         const newGroup: FieldGroup = { id, kind: ITEM_KINDS.FIELD_GROUP, label, items: [] }
 
         const { newItemsData, found } = findAndUpdateInTree(
@@ -119,7 +121,7 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         const { formId, itemsData } = get()
         if (!formId) return
 
-        const rowId = crypto.randomUUID()
+        const rowId = generateUuid()
         const newRow: FieldGroup = {
             id: rowId,
             kind: ITEM_KINDS.FIELD_GROUP,
@@ -148,6 +150,50 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
             groupId,
             (group) => ({ ...group, items: removeFieldFromGroupItems(group.items, fieldId) }),
             (items) => removeFieldFromGroupItems(items, fieldId)
+        )
+
+        if (found) {
+            set({ itemsData: newItemsData })
+        }
+    },
+
+    reorderFieldInGroup: (groupId, fieldId, direction) => {
+        const { formId, itemsData } = get()
+        if (!formId) return
+
+        const swapAdjacentItems = (group: FieldGroup): FieldGroup => {
+            const fieldIndex = group.items.findIndex((item) => item.id === fieldId)
+            if (fieldIndex === -1) return group
+
+            const isAtBoundary = direction === 'up'
+                ? fieldIndex === 0
+                : fieldIndex === group.items.length - 1
+            if (isAtBoundary) return group
+
+            const swapIndex = direction === 'up' ? fieldIndex - 1 : fieldIndex + 1
+            const reorderedItems = [...group.items]
+            const temporaryItem = reorderedItems[fieldIndex]
+            reorderedItems[fieldIndex] = reorderedItems[swapIndex]
+            reorderedItems[swapIndex] = temporaryItem
+
+            return { ...group, items: reorderedItems }
+        }
+
+        const reorderInNestedGroup = (items: (CanvasField | FieldGroup)[]): (CanvasField | FieldGroup)[] => {
+            return items.map((item) => {
+                if (item.kind !== ITEM_KINDS.FIELD_GROUP) return item
+                if (item.id === groupId) return swapAdjacentItems(item)
+                const updatedChildren = reorderInNestedGroup(item.items)
+                if (updatedChildren === item.items) return item
+                return { ...item, items: updatedChildren }
+            })
+        }
+
+        const { newItemsData, found } = findAndUpdateInTree(
+            itemsData,
+            groupId,
+            swapAdjacentItems,
+            reorderInNestedGroup
         )
 
         if (found) {

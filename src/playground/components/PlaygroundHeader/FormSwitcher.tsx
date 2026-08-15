@@ -19,18 +19,19 @@ export function FormSwitcher() {
         formId,
         formTitle,
         savedFormsList,
-        isDialogOpen,
-        setIsDialogOpen,
+        isCreateFormDialogOpen,
+        setCreateFormDialogOpen,
+        isRenameFormDialogOpen,
+        setRenameFormDialogOpen,
         newTitle,
         setNewTitle,
-        isEditingTitle,
-        setIsEditingTitle,
         editTitleValue,
         setEditTitleValue,
         handleCreate,
         handleTitleSubmit,
         handleSelectChange,
         handleOpenDialog,
+        handleOpenRenameDialog,
         handleDelete
     } = useFormSwitcher()
 
@@ -39,7 +40,7 @@ export function FormSwitcher() {
     })
 
     return (
-        <div className="flex items-center gap-3 ml-4">
+        <div className="flex items-center gap-3 sm:ml-4 ml-0">
             <FormSwitcherSelect
                 value={formId}
                 onValueChange={handleSelectChange}
@@ -51,20 +52,10 @@ export function FormSwitcher() {
                 handleCreateNew={handleOpenDialog}
             />
             {formId && (
-                <div className="flex items-center gap-2">
-                    {isEditingTitle ? (
-                        <Input
-                            value={editTitleValue}
-                            onChange={(event) => setEditTitleValue(event.target.value)}
-                            onBlur={handleTitleSubmit}
-                            onKeyDown={(event) => event.key === 'Enter' && handleTitleSubmit()}
-                            className="h-8 w-48 text-sm"
-                            autoFocus
-                        />
-                    ) : (
+                <div className="hidden sm:flex items-center gap-2">
                         <div
                             className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/60 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors group"
-                            onClick={() => setIsEditingTitle(true)}
+                            onClick={handleOpenRenameDialog}
                         >
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
@@ -72,14 +63,15 @@ export function FormSwitcher() {
                                 <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </span>
                         </div>
-                    )}
                 </div>
             )}
+
+            {/* Create Form Dialog */}
             <Dialog
-                open={isDialogOpen}
-                onOpenChange={setIsDialogOpen}
+                open={isCreateFormDialogOpen}
+                onOpenChange={setCreateFormDialogOpen}
             >
-                <DialogContent>
+                <DialogContent className="max-w-[90vw] rounded-2xl sm:max-w-lg">
                     <DialogHeader>
                         <DialogTitle>
                             {translations('dialog.title')}
@@ -94,15 +86,45 @@ export function FormSwitcher() {
                         placeholder={translations('dialog.inputPlaceholder')}
                         onKeyDown={(event) => event.key === 'Enter' && handleCreate()}
                     />
-                    <DialogFooter>
+                    <DialogFooter className="gap-2 sm:gap-0">
                         <Button
                             variant="outline"
-                            onClick={() => setIsDialogOpen(false)}
+                            onClick={() => setCreateFormDialogOpen(false)}
                         >
                             {translations('dialog.cancel')}
                         </Button>
                         <Button onClick={handleCreate}>
                             {translations('dialog.create')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Rename Form Dialog (Mobile Friendly) */}
+            <Dialog
+                open={isRenameFormDialogOpen}
+                onOpenChange={setRenameFormDialogOpen}
+            >
+                <DialogContent className="max-w-[90vw] rounded-2xl sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Rename Form</DialogTitle>
+                        <DialogDescription>Enter a new title for this form.</DialogDescription>
+                    </DialogHeader>
+                    <Input
+                        value={editTitleValue}
+                        onChange={(event) => setEditTitleValue(event.target.value)}
+                        placeholder="Enter form name..."
+                        onKeyDown={(event) => event.key === 'Enter' && handleTitleSubmit()}
+                    />
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button
+                            variant="outline"
+                            onClick={() => setRenameFormDialogOpen(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button onClick={handleTitleSubmit}>
+                            Save Changes
                         </Button>
                     </DialogFooter>
                 </DialogContent>

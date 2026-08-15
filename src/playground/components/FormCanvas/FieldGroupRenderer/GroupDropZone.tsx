@@ -1,5 +1,6 @@
 import { useGroupDropZone } from '@/playground/hooks/useGroupDropZone'
 import { useTranslation } from 'react-i18next'
+import { useIsMobile } from '@/playground/hooks/useIsMobile'
 
 export type GroupDropZoneProps = {
   groupId: string
@@ -7,6 +8,8 @@ export type GroupDropZoneProps = {
 }
 
 export function GroupDropZone({ groupId, label }: GroupDropZoneProps) {
+  const isMobile = useIsMobile()
+
   const {
     dropRef,
     isOver
@@ -18,6 +21,10 @@ export function GroupDropZone({ groupId, label }: GroupDropZoneProps) {
     keyPrefix: 'playground.fields.group.dropZone'
   })
 
+  const mobileLabel = 'Use + to add fields'
+  const desktopLabel = label ?? translations('titleAlt')
+  const displayLabel = isMobile ? mobileLabel : desktopLabel
+
   return (
     <div
       ref={dropRef}
@@ -25,7 +32,7 @@ export function GroupDropZone({ groupId, label }: GroupDropZoneProps) {
         }`}
     >
       <p className="text-sm font-medium text-muted-foreground/60">
-        {isOver ? translations('title') : (label ?? translations('titleAlt'))}
+        {isOver ? translations('title') : displayLabel}
       </p>
     </div>
   )

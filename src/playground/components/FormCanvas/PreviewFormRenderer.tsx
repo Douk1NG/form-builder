@@ -1,5 +1,6 @@
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
 import { useTranslation } from 'react-i18next'
+import { useIsMobile } from '@/playground/hooks/useIsMobile'
 import FormBuilder from '@/components/form'
 import type { ActionResponse } from '@/types/form'
 import type { FormSchema } from '@/playground/store/slices/CanvasItems'
@@ -15,8 +16,26 @@ export function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: Previ
     const previewDevice = useFormBuilderStore((state) => state.previewDevice)
     const { t } = useTranslation()
 
+    const isMobileViewport = useIsMobile()
+
     // Determine layout wraps and aspect ratio bounds depending on target device
     const renderDeviceFrame = () => {
+        if (isMobileViewport) {
+            // Force mobile preview mode inside a plain viewport without thick devices wrapper borders on small screens
+            return (
+                <div className="w-full h-full bg-card overflow-y-auto px-5 py-6 flex flex-col">
+                    <FormBuilder
+                        fields={currentFormSchema.items}
+                        values={{}}
+                        locale={previewLocale}
+                        translate={t as (key: string) => string}
+                        action={simulateSubmit}
+                        isCreating={true}
+                    />
+                </div>
+            )
+        }
+
         if (previewDevice === 'desktop') {
             return (
                 <div className="w-full h-full border border-border/60 bg-card shadow-2xl rounded-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col">
@@ -127,8 +146,10 @@ export function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: Previ
         )
     }
 
+    const containerMargin = isMobileViewport ? 'p-0 -m-4 h-full' : 'p-6 -m-8 h-[calc(100vh-80px)]'
+
     return (
-        <div className="h-[calc(100vh-80px)] p-6 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#27272a_1px,transparent_1px)] bg-size-[24px_24px] -m-8 flex items-center justify-center overflow-hidden">
+        <div className={`bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#27272a_1px,transparent_1px)] bg-size-[24px_24px] flex items-center justify-center overflow-hidden ${containerMargin}`}>
             <div className="w-full h-full flex items-center justify-center overflow-hidden">
                 {renderDeviceFrame()}
             </div>

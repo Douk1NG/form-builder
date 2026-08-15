@@ -1,4 +1,5 @@
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
+import { generateUuid } from '@/lib/utils'
 import type { FieldType, NewFieldInput } from '../../types/form'
 import { findItemById } from '@/playground/utils/findItemById'
 import { DEFAULT_GROUP_LABEL, FIELD_ID_SUFFIX_LENGTH, DEFAULT_TWO_COLUMN_COUNT } from '../constants/fieldDefaults'
@@ -22,7 +23,7 @@ export function useFieldPalette() {
     const newFieldBase: NewFieldInput = {
       type,
       label: `New ${label}`,
-      name: `field_${crypto.randomUUID().slice(0, FIELD_ID_SUFFIX_LENGTH)}`,
+      name: `field_${generateUuid().slice(0, FIELD_ID_SUFFIX_LENGTH)}`,
       description: '',
       placeholder: ''
     }

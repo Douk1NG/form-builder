@@ -31,8 +31,8 @@ export function useFieldGroupRenderer(groupId: string) {
 
   const isSelected = selectedItemId === groupId
 
-  const handleSelectGroup = (event: React.MouseEvent | React.KeyboardEvent) => {
-    event.stopPropagation()
+  const handleSelectGroup = (event?: React.MouseEvent | React.KeyboardEvent) => {
+    event?.stopPropagation()
     setSelectedItem(groupId)
   }
 

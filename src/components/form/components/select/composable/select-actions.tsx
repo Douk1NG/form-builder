@@ -34,6 +34,7 @@ export function SelectActionButton({
   return (
     <button
       type="button"
+      onPointerDown={(e) => e.stopPropagation()}
       onClick={() => {
         onClick()
         setOpen(false)

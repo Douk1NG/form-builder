@@ -13,7 +13,7 @@ export function FieldActionToolbar({
     onRemove
 }: FieldActionToolbarProps) {
     return (
-        <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1 z-10">
+        <div className="absolute right-3 top-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-200 flex items-center gap-0.5 bg-card/95 backdrop-blur-sm shadow-lg shadow-black/5 border border-border/60 rounded-lg p-1 z-10">
             <Button
                 type="button"
                 variant="ghost"

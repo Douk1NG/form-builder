@@ -345,6 +345,59 @@ describe('useFormBuilderStore', () => {
       expect(updatedGroup.items[1].id).toBe(fieldAId)
     })
 
+    describe('reorderFieldInGroup', () => {
+      it('reorders fields inside a group up and down', () => {
+        const store = useFormBuilderStore.getState()
+        store.createNewForm('Reorder Field In Group Test')
+
+        store.addGroup('Group')
+        const groupId = useFormBuilderStore.getState().itemIds[0]
+
+        store.addFieldToGroup(groupId, { type: 'text', label: 'Field 1', name: 'f1' })
+        store.addFieldToGroup(groupId, { type: 'text', label: 'Field 2', name: 'f2' })
+        store.addFieldToGroup(groupId, { type: 'text', label: 'Field 3', name: 'f3' })
+
+        let state = useFormBuilderStore.getState()
+        const group = state.itemsData[groupId]
+        assertFieldGroup(group)
+        const f1Id = group.items[0].id
+        const f2Id = group.items[1].id
+        const f3Id = group.items[2].id
+
+        // Reorder f2 up
+        store.reorderFieldInGroup(groupId, f2Id, 'up')
+        state = useFormBuilderStore.getState()
+        let updatedGroup = state.itemsData[groupId]
+        assertFieldGroup(updatedGroup)
+        expect(updatedGroup.items[0].id).toBe(f2Id)
+        expect(updatedGroup.items[1].id).toBe(f1Id)
+        expect(updatedGroup.items[2].id).toBe(f3Id)
+
+        // Reorder f2 down
+        store.reorderFieldInGroup(groupId, f2Id, 'down')
+        state = useFormBuilderStore.getState()
+        updatedGroup = state.itemsData[groupId]
+        assertFieldGroup(updatedGroup)
+        expect(updatedGroup.items[0].id).toBe(f1Id)
+        expect(updatedGroup.items[1].id).toBe(f2Id)
+        expect(updatedGroup.items[2].id).toBe(f3Id)
+
+        // Reorder f1 up (boundary - should do nothing)
+        store.reorderFieldInGroup(groupId, f1Id, 'up')
+        state = useFormBuilderStore.getState()
+        updatedGroup = state.itemsData[groupId]
+        assertFieldGroup(updatedGroup)
+        expect(updatedGroup.items[0].id).toBe(f1Id)
+
+        // Reorder f3 down (boundary - should do nothing)
+        store.reorderFieldInGroup(groupId, f3Id, 'down')
+        state = useFormBuilderStore.getState()
+        updatedGroup = state.itemsData[groupId]
+        assertFieldGroup(updatedGroup)
+        expect(updatedGroup.items[2].id).toBe(f3Id)
+      })
+    })
+
     it('moves a field from one group to another using moveFieldToGroup', () => {
       const store = useFormBuilderStore.getState()
       store.createNewForm('Cross Group Move Test')

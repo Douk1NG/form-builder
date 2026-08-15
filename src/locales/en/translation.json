@@ -123,6 +123,8 @@
     "builder": {
       "dragDropTitle": "Drag & Drop fields here",
       "dragDropDescription": "Select components from the left palette or use the Layout tools to start building your form",
+      "mobileAddTitle": "Tap the + button to add fields",
+      "mobileAddDescription": "Select fields and layouts from the bottom palette HUD to build your form.",
       "localizedInput": {
         "translate": "Translate",
         "toggleBtnTitle": "Toggle translations"

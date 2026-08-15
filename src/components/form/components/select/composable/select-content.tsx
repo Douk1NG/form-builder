@@ -16,6 +16,7 @@ export function SelectContent({ className, children }: SelectContentProps) {
   return (
     <div
       role="listbox"
+      onPointerDown={(e) => e.stopPropagation()}
       className={cn(
         "absolute top-full left-0 right-0 z-50 mt-2 rounded-md border border-input",
         "bg-popover shadow-md",

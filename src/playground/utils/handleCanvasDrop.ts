@@ -1,4 +1,5 @@
 import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import { generateUuid } from '@/lib/utils'
 
 import {
     isPaletteDragData,
@@ -54,7 +55,7 @@ function handlePaletteLayoutDrop(
     }
 
     const newGroup: CanvasItem = {
-        id: crypto.randomUUID(),
+        id: generateUuid(),
         kind: ITEM_KINDS.FIELD_GROUP,
         label: isColumnRow ? '' : DEFAULT_GROUP_LABEL,
         ...(isColumnRow ? { columns: DEFAULT_TWO_COLUMN_COUNT } : {}),
@@ -77,7 +78,7 @@ function handlePaletteFieldDrop(
     const field = {
         type: paletteData.type,
         label: paletteData.label,
-        name: `field_${crypto.randomUUID().slice(0, FIELD_ID_SUFFIX_LENGTH)}`,
+        name: `field_${generateUuid().slice(0, FIELD_ID_SUFFIX_LENGTH)}`,
     }
 
     if ((edge === 'left' || edge === 'right') && destinationData.id) {
@@ -85,7 +86,7 @@ function handlePaletteFieldDrop(
     } else if (destinationData.isCanvas) {
         dependencies.addField(field)
     } else if (typeof destinationData.insertIndex === 'number') {
-        const newItem: CanvasItem = { ...field, id: crypto.randomUUID(), kind: ITEM_KINDS.FIELD }
+        const newItem: CanvasItem = { ...field, id: generateUuid(), kind: ITEM_KINDS.FIELD }
         dependencies.insertItemAt(destinationData.insertIndex, newItem)
     } else if (destinationData.groupId) {
         dependencies.addFieldToGroup(destinationData.groupId, field)

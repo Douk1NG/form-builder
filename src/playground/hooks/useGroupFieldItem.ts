@@ -6,8 +6,8 @@ export function useGroupFieldItem(fieldId: string | undefined) {
   const selectedItemId = useFormBuilderStore((state) => state.selectedItemId)
   const isSelected = selectedItemId === fieldId
 
-  const handleSelect = (event: React.MouseEvent | React.KeyboardEvent) => {
-    event.stopPropagation()
+  const handleSelect = (event?: React.MouseEvent | React.KeyboardEvent) => {
+    event?.stopPropagation()
     setSelectedItem(fieldId ?? null)
   }
 

@@ -1,4 +1,5 @@
 import { Settings2 } from 'lucide-react'
+import { useIsMobile } from '@/playground/hooks/useIsMobile'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PropertiesSectionHeader } from './PropertiesSectionHeader'
 import { FieldBasicTab } from './FieldBasicTab'
@@ -34,9 +35,13 @@ export function FieldTabsPanel({
 }: FieldTabsPanelProps) {
   const hasOptions = selectedField.type === 'select' || selectedField.type === 'multiselect'
 
+  const isMobile = useIsMobile()
+
   return (
-    <div className="space-y-5">
-      <PropertiesSectionHeader icon={<Settings2 className="w-5 h-5" />} title="Field Properties" rightAction={expandToggle} />
+    <div className={isMobile ? 'space-y-4' : 'space-y-5'}>
+      {!isMobile && (
+        <PropertiesSectionHeader icon={<Settings2 className="w-5 h-5" />} title="Field Properties" rightAction={expandToggle} />
+      )}
 
       <Tabs defaultValue="basic" className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-6">

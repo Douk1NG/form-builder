@@ -1,4 +1,5 @@
 import type { CanvasItem, CanvasField, FieldGroup, NewFieldInput, Field } from '@/types/form'
+import { generateUuid } from '@/lib/utils'
 import { findItemById } from '@/playground/utils/findItemById'
 import { mergeItemsIntoGroupInTree, replaceItemInGroupItems } from '@/playground/store/CanvasItemTreeMerge'
 import { DEFAULT_TWO_COLUMN_COUNT } from '@/playground/constants/fieldDefaults'
@@ -6,7 +7,7 @@ import { ITEM_KINDS } from '@/types/itemKinds'
 
 function createTwoColumnGroup(leftItem: CanvasField, rightItem: CanvasField): FieldGroup {
     return {
-        id: crypto.randomUUID(),
+        id: generateUuid(),
         kind: ITEM_KINDS.FIELD_GROUP,
         label: '',
         columns: DEFAULT_TWO_COLUMN_COUNT,
@@ -50,7 +51,7 @@ export function handleCreateGroupWithNewField(
     const targetItem = findItemById(itemsData, targetId)
     if (!targetItem || targetItem.kind !== ITEM_KINDS.FIELD) return null
 
-    const newFieldId = crypto.randomUUID()
+    const newFieldId = generateUuid()
     const newField: CanvasField = { ...(field as Field), id: newFieldId, kind: ITEM_KINDS.FIELD }
 
     const leftItem = side === 'left' ? newField : targetItem

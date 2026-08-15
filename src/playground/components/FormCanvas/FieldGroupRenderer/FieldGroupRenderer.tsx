@@ -4,12 +4,14 @@ import type { Field } from '@/types/form'
 import { GroupFieldItem } from './GroupFieldItem'
 import { GroupDropZone } from './GroupDropZone'
 import { GroupActionToolbar } from './GroupActionToolbar'
+import { MobileGroupActionMenu } from './MobileGroupActionMenu'
 import { useFieldGroupRendererCard } from '@/playground/hooks/useFieldGroupRendererCard'
-import { useTranslation } from 'react-i18next'
 import { ITEM_KINDS } from '@/types/itemKinds'
 import { EdgeIndicators } from '@/playground/components/FormCanvas/EdgeIndicators'
 import { DragHandle } from '@/playground/components/FormCanvas/DragHandle'
 import { FieldGroupRenderer as NestedFieldGroupRenderer } from './FieldGroupRenderer'
+import { useIsMobile } from '@/playground/hooks/useIsMobile'
+import { useMobilePropertiesHud } from '@/playground/hooks/useMobilePropertiesHud'
 
 export type FieldGroupRendererProps = {
   groupId: string
@@ -25,37 +27,26 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
     handleMoveUp,
     handleMoveDown,
     handleRemoveFieldFromGroup,
+    handleReorderFieldInGroup,
     handleKeyDown,
     handleToggleLock,
     elementRef,
     dragHandleRef,
-    isDragging,
     closestEdge,
     computedBorderClass,
     emptySlotCount,
+    draggingClass,
+    headerClass,
+    accentStyles,
+    lockGroupTranslationLabel,
+    groupColumnsClass,
+    translations
   } = useFieldGroupRendererCard(groupId, index)
 
-  const { t: translations } = useTranslation("translation", {
-    keyPrefix: "playground.fields.group"
-  })
+  const isMobile = useIsMobile()
+  const { openPropertiesHud } = useMobilePropertiesHud()
 
   if (!group) return null
-
-  const draggingClass = isDragging ? 'opacity-40 scale-[0.98] shadow-none border-dashed' : ''
-
-  const lockedHeaderStyles = 'border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10'
-  const unlockedHeaderStyles = 'border-border/40 bg-muted/30 hover:bg-muted/50'
-  const headerClass = isLocked ? lockedHeaderStyles : unlockedHeaderStyles
-
-  const lockedAccentStyles = { icon: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400', label: 'text-emerald-600 dark:text-emerald-400' }
-  const unlockedAccentStyles = { icon: 'bg-violet-500/15 text-violet-600 dark:text-violet-400', label: 'text-violet-600 dark:text-violet-400' }
-  const accentStyles = isLocked ? lockedAccentStyles : unlockedAccentStyles
-
-  const lockGroupTranslationLabel = isLocked
-    ? translations('status.unlock')
-    : translations('status.lock')
-
-  const groupColumnsClass = Number(group.columns) === 2 ? 'md:grid-cols-2' : ''
 
   return (
     <div
@@ -70,7 +61,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
         tabIndex={0}
         onKeyDown={handleKeyDown}
       >
-        <DragHandle ref={dragHandleRef} />
+        {!isMobile && <DragHandle ref={dragHandleRef} />}
         <div className={`p-1.5 rounded-lg ${accentStyles.icon}`}>
           <Layers className={`h-4 w-4 ${accentStyles.label}`} />
         </div>
@@ -90,15 +81,30 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
           </span>
         )}
 
-        <GroupActionToolbar
-          isLocked={isLocked}
-          lockLabel={lockGroupTranslationLabel}
-          labelClass={accentStyles.label}
-          onToggleLock={handleToggleLock}
-          onMoveUp={handleMoveUp}
-          onMoveDown={handleMoveDown}
-          onRemove={handleRemoveGroup}
-        />
+        {isMobile ? (
+          <MobileGroupActionMenu
+            isLocked={isLocked}
+            lockLabel={lockGroupTranslationLabel}
+            onToggleLock={handleToggleLock}
+            onMoveUp={handleMoveUp}
+            onMoveDown={handleMoveDown}
+            onRemove={handleRemoveGroup}
+            onOpenProperties={() => {
+              handleSelectGroup()
+              openPropertiesHud()
+            }}
+          />
+        ) : (
+          <GroupActionToolbar
+            isLocked={isLocked}
+            lockLabel={lockGroupTranslationLabel}
+            labelClass={accentStyles.label}
+            onToggleLock={handleToggleLock}
+            onMoveUp={handleMoveUp}
+            onMoveDown={handleMoveDown}
+            onRemove={handleRemoveGroup}
+          />
+        )}
       </div>
 
       {/* Group Body */}
@@ -120,6 +126,8 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
               groupId={groupId}
               index={itemIndex}
               onRemove={handleRemoveFieldFromGroup(id)}
+              onMoveUp={handleReorderFieldInGroup(id, 'up')}
+              onMoveDown={handleReorderFieldInGroup(id, 'down')}
             />
           )
         })}
@@ -139,7 +147,7 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
         })}
       </div>
 
-      <EdgeIndicators closestEdge={closestEdge} borderRadius="2xl" />
+      {!isMobile && <EdgeIndicators closestEdge={closestEdge} borderRadius="2xl" />}
     </div>
   )
 }

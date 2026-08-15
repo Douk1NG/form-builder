@@ -1,3 +1,4 @@
+import { generateUuid } from '../../../lib/utils'
 import type { StateCreator } from 'zustand'
 import type { CanvasItem } from '../../../types/form'
 import type { FormBuilderState } from '../useFormBuilderStore'
@@ -49,7 +50,7 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
             }
         }
 
-        const newFormId = crypto.randomUUID()
+        const newFormId = generateUuid()
 
         newSavedForms[newFormId] = {
             formId: newFormId,

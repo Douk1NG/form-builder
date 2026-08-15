@@ -9,12 +9,15 @@ export function useFormSwitcher() {
     const createNewForm = useFormBuilderStore((state) => state.createNewForm)
     const updateFormTitle = useFormBuilderStore((state) => state.updateFormTitle)
     const deleteForm = useFormBuilderStore((state) => state.deleteForm)
+    const isCreateFormDialogOpen = useFormBuilderStore((state) => state.isCreateFormDialogOpen)
+    const setCreateFormDialogOpen = useFormBuilderStore((state) => state.setCreateFormDialogOpen)
+    const isRenameFormDialogOpen = useFormBuilderStore((state) => state.isRenameFormDialogOpen)
+    const setRenameFormDialogOpen = useFormBuilderStore((state) => state.setRenameFormDialogOpen)
 
     const hasSavedForms = Object.keys(savedForms).length > 0
     const hasActiveForm = Boolean(formId)
     const shouldShowInitialDialog = !hasSavedForms && !hasActiveForm
 
-    const [isDialogOpen, setIsDialogOpen] = useState(shouldShowInitialDialog)
     const [newTitle, setNewTitle] = useState('')
     const [isEditingTitle, setIsEditingTitle] = useState(false)
     const [editTitleValue, setEditTitleValue] = useState(formTitle)
@@ -24,6 +27,13 @@ export function useFormSwitcher() {
         setEditTitleValue(formTitle)
         setPrevFormTitle(formTitle)
     }
+
+    // Auto-open dialog on first load when no forms exist
+    useEffect(() => {
+        if (shouldShowInitialDialog) {
+            setCreateFormDialogOpen(true)
+        }
+    }, [shouldShowInitialDialog, setCreateFormDialogOpen])
 
     // Auto-sync active form into savedForms list if it's missing (e.g., on first reload or legacy load)
     useEffect(() => {
@@ -48,7 +58,7 @@ export function useFormSwitcher() {
         const trimmedTitle = newTitle.trim()
         if (trimmedTitle) {
             createNewForm(trimmedTitle)
-            setIsDialogOpen(false)
+            setCreateFormDialogOpen(false)
             setNewTitle('')
         }
     }
@@ -61,6 +71,7 @@ export function useFormSwitcher() {
             setEditTitleValue(formTitle)
         }
         setIsEditingTitle(false)
+        setRenameFormDialogOpen(false)
     }
 
     const handleSelectChange = (selectedValue: string) => {
@@ -68,7 +79,12 @@ export function useFormSwitcher() {
     }
 
     const handleOpenDialog = () => {
-        setIsDialogOpen(true)
+        setCreateFormDialogOpen(true)
+    }
+
+    const handleOpenRenameDialog = () => {
+        setEditTitleValue(formTitle)
+        setRenameFormDialogOpen(true)
     }
 
     const handleDelete = (targetFormId: string) => {
@@ -83,8 +99,10 @@ export function useFormSwitcher() {
         formTitle,
         savedFormsList,
         isCurrentFormUnsaved,
-        isDialogOpen,
-        setIsDialogOpen,
+        isCreateFormDialogOpen,
+        setCreateFormDialogOpen,
+        isRenameFormDialogOpen,
+        setRenameFormDialogOpen,
         newTitle,
         setNewTitle,
         isEditingTitle,
@@ -95,6 +113,7 @@ export function useFormSwitcher() {
         handleTitleSubmit,
         handleSelectChange,
         handleOpenDialog,
+        handleOpenRenameDialog,
         handleDelete
     }
 }

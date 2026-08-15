@@ -17,7 +17,9 @@
     "preview": "Vista Previa",
     "noFields": "No se han añadido campos todavía. Arrastra y suelta o haz clic para añadir un campo.",
     "dragDropTitle": "Arrastra y suelta campos aquí",
-    "dragDropDescription": "Selecciona componentes de la paleta izquierda o usa las herramientas de Diseño para empezar a construir tu formulario"
+    "dragDropDescription": "Selecciona componentes de la paleta izquierda o usa las herramientas de Diseño para empezar a construir tu formulario",
+    "mobileAddTitle": "Toca el botón + para añadir campos",
+    "mobileAddDescription": "Selecciona campos y diseños de la paleta inferior HUD para construir tu formulario."
   },
   "fields": {
     "text": "Texto",

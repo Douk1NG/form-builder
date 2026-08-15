@@ -8,15 +8,23 @@ import { useEdgeDraggable } from '@/playground/hooks/useEdgeDraggable'
 import { Edges } from '@/playground/constants/edgeConstants'
 import { EdgeIndicators } from '@/playground/components/FormCanvas/EdgeIndicators'
 import { DragHandle } from '@/playground/components/FormCanvas/DragHandle'
+import { MobileFieldActionMenu } from '@/playground/components/FormCanvas/FieldRenderer/MobileFieldActionMenu'
+import { useIsMobile } from '@/playground/hooks/useIsMobile'
+import { useMobilePropertiesHud } from '@/playground/hooks/useMobilePropertiesHud'
 
 export type GroupFieldItemProps = {
   field: Field
   groupId: string
   index: number
   onRemove: (event: React.MouseEvent) => void
+  onMoveUp: (event: React.MouseEvent) => void
+  onMoveDown: (event: React.MouseEvent) => void
 }
 
-export function GroupFieldItem({ field, index, onRemove }: GroupFieldItemProps) {
+export function GroupFieldItem({ field, index, onRemove, onMoveUp, onMoveDown }: GroupFieldItemProps) {
+  const isMobile = useIsMobile()
+  const { openPropertiesHud } = useMobilePropertiesHud()
+
   const {
     isSelected,
     handleSelect,
@@ -39,34 +47,48 @@ export function GroupFieldItem({ field, index, onRemove }: GroupFieldItemProps) 
   const defaultStyles = 'border-border/30 hover:border-primary/40 hover:shadow-xs'
   const draggingClass = isDragging ? 'opacity-40 scale-[0.98] shadow-none border-dashed' : ''
   const dragOverClass = isDragOver ? 'border-primary/40 shadow-sm bg-card/70' : ''
+  const mobilePaddingClass = isMobile ? 'p-4' : 'p-4 pl-12'
 
   return (
     <div
       ref={wrapperRef}
-      className={`relative group/field rounded-xl border bg-card/80 p-4 pl-12 transition-all duration-200 cursor-pointer ${isSelected ? selectedStyles : dragOverClass || defaultStyles} ${draggingClass}`}
+      className={`relative group/field rounded-xl border bg-card/80 ${mobilePaddingClass} transition-all duration-200 cursor-pointer ${isSelected ? selectedStyles : dragOverClass || defaultStyles} ${draggingClass}`}
       onClick={handleSelect}
       role="button"
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >
-      <DragHandle ref={dragHandleRef} />
+      {!isMobile && <DragHandle ref={dragHandleRef} />}
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover/field:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 z-10 rounded-md"
-        onClick={onRemove}
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-      </Button>
+      {isMobile ? (
+        <MobileFieldActionMenu
+          onMoveUp={onMoveUp}
+          onMoveDown={onMoveDown}
+          onRemove={onRemove}
+          onOpenProperties={() => {
+            handleSelect()
+            openPropertiesHud()
+          }}
+        />
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 right-2 h-7 w-7 opacity-100 lg:opacity-0 group-hover/field:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 z-10 rounded-md"
+          onClick={onRemove}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      )}
+
       <div className="pointer-events-none opacity-90">
         <FieldComponent
           {...field}
         />
       </div>
 
-      <EdgeIndicators closestEdge={closestEdge} />
+      {!isMobile && <EdgeIndicators closestEdge={closestEdge} />}
     </div>
   )
 }
