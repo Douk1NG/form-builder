@@ -1,3 +1,4 @@
+import React from 'react'
 import { Layers } from 'lucide-react'
 import { resolveLocalizedString } from '@/utils/locales'
 import type { Field } from '@/types/form'
@@ -18,7 +19,7 @@ export type FieldGroupRendererProps = {
   index: number
 }
 
-export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) {
+export const FieldGroupRenderer = React.memo(function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) {
   const {
     group,
     isLocked,
@@ -26,8 +27,6 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
     handleRemoveGroup,
     handleMoveUp,
     handleMoveDown,
-    handleRemoveFieldFromGroup,
-    handleReorderFieldInGroup,
     handleKeyDown,
     handleToggleLock,
     elementRef,
@@ -125,9 +124,6 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
               field={groupItem as Field}
               groupId={groupId}
               index={itemIndex}
-              onRemove={handleRemoveFieldFromGroup(id)}
-              onMoveUp={handleReorderFieldInGroup(id, 'up')}
-              onMoveDown={handleReorderFieldInGroup(id, 'down')}
             />
           )
         })}
@@ -150,4 +146,4 @@ export function FieldGroupRenderer({ groupId, index }: FieldGroupRendererProps) 
       {!isMobile && <EdgeIndicators closestEdge={closestEdge} borderRadius="2xl" />}
     </div>
   )
-}
+})

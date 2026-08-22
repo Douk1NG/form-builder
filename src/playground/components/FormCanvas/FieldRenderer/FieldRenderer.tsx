@@ -1,3 +1,4 @@
+import React from 'react'
 import { useFieldRenderer } from '../../../hooks/useFieldRenderer'
 import { CanvasFieldWrapper } from './CanvasFieldWrapper'
 import FieldComponent from '../../../../components/form/field'
@@ -7,7 +8,7 @@ export type FieldRendererProps = {
   index: number
 }
 
-export function FieldRenderer({ id, index }: FieldRendererProps) {
+export const FieldRenderer = React.memo(function FieldRenderer({ id, index }: FieldRendererProps) {
 
   const {
     field,
@@ -35,4 +36,4 @@ export function FieldRenderer({ id, index }: FieldRendererProps) {
       />
     </CanvasFieldWrapper>
   )
-}
+})

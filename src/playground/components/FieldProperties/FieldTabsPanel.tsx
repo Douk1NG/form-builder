@@ -13,7 +13,7 @@ export type FieldTabsPanelProps = {
   expandToggle: React.ReactNode
   translations: (key: string) => string
   onLabelChange: (value: LocalizedString) => void
-  onNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onNameChange: (name: string) => void
   onDescriptionChange: (value: LocalizedString) => void
   onPlaceholderChange: (value: LocalizedString) => void
   onReadOnlyChange: (checked: boolean) => void

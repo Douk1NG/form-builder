@@ -117,6 +117,7 @@
   opacity: 0.15;
   pointer-events: none;
   animation: ambient-float 20s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* Custom scrollbar */

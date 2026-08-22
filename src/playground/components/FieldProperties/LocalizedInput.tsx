@@ -23,16 +23,18 @@ export function LocalizedInput({
   label
 }: LocalizedInputProps) {
   const {
+    localValue,
     isLocalized,
     toggleLocalization,
     handleStringChange,
-    handleLocalizedChange
+    handleLocalizedChange,
+    handleBlur
   } = useLocalizedInput({ value, onChange })
 
   const { t: translations } = useTranslation('translation',
     { keyPrefix: 'playground.builder.localizedInput' })
 
-  const isStringValue = typeof value === 'string'
+  const isStringValue = typeof localValue === 'string'
 
   return (
     <div className="space-y-2">
@@ -56,15 +58,16 @@ export function LocalizedInput({
       {!isLocalized ? (
         <Input
           id={id}
-          value={isStringValue ? value : ''}
+          value={isStringValue ? localValue : ''}
           onChange={handleStringChange}
+          onBlur={handleBlur}
           placeholder={placeholder}
           className="transition-all focus:ring-primary/30 rounded-lg"
         />
       ) : (
         <div className="space-y-2 bg-muted/20 p-3 rounded-lg border border-border/40">
           {SUPPORTED_LOCALES.map(locale => {
-            const localizedValue = typeof value === 'object' && value !== null ? value : {}
+            const localizedValue = typeof localValue === 'object' && localValue !== null ? localValue : {}
             const inputValue = localizedValue[locale] || ''
 
             return (
@@ -73,6 +76,7 @@ export function LocalizedInput({
                 <Input
                   value={inputValue}
                   onChange={(e) => handleLocalizedChange(locale, e.target.value)}
+                  onBlur={handleBlur}
                   placeholder={`${placeholder} (${locale.toUpperCase()})`}
                   className="transition-all focus:ring-primary/30 rounded-lg h-8 text-sm"
                 />

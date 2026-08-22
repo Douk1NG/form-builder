@@ -18,7 +18,6 @@ export function useEdgeDraggable({ id, index, allowedEdges }: UseEdgeDraggablePa
     const [isDragging, setIsDragging] = useState(false)
     const [isDragOver, setIsDragOver] = useState(false)
     const [closestEdge, setClosestEdge] = useState<Edge | null>(null)
-    const itemsData = useFormBuilderStore((state) => state.itemsData)
 
     useEffect(() => {
         const element = elementRef.current
@@ -44,7 +43,8 @@ export function useEdgeDraggable({ id, index, allowedEdges }: UseEdgeDraggablePa
             canDrop: ({ source }) => {
                 if (!isCanvasDragData(source.data)) return true
                 const sourceId = source.data.id
-                return !isDescendantOrSelf(itemsData, sourceId, id)
+                const currentItemsData = useFormBuilderStore.getState().itemsData
+                return !isDescendantOrSelf(currentItemsData, sourceId, id)
             },
             onDragEnter: ({ self }) => {
                 setIsDragOver(true)
@@ -67,7 +67,7 @@ export function useEdgeDraggable({ id, index, allowedEdges }: UseEdgeDraggablePa
             cleanupDraggable()
             cleanupDropTarget()
         }
-    }, [id, index, allowedEdges, itemsData])
+    }, [id, index, allowedEdges])
 
     return {
         elementRef,

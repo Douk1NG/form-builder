@@ -48,13 +48,11 @@ export function useFieldGroupRendererCard(groupId: string, index: number) {
     handleRemoveGroup,
     handleMoveUp,
     handleMoveDown,
-    handleRemoveFieldFromGroup,
   } = useFieldGroupRenderer(groupId)
 
   const lockedGroupId = useFormBuilderStore((state) => state.lockedGroupId)
   const toggleLockedGroup = useFormBuilderStore((state) => state.toggleLockedGroup)
   const addRowToGroup = useFormBuilderStore((state) => state.addRowToGroup)
-  const reorderFieldInGroup = useFormBuilderStore((state) => state.reorderFieldInGroup)
 
   const { t: translations } = useTranslation("translation", {
     keyPrefix: "playground.fields.group"
@@ -94,11 +92,6 @@ export function useFieldGroupRendererCard(groupId: string, index: number) {
     addRowToGroup(groupId)
   }
 
-  const handleReorderFieldInGroup = (fieldId: string, direction: 'up' | 'down') => (event: React.MouseEvent) => {
-    event.stopPropagation()
-    reorderFieldInGroup(groupId, fieldId, direction)
-  }
-
   const columns = group?.columns || 1
   const emptySlotCount = Math.max(0, columns - (group?.items.length || 0))
 
@@ -116,8 +109,6 @@ export function useFieldGroupRendererCard(groupId: string, index: number) {
     handleRemoveGroup,
     handleMoveUp,
     handleMoveDown,
-    handleRemoveFieldFromGroup,
-    handleReorderFieldInGroup,
     handleKeyDown,
     handleToggleLock,
     handleAddRow,

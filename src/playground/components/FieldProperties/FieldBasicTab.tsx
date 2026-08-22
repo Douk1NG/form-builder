@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LocalizedInput } from './LocalizedInput'
@@ -10,14 +11,14 @@ export type FieldBasicTabProps = {
     description?: LocalizedString
     placeholder?: LocalizedString
     onLabelChange: (value: LocalizedString) => void
-    onNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+    onNameChange: (name: string) => void
     onDescriptionChange: (value: LocalizedString) => void
     onPlaceholderChange: (value: LocalizedString) => void
 }
 
 export function FieldBasicTab({
     label,
-    name,
+    name = '',
     description,
     placeholder,
     onLabelChange,
@@ -28,6 +29,50 @@ export function FieldBasicTab({
     const { t: translations } = useTranslation('translation', {
         keyPrefix: 'playground.properties.basic'
     })
+
+    const [localName, setLocalName] = useState(name)
+    const [prevName, setPrevName] = useState(name)
+
+    if (name !== prevName) {
+        setLocalName(name)
+        setPrevName(name)
+    }
+
+    const onNameChangeRef = useRef(onNameChange)
+    
+    useEffect(() => {
+        onNameChangeRef.current = onNameChange
+    }, [onNameChange])
+
+    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+    const handleLocalNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const val = event.target.value
+        setLocalName(val)
+
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current)
+        }
+
+        debounceTimeoutRef.current = setTimeout(() => {
+            onNameChangeRef.current(val)
+        }, 150)
+    }
+
+    const handleNameBlur = () => {
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current)
+            onNameChangeRef.current(localName)
+        }
+    }
+
+    useEffect(() => {
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
+        }
+    }, [])
 
     return (
         <div className="space-y-4">
@@ -48,8 +93,9 @@ export function FieldBasicTab({
                 </Label>
                 <Input
                     id="field-name"
-                    value={name}
-                    onChange={onNameChange}
+                    value={localName}
+                    onChange={handleLocalNameChange}
+                    onBlur={handleNameBlur}
                     placeholder={translations('name.placeholder')}
                     className="font-mono text-sm transition-all focus:ring-primary/30 rounded-lg"
                 />

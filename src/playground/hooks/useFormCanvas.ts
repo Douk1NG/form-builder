@@ -8,20 +8,9 @@ import type { CanvasItem } from '@/types/form'
 
 export function useFormCanvas() {
   const itemIds = useFormBuilderStore(useShallow((state) => state.itemIds))
+  const itemsData = useFormBuilderStore((state) => state.itemsData)
   const previewMode = useFormBuilderStore((state) => state.previewMode)
   const getFormSchema = useFormBuilderStore((state) => state.getFormSchema)
-  const insertItemAt = useFormBuilderStore((state) => state.insertItemAt)
-  const moveItem = useFormBuilderStore((state) => state.moveItem)
-  const moveCanvasItem = useFormBuilderStore((state) => state.moveCanvasItem)
-  const addField = useFormBuilderStore((state) => state.addField)
-  const addFieldToGroup = useFormBuilderStore((state) => state.addFieldToGroup)
-  const addGroupToGroup = useFormBuilderStore((state) => state.addGroupToGroup)
-  const addRowToGroup = useFormBuilderStore((state) => state.addRowToGroup)
-  const createGroupFromDrop = useFormBuilderStore((state) => state.createGroupFromDrop)
-  const createGroupWithNewField = useFormBuilderStore((state) => state.createGroupWithNewField)
-  const moveFieldToGroup = useFormBuilderStore((state) => state.moveFieldToGroup)
-  const mergeGroupIntoGroup = useFormBuilderStore((state) => state.mergeGroupIntoGroup)
-  const itemsData = useFormBuilderStore((state) => state.itemsData)
 
   useEffect(() => {
     return monitorForElements({
@@ -29,40 +18,28 @@ export function useFormCanvas() {
         const destination = location.current.dropTargets[0]
         if (!destination) return
 
+        const currentState = useFormBuilderStore.getState()
+
         handleCanvasDrop({
           sourceData: source.data,
           destinationData: destination.data,
-          itemIds,
-          itemsData,
-          insertItemAt,
-          moveItem,
-          moveCanvasItem,
-          addField,
-          addFieldToGroup,
-          addGroupToGroup,
-          addRowToGroup,
-          createGroupFromDrop,
-          createGroupWithNewField,
-          moveFieldToGroup,
-          mergeGroupIntoGroup,
+          itemIds: currentState.itemIds,
+          itemsData: currentState.itemsData,
+          insertItemAt: currentState.insertItemAt,
+          moveItem: currentState.moveItem,
+          moveCanvasItem: currentState.moveCanvasItem,
+          addField: currentState.addField,
+          addFieldToGroup: currentState.addFieldToGroup,
+          addGroupToGroup: currentState.addGroupToGroup,
+          addRowToGroup: currentState.addRowToGroup,
+          createGroupFromDrop: currentState.createGroupFromDrop,
+          createGroupWithNewField: currentState.createGroupWithNewField,
+          moveFieldToGroup: currentState.moveFieldToGroup,
+          mergeGroupIntoGroup: currentState.mergeGroupIntoGroup,
         })
       },
     })
-  }, [
-    addField,
-    insertItemAt,
-    moveItem,
-    moveCanvasItem,
-    addFieldToGroup,
-    addGroupToGroup,
-    addRowToGroup,
-    createGroupFromDrop,
-    createGroupWithNewField,
-    moveFieldToGroup,
-    mergeGroupIntoGroup,
-    itemsData,
-    itemIds
-  ])
+  }, [])
 
   const simulateSubmit = async () => {
     return { success: true, message: 'Simulated submission', data: {} }

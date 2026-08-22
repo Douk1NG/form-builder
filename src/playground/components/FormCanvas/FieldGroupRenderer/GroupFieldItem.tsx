@@ -16,20 +16,20 @@ export type GroupFieldItemProps = {
   field: Field
   groupId: string
   index: number
-  onRemove: (event: React.MouseEvent) => void
-  onMoveUp: (event: React.MouseEvent) => void
-  onMoveDown: (event: React.MouseEvent) => void
 }
 
-export function GroupFieldItem({ field, index, onRemove, onMoveUp, onMoveDown }: GroupFieldItemProps) {
+export const GroupFieldItem = React.memo(function GroupFieldItem({ field, groupId, index }: GroupFieldItemProps) {
   const isMobile = useIsMobile()
   const { openPropertiesHud } = useMobilePropertiesHud()
 
   const {
     isSelected,
     handleSelect,
-    handleKeyDown
-  } = useGroupFieldItem(field.id)
+    handleKeyDown,
+    handleRemove,
+    handleMoveUp,
+    handleMoveDown,
+  } = useGroupFieldItem(groupId, field.id)
 
   const {
     elementRef: wrapperRef,
@@ -62,9 +62,9 @@ export function GroupFieldItem({ field, index, onRemove, onMoveUp, onMoveDown }:
 
       {isMobile ? (
         <MobileFieldActionMenu
-          onMoveUp={onMoveUp}
-          onMoveDown={onMoveDown}
-          onRemove={onRemove}
+          onMoveUp={handleMoveUp}
+          onMoveDown={handleMoveDown}
+          onRemove={handleRemove}
           onOpenProperties={() => {
             handleSelect()
             openPropertiesHud()
@@ -76,7 +76,7 @@ export function GroupFieldItem({ field, index, onRemove, onMoveUp, onMoveDown }:
           variant="ghost"
           size="icon"
           className="absolute top-2 right-2 h-7 w-7 opacity-100 lg:opacity-0 group-hover/field:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 z-10 rounded-md"
-          onClick={onRemove}
+          onClick={handleRemove}
         >
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
@@ -91,5 +91,6 @@ export function GroupFieldItem({ field, index, onRemove, onMoveUp, onMoveDown }:
       {!isMobile && <EdgeIndicators closestEdge={closestEdge} />}
     </div>
   )
-}
+})
+
 

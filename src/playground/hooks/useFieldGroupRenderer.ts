@@ -1,21 +1,7 @@
 import { useFormBuilderStore } from '@/playground/store/useFormBuilderStore'
-import type { FieldGroup, CanvasItem } from '@/types/form'
+import type { FieldGroup } from '@/types/form'
 import { ITEM_KINDS } from '@/types/itemKinds'
-
-function findGroupById(items: Record<string, CanvasItem>, groupId: string): FieldGroup | null {
-  for (const item of Object.values(items)) {
-    if (item.kind !== ITEM_KINDS.FIELD_GROUP) continue
-    if (item.id === groupId) return item as FieldGroup
-
-    const nested = findGroupById(
-      Object.fromEntries(item.items.map((child) => [child.id, child])),
-      groupId
-    )
-    if (nested) return nested
-  }
-
-  return null
-}
+import { findItemById } from '../utils/findItemById'
 
 export function useFieldGroupRenderer(groupId: string) {
   const selectedItemId = useFormBuilderStore((state) => state.selectedItemId)
@@ -26,7 +12,8 @@ export function useFieldGroupRenderer(groupId: string) {
 
   const group = useFormBuilderStore((state) => {
     if (!state.itemsData) return null
-    return findGroupById(state.itemsData, groupId)
+    const item = findItemById(state.itemsData, groupId)
+    return item?.kind === ITEM_KINDS.FIELD_GROUP ? item as FieldGroup : null
   })
 
   const isSelected = selectedItemId === groupId

@@ -18,6 +18,7 @@ export function FieldOptionsEditor({ options = [], onChange, disabled }: FieldOp
     handleAddOption,
     handleRemoveOption,
     handleUpdateOption,
+    handleBlur,
   } = useFieldOptionsEditor(options, onChange)
 
   const { t: translations } = useTranslation(
@@ -48,12 +49,14 @@ export function FieldOptionsEditor({ options = [], onChange, disabled }: FieldOp
             <Input
               value={option.label}
               onChange={(event) => handleUpdateOption(index, 'label', event.target.value)}
+              onBlur={handleBlur}
               placeholder={translations('label')}
               disabled={disabled}
             />
             <Input
               value={String(option.value)}
               onChange={(event) => handleUpdateOption(index, 'value', event.target.value)}
+              onBlur={handleBlur}
               placeholder={translations('value')}
               disabled={disabled}
             />

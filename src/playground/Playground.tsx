@@ -9,8 +9,7 @@ import { ChevronLeft, ChevronRight, Layout, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useIsMobile } from './hooks/useIsMobile'
 import { useFormBuilderStore } from './store/useFormBuilderStore'
-import { PreviewFormRenderer } from './components/FormCanvas/PreviewFormRenderer'
-import { useFormCanvas } from './hooks/useFormCanvas'
+import { MobilePreviewContent } from './components/FormCanvas/MobilePreviewContent'
 import { MobilePaletteHud } from './components/FieldPalette/MobilePaletteHud'
 import { MobilePropertiesHud } from './components/FieldProperties/MobilePropertiesHud'
 
@@ -28,7 +27,6 @@ export function Playground() {
 
   const setPreviewMode = useFormBuilderStore((state) => state.setPreviewMode)
   const isMobile = useIsMobile()
-  const { currentFormSchema, simulateSubmit } = useFormCanvas()
 
   const tabButtonStyles = 'flex flex-col items-center justify-center flex-1 py-1 gap-1 text-xs font-medium transition-colors'
   const activeColorClass = 'text-primary'
@@ -45,19 +43,7 @@ export function Playground() {
               <MobilePropertiesHud />
             </>
           )}
-          {previewMode && currentFormSchema && (
-            <div className="h-[calc(100vh-140px)]">
-              <PreviewFormRenderer
-                currentFormSchema={currentFormSchema}
-                simulateSubmit={simulateSubmit}
-              />
-            </div>
-          )}
-          {previewMode && !currentFormSchema && (
-            <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground h-full">
-              Enter preview mode by enabling fields on the canvas first.
-            </div>
-          )}
+          {previewMode && <MobilePreviewContent />}
         </main>
 
         {/* Sticky Mobile Navigation Bottom Tab Bar */}

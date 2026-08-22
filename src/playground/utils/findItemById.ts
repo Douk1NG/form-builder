@@ -1,13 +1,25 @@
 import type { CanvasItem } from '../../types/form'
 import { ITEM_KINDS } from '@/types/itemKinds'
 
-export function findItemById(items: Record<string, CanvasItem>, itemId: string): CanvasItem | null {
-    for (const item of Object.values(items)) {
+export function findItemInItems(items: Array<CanvasItem>, itemId: string): CanvasItem | null {
+    for (const item of items) {
         if (item.id === itemId) return item
 
         if (item.kind === ITEM_KINDS.FIELD_GROUP) {
-            const nestedItems = Object.fromEntries(item.items.map((child) => [child.id, child]))
-            const nestedMatch = findItemById(nestedItems, itemId)
+            const nestedMatch = findItemInItems(item.items, itemId)
+            if (nestedMatch) return nestedMatch
+        }
+    }
+    return null
+}
+
+export function findItemById(items: Record<string, CanvasItem>, itemId: string): CanvasItem | null {
+    const direct = items[itemId]
+    if (direct) return direct
+
+    for (const item of Object.values(items)) {
+        if (item.kind === ITEM_KINDS.FIELD_GROUP) {
+            const nestedMatch = findItemInItems(item.items, itemId)
             if (nestedMatch) return nestedMatch
         }
     }

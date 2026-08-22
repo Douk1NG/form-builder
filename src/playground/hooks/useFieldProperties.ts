@@ -34,7 +34,7 @@ export function useFieldProperties() {
   }
 
   const handleUpdateLabel = withFieldGuard<LocalizedString>((itemId, value) => updateField(itemId, { label: value }))
-  const handleUpdateName = withFieldGuard<React.ChangeEvent<HTMLInputElement>>((itemId, event) => updateField(itemId, { name: event.target.value }))
+  const handleUpdateName = withFieldGuard<string>((itemId, name) => updateField(itemId, { name }))
   const handleUpdateDescription = withFieldGuard<LocalizedString>((itemId, value) => updateField(itemId, { description: value }))
   const handleUpdatePlaceholder = withFieldGuard<LocalizedString>((itemId, value) => updateField(itemId, { placeholder: value }))
   const handleUpdateReadOnly = withFieldGuard<boolean>((itemId, checked) => updateField(itemId, { readOnly: checked }))
