@@ -13,6 +13,33 @@ export type ActionResponse = {
 
 export type LocalizedString = string | Record<string, string>;
 
+export type FieldStyle = {
+    labelColor?: string;
+    labelSize?: string;
+    labelTransform?: 'none' | 'uppercase';
+    labelWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
+    inputBackgroundColor?: string;
+    inputBorderColor?: string;
+    inputBorderRadius?: string;
+};
+
+export type GroupStyle = {
+    titleColor?: string;
+    titleSize?: string;
+    titleTransform?: 'none' | 'uppercase';
+    backgroundColor?: string;
+    borderColor?: string;
+    borderRadius?: string;
+    borderStyle?: 'none' | 'solid' | 'dashed';
+    padding?: string;
+};
+
+export type FormStyle = {
+    backgroundColor?: string;
+    fontFamily?: string;
+    gap?: string;
+};
+
 export type FieldType = 'text' | 'select' | 'textarea' | 'currency' | 'multiselect' | 'switch' | 'tagbox' | 'image' | 'group_variant_inventory' | 'group_variant_product' | 'number';
 
 export type BaseField = {
@@ -31,6 +58,8 @@ export type BaseField = {
     defaultValue?: unknown;
     disabled?: boolean;
     translate?: (key: string) => string;
+    validationType?: 'none' | 'email' | 'phone' | 'url';
+    style?: FieldStyle;
 }
 
 export type WithOptions = {
@@ -67,6 +96,7 @@ export type TagboxField = BaseField & WithOptions & {
 
 export type ImageField = BaseField & ImageUploaderProps & {
     type: 'image';
+    avatarMode?: boolean;
 };
 
 export type GroupField = BaseField & WithOptions & {
@@ -120,6 +150,9 @@ export type FieldGroup = {
     label?: LocalizedString;
     columns?: number;
     items: Array<CanvasField | FieldGroup>;
+    style?: GroupStyle;
+    hideHeader?: boolean;
+    borderless?: boolean;
 };
 
 /**

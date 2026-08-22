@@ -5,7 +5,9 @@ import { PropertiesSectionHeader } from './PropertiesSectionHeader'
 import { FieldBasicTab } from './FieldBasicTab'
 import { FieldBehaviorTab } from './FieldBehaviorTab'
 import { FieldDataTab } from './FieldDataTab'
-import type { Field, LocalizedString } from '@/types/form'
+import { FieldStyleTab } from './FieldStyleTab'
+import { LabeledSwitchRow } from './LabeledSwitchRow'
+import type { Field, FieldStyle, LocalizedString } from '@/types/form'
 import type { Option } from '@/types/select'
 
 export type FieldTabsPanelProps = {
@@ -19,6 +21,8 @@ export type FieldTabsPanelProps = {
   onReadOnlyChange: (checked: boolean) => void
   onDisabledChange: (checked: boolean) => void
   onActionOptionsChange: (options: Option[]) => void
+  onFieldStyleChange: (style: FieldStyle) => void
+  onAvatarModeChange: (avatarMode: boolean) => void
 }
 
 export function FieldTabsPanel({
@@ -32,8 +36,12 @@ export function FieldTabsPanel({
   onReadOnlyChange,
   onDisabledChange,
   onActionOptionsChange,
+  onFieldStyleChange,
+  onAvatarModeChange,
 }: FieldTabsPanelProps) {
   const hasOptions = selectedField.type === 'select' || selectedField.type === 'multiselect'
+  const isImageField = selectedField.type === 'image'
+  const hasAvatarMode = isImageField && 'avatarMode' in selectedField
 
   const isMobile = useIsMobile()
 
@@ -44,7 +52,7 @@ export function FieldTabsPanel({
       )}
 
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
           <TabsTrigger
             value="basic"
             type="button"
@@ -64,6 +72,12 @@ export function FieldTabsPanel({
           >
             {translations('data')}
           </TabsTrigger>
+          <TabsTrigger
+            value="style"
+            type="button"
+          >
+            Style
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="basic">
@@ -77,6 +91,17 @@ export function FieldTabsPanel({
             onDescriptionChange={onDescriptionChange}
             onPlaceholderChange={onPlaceholderChange}
           />
+          {isImageField && (
+            <div className="mt-4 border-t border-border/40 pt-4">
+              <LabeledSwitchRow
+                id="field-avatar-mode"
+                label="Avatar Mode"
+                description="Display as a circular profile photo instead of a multi-file upload dropzone"
+                checked={hasAvatarMode ? (selectedField as Field & { avatarMode?: boolean }).avatarMode ?? false : false}
+                onCheckedChange={onAvatarModeChange}
+              />
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="behavior" className="mt-4">
@@ -96,6 +121,13 @@ export function FieldTabsPanel({
             />
           </TabsContent>
         )}
+
+        <TabsContent value="style" className="mt-4">
+          <FieldStyleTab
+            fieldStyle={selectedField.style}
+            onFieldStyleChange={onFieldStyleChange}
+          />
+        </TabsContent>
       </Tabs>
     </div>
   )

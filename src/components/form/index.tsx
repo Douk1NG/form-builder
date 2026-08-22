@@ -79,10 +79,46 @@ const FormBuilder = ({
                 const group = item as FieldGroup;
                 const groupColumnsClass = Number(group.columns) === 2 ? 'md:grid-cols-2' : '';
                 const resolvedLabel = translate(resolveLocalizedString(group.label, locale));
+                const isBorderless = group.borderless === true
+                const isHeaderHidden = group.hideHeader === true
+
+                const groupContainerClass = isBorderless
+                    ? 'space-y-6'
+                    : 'space-y-6 p-6 rounded-2xl border border-border/40 bg-card/40 backdrop-blur-sm'
+
+                const groupInlineStyles: React.CSSProperties = {}
+                if (group.style?.backgroundColor) {
+                    groupInlineStyles.backgroundColor = group.style.backgroundColor
+                }
+                if (group.style?.borderColor && !isBorderless) {
+                    groupInlineStyles.borderColor = group.style.borderColor
+                }
+                if (group.style?.borderStyle === 'none') {
+                    groupInlineStyles.borderStyle = 'none'
+                } else if (group.style?.borderStyle) {
+                    groupInlineStyles.borderStyle = group.style.borderStyle
+                }
+
+                const titleInlineStyles: React.CSSProperties = {}
+                if (group.style?.titleColor) {
+                    titleInlineStyles.color = group.style.titleColor
+                }
+                if (group.style?.titleTransform === 'uppercase') {
+                    titleInlineStyles.textTransform = 'uppercase'
+                    titleInlineStyles.letterSpacing = '0.05em'
+                }
+
+                const shouldShowLabel = resolvedLabel && !isHeaderHidden
+
                 return (
-                    <div key={group.id} className="space-y-6 p-6 rounded-2xl border border-border/40 bg-card/40 backdrop-blur-sm">
-                        {resolvedLabel && (
-                            <h3 className="font-bold text-xl tracking-tight text-foreground">{resolvedLabel}</h3>
+                    <div key={group.id} className={groupContainerClass} style={groupInlineStyles}>
+                        {shouldShowLabel && (
+                            <h3
+                                className="font-bold text-xl tracking-tight text-foreground"
+                                style={titleInlineStyles}
+                            >
+                                {resolvedLabel}
+                            </h3>
                         )}
                         <div className={`grid gap-4 grid-cols-1 ${groupColumnsClass} form-group-grid`}>
                             {group.items.map((groupItem, index) => (

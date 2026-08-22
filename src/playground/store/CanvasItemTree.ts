@@ -13,12 +13,24 @@ export function updateFieldInGroupItems(
     fieldId: string,
     updates: Partial<Field>
 ): Array<CanvasField | FieldGroup> {
-    return items.map((groupItem) => {
+    let changed = false
+    const updated = items.map((groupItem) => {
         if (groupItem.kind === ITEM_KINDS.FIELD_GROUP) {
-            return { ...groupItem, items: updateFieldInGroupItems(groupItem.items, fieldId, updates) }
+            const updatedSubItems = updateFieldInGroupItems(groupItem.items, fieldId, updates)
+            if (updatedSubItems !== groupItem.items) {
+                changed = true
+                return { ...groupItem, items: updatedSubItems }
+            }
+            return groupItem
         }
-        return applyFieldUpdates(groupItem as CanvasField, fieldId, updates)
+        const updatedField = applyFieldUpdates(groupItem as CanvasField, fieldId, updates)
+        if (updatedField !== groupItem) {
+            changed = true
+            return updatedField
+        }
+        return groupItem
     })
+    return changed ? updated : items
 }
 
 export function removeFieldFromGroupItems(

@@ -14,16 +14,27 @@ export type PreviewFormRendererProps = {
 export function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: PreviewFormRendererProps) {
     const previewLocale = useFormBuilderStore((state) => state.previewLocale)
     const previewDevice = useFormBuilderStore((state) => state.previewDevice)
+    const formStyle = useFormBuilderStore((state) => state.formStyle)
     const { t } = useTranslation()
 
     const isMobileViewport = useIsMobile()
 
     // Determine layout wraps and aspect ratio bounds depending on target device
     const renderDeviceFrame = () => {
+        const viewportStyle: React.CSSProperties = {}
+        if (formStyle?.backgroundColor) {
+            viewportStyle.backgroundColor = formStyle.backgroundColor
+        }
+        if (formStyle?.fontFamily === 'serif') {
+            viewportStyle.fontFamily = 'Georgia, serif'
+        } else if (formStyle?.fontFamily === 'mono') {
+            viewportStyle.fontFamily = 'Courier New, monospace'
+        }
+
         if (isMobileViewport) {
             // Force mobile preview mode inside a plain viewport without thick devices wrapper borders on small screens
             return (
-                <div className="w-full h-full bg-card overflow-y-auto px-5 py-6 flex flex-col">
+                <div className="w-full h-full overflow-y-auto px-5 py-6 flex flex-col" style={viewportStyle}>
                     <FormBuilder
                         fields={currentFormSchema.items}
                         values={{}}
@@ -65,7 +76,7 @@ export function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: Previ
                     </div>
 
                     {/* Content area */}
-                    <div className="flex-1 p-8 overflow-y-auto custom-scrollbar bg-card/60">
+                    <div className="flex-1 p-8 overflow-y-auto custom-scrollbar" style={viewportStyle}>
                         <FormBuilder
                             fields={currentFormSchema.items}
                             values={{}}
@@ -96,7 +107,7 @@ export function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: Previ
                     </div>
 
                     {/* Content Area */}
-                    <div className="flex-1 p-8 overflow-y-auto custom-scrollbar bg-card">
+                    <div className="flex-1 p-8 overflow-y-auto custom-scrollbar" style={viewportStyle}>
                         <FormBuilder
                             fields={currentFormSchema.items}
                             values={{}}
@@ -129,7 +140,7 @@ export function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: Previ
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1 px-5 py-6 overflow-y-auto custom-scrollbar bg-card">
+                <div className="flex-1 px-5 py-6 overflow-y-auto custom-scrollbar" style={viewportStyle}>
                     <FormBuilder
                         fields={currentFormSchema.items}
                         values={{}}
@@ -149,7 +160,10 @@ export function PreviewFormRenderer({ currentFormSchema, simulateSubmit }: Previ
     const containerMargin = isMobileViewport ? 'p-0 -m-4 h-full' : 'p-6 -m-8 h-[calc(100vh-80px)]'
 
     return (
-        <div className={`bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#27272a_1px,transparent_1px)] bg-size-[24px_24px] flex items-center justify-center overflow-hidden ${containerMargin}`}>
+        <div
+            data-preview-frame="true"
+            className={`bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#27272a_1px,transparent_1px)] bg-size-[24px_24px] flex items-center justify-center overflow-hidden ${containerMargin}`}
+        >
             <div className="w-full h-full flex items-center justify-center overflow-hidden">
                 {renderDeviceFrame()}
             </div>

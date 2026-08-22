@@ -1,7 +1,7 @@
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import { findItemById } from '../utils/findItemById'
 import type { Option } from '../../types/select'
-import type { Field, FieldGroup, LocalizedString } from '../../types/form'
+import type { Field, FieldGroup, FieldStyle, GroupStyle, LocalizedString } from '../../types/form'
 import { ITEM_KINDS } from '@/types/itemKinds'
 
 export type SelectedItemKind = typeof ITEM_KINDS.FIELD | typeof ITEM_KINDS.FIELD_GROUP | null
@@ -40,9 +40,23 @@ export function useFieldProperties() {
   const handleUpdateReadOnly = withFieldGuard<boolean>((itemId, checked) => updateField(itemId, { readOnly: checked }))
   const handleUpdateDisabled = withFieldGuard<boolean>((itemId, checked) => updateField(itemId, { disabled: checked }))
   const handleUpdateOptions = withFieldGuard<Option[]>((itemId, options) => updateField(itemId, { options }))
+  const handleUpdateFieldStyle = withFieldGuard<FieldStyle>((itemId, style) => updateField(itemId, { style }))
+  const handleUpdateAvatarMode = withFieldGuard<boolean>((itemId, avatarMode) => updateField(itemId, { avatarMode }))
 
   const handleUpdateGroupLabel = (value: LocalizedString) => {
     if (isGroupSelected && selectedItemId) updateGroup(selectedItemId, { label: value })
+  }
+
+  const handleUpdateGroupStyle = (style: GroupStyle) => {
+    if (isGroupSelected && selectedItemId) updateGroup(selectedItemId, { style })
+  }
+
+  const handleUpdateGroupHideHeader = (hideHeader: boolean) => {
+    if (isGroupSelected && selectedItemId) updateGroup(selectedItemId, { hideHeader })
+  }
+
+  const handleUpdateGroupBorderless = (borderless: boolean) => {
+    if (isGroupSelected && selectedItemId) updateGroup(selectedItemId, { borderless })
   }
 
   const isPropertiesExpanded = useFormBuilderStore((state) => state.isPropertiesExpanded)
@@ -63,6 +77,11 @@ export function useFieldProperties() {
     handleUpdateReadOnly,
     handleUpdateDisabled,
     handleUpdateOptions,
+    handleUpdateFieldStyle,
+    handleUpdateAvatarMode,
     handleUpdateGroupLabel,
+    handleUpdateGroupStyle,
+    handleUpdateGroupHideHeader,
+    handleUpdateGroupBorderless,
   }
 }

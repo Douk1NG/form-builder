@@ -57,6 +57,7 @@ export const GroupFieldItem = React.memo(function GroupFieldItem({ field, groupI
       role="button"
       tabIndex={0}
       onKeyDown={handleKeyDown}
+      data-canvas-field-wrapper="true"
     >
       {!isMobile && <DragHandle ref={dragHandleRef} />}
 

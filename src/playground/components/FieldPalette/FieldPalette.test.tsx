@@ -46,7 +46,7 @@ describe('FieldPalette', () => {
     }
   })
 
-  it('disables layout buttons when locked group is a 2-column row', () => {
+  it('allows layout buttons when locked group is a 2-column row', () => {
     // Add a 2-column row group and lock it
     useFormBuilderStore.setState({
       lockedGroupId: 'row-1',
@@ -57,11 +57,11 @@ describe('FieldPalette', () => {
 
     render(<FieldPalette />)
 
-    // The Group and 2 Column buttons under layout should be disabled
+    // The Group and 2 Column buttons under layout should be enabled (nesting is now allowed)
     const groupButton = screen.getByText('Field Group').closest('button')
     const rowButton = screen.getByText('2 Columns').closest('button')
 
-    expect(groupButton).toBeDisabled()
-    expect(rowButton).toBeDisabled()
+    expect(groupButton).toBeEnabled()
+    expect(rowButton).toBeEnabled()
   })
 })

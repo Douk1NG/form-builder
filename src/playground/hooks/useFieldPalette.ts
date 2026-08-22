@@ -1,9 +1,7 @@
 import { useFormBuilderStore } from '../store/useFormBuilderStore'
 import { generateUuid } from '@/lib/utils'
 import type { FieldType, NewFieldInput } from '../../types/form'
-import { findItemById } from '@/playground/utils/findItemById'
 import { DEFAULT_GROUP_LABEL, FIELD_ID_SUFFIX_LENGTH, DEFAULT_TWO_COLUMN_COUNT } from '../constants/fieldDefaults'
-import { ITEM_KINDS } from '@/types/itemKinds'
 
 export function useFieldPalette() {
   const addField = useFormBuilderStore((state) => state.addField)
@@ -14,10 +12,7 @@ export function useFieldPalette() {
   const addRowToGroup = useFormBuilderStore((state) => state.addRowToGroup)
   const previewMode = useFormBuilderStore((state) => state.previewMode)
   const lockedGroupId = useFormBuilderStore((state) => state.lockedGroupId)
-  const itemsData = useFormBuilderStore((state) => state.itemsData)
 
-  const lockedGroup = lockedGroupId ? findItemById(itemsData, lockedGroupId) : null
-  const isLockedGroupTwoColumns = lockedGroup && lockedGroup.kind === ITEM_KINDS.FIELD_GROUP && (lockedGroup.columns || 0) > 1
 
   const handleAddField = (type: FieldType, label: string) => {
     const newFieldBase: NewFieldInput = {
@@ -40,7 +35,6 @@ export function useFieldPalette() {
       addGroup(DEFAULT_GROUP_LABEL)
       return
     }
-    if (isLockedGroupTwoColumns) return
     addGroupToGroup(lockedGroupId, DEFAULT_GROUP_LABEL)
   }
 
@@ -49,13 +43,12 @@ export function useFieldPalette() {
       addRow(DEFAULT_TWO_COLUMN_COUNT)
       return
     }
-    if (isLockedGroupTwoColumns) return
     addRowToGroup(lockedGroupId)
   }
 
   return {
     previewMode,
-    isLayoutDisabled: !!isLockedGroupTwoColumns,
+    isLayoutDisabled: false,
     handleAddField,
     handleAddGroup,
     handleAddRow,

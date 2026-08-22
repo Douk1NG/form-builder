@@ -47,18 +47,35 @@ export const FieldGroupRenderer = React.memo(function FieldGroupRenderer({ group
 
   if (!group) return null
 
+  const isBorderless = group.borderless === true
+  const isHeaderHidden = group.hideHeader === true
+
+  const containerClasses = isBorderless
+    ? `relative group transition-all duration-200 ${draggingClass}`
+    : `relative group rounded-2xl border transition-all duration-200 backdrop-blur-md ${computedBorderClass} ${draggingClass}`
+
+  const groupInlineStyles: React.CSSProperties = {}
+  if (group.style?.backgroundColor) {
+    groupInlineStyles.backgroundColor = group.style.backgroundColor
+  }
+  if (group.style?.borderColor && !isBorderless) {
+    groupInlineStyles.borderColor = group.style.borderColor
+  }
+
   return (
     <div
       ref={elementRef}
-      className={`relative group rounded-2xl border transition-all duration-200 backdrop-blur-md ${computedBorderClass} ${draggingClass}`}
+      className={containerClasses}
+      style={groupInlineStyles}
     >
       {/* Group Header */}
       <div
-        className={`flex items-center gap-2.5 px-4 py-3.5 cursor-pointer border-b rounded-t-2xl transition-colors backdrop-blur-sm ${headerClass}`}
+        className={`flex items-center gap-2.5 px-4 py-3.5 cursor-pointer ${isHeaderHidden ? '' : 'border-b rounded-t-2xl'} transition-colors backdrop-blur-sm ${headerClass} ${isHeaderHidden ? 'py-1.5 px-2 opacity-50' : ''}`}
         onClick={handleSelectGroup}
         role="button"
         tabIndex={0}
         onKeyDown={handleKeyDown}
+        data-canvas-group="true"
       >
         {!isMobile && <DragHandle ref={dragHandleRef} />}
         <div className={`p-1.5 rounded-lg ${accentStyles.icon}`}>

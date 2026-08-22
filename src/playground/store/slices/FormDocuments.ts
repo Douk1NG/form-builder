@@ -1,6 +1,6 @@
 import { generateUuid } from '../../../lib/utils'
 import type { StateCreator } from 'zustand'
-import type { CanvasItem } from '../../../types/form'
+import type { CanvasItem, FormStyle } from '../../../types/form'
 import type { FormBuilderState } from '../useFormBuilderStore'
 
 export type SavedForm = {
@@ -9,17 +9,20 @@ export type SavedForm = {
     formDescription: string
     itemIds: string[]
     itemsData: Record<string, CanvasItem>
+    formStyle?: FormStyle
 }
 
 export type FormDocumentSlice = {
     formId: string
     formTitle: string
     formDescription: string
+    formStyle: FormStyle
     savedForms: Record<string, SavedForm>
 
     createNewForm: (title: string) => void
     switchForm: (formId: string) => void
     updateFormTitle: (title: string) => void
+    updateFormStyle: (style: Partial<FormStyle>) => void
     deleteForm: (formId: string) => void
 }
 
@@ -27,6 +30,7 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
     formId: '',
     formTitle: '',
     formDescription: '',
+    formStyle: { backgroundColor: '', fontFamily: 'sans' },
     savedForms: {},
 
     createNewForm: (title) => {
@@ -34,6 +38,7 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
             formId,
             formTitle,
             formDescription,
+            formStyle,
             itemIds,
             itemsData,
             savedForms
@@ -45,17 +50,20 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
                 formId,
                 formTitle,
                 formDescription,
+                formStyle,
                 itemIds,
                 itemsData,
             }
         }
 
         const newFormId = generateUuid()
+        const defaultStyle: FormStyle = { backgroundColor: '', fontFamily: 'sans' }
 
         newSavedForms[newFormId] = {
             formId: newFormId,
             formTitle: title,
             formDescription: '',
+            formStyle: defaultStyle,
             itemIds: [],
             itemsData: {},
         }
@@ -64,6 +72,7 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
             formId: newFormId,
             formTitle: title,
             formDescription: '',
+            formStyle: defaultStyle,
             itemIds: [],
             itemsData: {},
             selectedItemId: null,
@@ -72,7 +81,7 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
     },
 
     switchForm: (targetFormId) => {
-        const { formId, formTitle, formDescription, itemIds, itemsData, savedForms } = get()
+        const { formId, formTitle, formDescription, formStyle, itemIds, itemsData, savedForms } = get()
 
         if (formId === targetFormId) return
 
@@ -82,6 +91,7 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
                 formId,
                 formTitle,
                 formDescription,
+                formStyle,
                 itemIds,
                 itemsData,
             }
@@ -90,10 +100,13 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
         const targetForm = newSavedForms[targetFormId]
         if (!targetForm) return
 
+        const targetStyle = targetForm.formStyle || { backgroundColor: '', fontFamily: 'sans' }
+
         set({
             formId: targetForm.formId,
             formTitle: targetForm.formTitle,
             formDescription: targetForm.formDescription,
+            formStyle: targetStyle,
             itemIds: targetForm.itemIds,
             itemsData: targetForm.itemsData,
             selectedItemId: null,
@@ -118,6 +131,25 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
         })
     },
 
+    updateFormStyle: (styleUpdates) => {
+        const { formId, formStyle, savedForms } = get()
+        if (!formId) return
+
+        const newStyle = { ...formStyle, ...styleUpdates }
+        const newSavedForms = { ...savedForms }
+        if (newSavedForms[formId]) {
+            newSavedForms[formId] = {
+                ...newSavedForms[formId],
+                formStyle: newStyle,
+            }
+        }
+
+        set({
+            formStyle: newStyle,
+            savedForms: newSavedForms,
+        })
+    },
+
     deleteForm: (targetFormId) => {
         const { formId, savedForms } = get()
 
@@ -129,10 +161,12 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
             if (remainingFormIds.length > 0) {
                 const nextFormId = remainingFormIds[0]
                 const nextForm = newSavedForms[nextFormId]
+                const targetStyle = nextForm.formStyle || { backgroundColor: '', fontFamily: 'sans' }
                 set({
                     formId: nextForm.formId,
                     formTitle: nextForm.formTitle,
                     formDescription: nextForm.formDescription,
+                    formStyle: targetStyle,
                     itemIds: nextForm.itemIds,
                     itemsData: nextForm.itemsData,
                     selectedItemId: null,
@@ -143,6 +177,7 @@ export const createFormDocumentSlice: StateCreator<FormBuilderState, [], [], For
                     formId: '',
                     formTitle: '',
                     formDescription: '',
+                    formStyle: { backgroundColor: '', fontFamily: 'sans' },
                     itemIds: [],
                     itemsData: {},
                     selectedItemId: null,

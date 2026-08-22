@@ -150,3 +150,22 @@
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
 }
+
+/* Field style CSS custom property inheritance */
+[style*='--field-input-bg'] input,
+[style*='--field-input-bg'] textarea,
+[style*='--field-input-bg'] [role="combobox"] {
+  background-color: var(--field-input-bg) !important;
+}
+
+[style*='--field-input-border'] input,
+[style*='--field-input-border'] textarea,
+[style*='--field-input-border'] [role="combobox"] {
+  border-color: var(--field-input-border) !important;
+}
+
+[style*='--field-input-radius'] input,
+[style*='--field-input-radius'] textarea,
+[style*='--field-input-radius'] [role="combobox"] {
+  border-radius: var(--field-input-radius) !important;
+}

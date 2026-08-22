@@ -5,7 +5,7 @@ import App from './App'
 import './lib/i18n'
 import './index.css'
 
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && typeof navigator !== 'undefined' && !navigator.webdriver) {
   scan({
     enabled: true,
     log: true,

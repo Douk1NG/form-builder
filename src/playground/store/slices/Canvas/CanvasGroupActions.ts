@@ -137,7 +137,11 @@ export const createCanvasGroupActions: StateCreator<FormBuilderState, [], [], Ca
         )
 
         if (found) {
-            set({ itemsData: newItemsData })
+            set({
+                itemsData: newItemsData,
+                lockedGroupId: rowId,
+                selectedItemId: rowId,
+            })
         }
     },
 

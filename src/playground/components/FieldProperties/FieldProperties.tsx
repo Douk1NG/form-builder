@@ -28,7 +28,12 @@ export function FieldProperties() {
     handleUpdateReadOnly,
     handleUpdateDisabled,
     handleUpdateOptions,
-    handleUpdateGroupLabel
+    handleUpdateFieldStyle,
+    handleUpdateAvatarMode,
+    handleUpdateGroupLabel,
+    handleUpdateGroupStyle,
+    handleUpdateGroupHideHeader,
+    handleUpdateGroupBorderless,
   } = useFieldProperties()
 
   const expandToggle = (
@@ -54,7 +59,13 @@ export function FieldProperties() {
         <div className="absolute top-0 right-0 z-20">{expandToggle}</div>
         <GroupPropertiesPanel
           groupLabel={selectedGroup.label}
+          groupStyle={selectedGroup.style}
+          hideHeader={selectedGroup.hideHeader ?? false}
+          borderless={selectedGroup.borderless ?? false}
           onLabelChange={handleUpdateGroupLabel}
+          onGroupStyleChange={handleUpdateGroupStyle}
+          onHideHeaderChange={handleUpdateGroupHideHeader}
+          onBorderlessChange={handleUpdateGroupBorderless}
         />
       </div>
     )
@@ -74,6 +85,8 @@ export function FieldProperties() {
       onReadOnlyChange={handleUpdateReadOnly}
       onDisabledChange={handleUpdateDisabled}
       onActionOptionsChange={handleUpdateOptions}
+      onFieldStyleChange={handleUpdateFieldStyle}
+      onAvatarModeChange={handleUpdateAvatarMode}
     />
   )
 }
